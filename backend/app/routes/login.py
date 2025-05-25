@@ -1,16 +1,31 @@
 import os
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
 from .common.common import Page_Dir
+from backend.dbhelper.DBHelper import DBHelper
 
 router = APIRouter()
 
 
+class LoginReq(BaseModel):
+    username: str
+    password: str
+
+
 @router.post("/")
-def login(username: str, password: str):
-    # 这里可以加入身份校验逻辑
-    return {"message": f"用户 {username} 登录请求收到"}
+def login(req: LoginReq):
+    db = DBHelper()
+    # 明文密码（仅测试开发），生产必须hash
+    user = db.fetchone("SELECT * FROM Users WHERE username=%s", (req.username,))
+    db.close()
+    if not user or user["password"] != req.password:
+        raise HTTPException(status_code=401, detail="用户名或密码错误")
+    # 生产推荐生成 session 或 jwt，前端保存
+    # resp = JSONResponse(content={"message": "登录成功"})
+    # resp.set_cookie(...)
+    return {"message": "登录成功", "username": req.username, "nickname": user.get("nickname", "")}
 
 
 @router.get("/")

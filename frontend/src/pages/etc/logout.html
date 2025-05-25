@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>注销 - TravelSmart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 引用统一css样式文件 -->
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .logout-container {
+            background: #fff;
+            border-radius: 12px;
+            padding: 40px 32px;
+            width: 350px;
+            margin: 120px auto;
+            box-shadow: 0 8px 24px #aaa9ee5c;
+            text-align: center;
+        }
+        .logout-msg {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        .btn {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logout-container">
+        <h1>退出登录</h1>
+        <div class="logout-msg" id="logoutMsg">确认要注销并退出当前账号？</div>
+        <div>
+            <button class="btn btn-primary" id="logoutConfirmBtn">退出登录</button>
+            <a class="btn" href="/dashboard/">取消</a>
+        </div>
+    </div>
+    <script src="/static/logout.js"></script>
+</body>
+</html>

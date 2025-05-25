@@ -1,0 +1,114 @@
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+    background: #f8fcff;
+}
+
+.sidebar {
+    width: 240px;
+    background: #3399ff11;
+    box-shadow: 2px 0 9px #d3eafd60;
+    padding: 32px 0 24px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.avatar img {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    margin-bottom: 16px;
+    border: 2px solid #90d6ff;
+    background: #fff;
+}
+.sidebar h2 {
+    font-size: 1.13rem;
+    color: #259ef8;
+    margin-bottom: 14px;
+}
+.user-menu {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+}
+.user-menu li {
+    margin: 13px 0;
+}
+.user-menu li a {
+    color: #3779e3;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 6px 28px;
+    border-radius: 17px;
+    transition: background .15s;
+}
+.user-menu li a:hover {
+    background: #e4f3ff;
+}
+
+/* 地图主显示区 */
+.map-main {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e5f4fd;
+}
+#map-container {
+    width: 92vw;
+    max-width: 900px;
+    height: 77vh;
+    min-height: 410px;
+    border-radius: 14px;
+    box-shadow: 0 0 14px #b2e5f21b;
+    overflow: hidden;
+    background: #fff;
+}
+
+/* AI 问答区 */
+.ai-chat {
+    width: 330px;
+    background: #f3f9ff;
+    box-shadow: -3px 0 13px #e3f1fc84;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 19px 12px 19px;
+}
+.chat-header {
+    font-size: 1.18rem;
+    color: #2892ff;
+    font-weight: bold;
+    margin-bottom: 18px;
+}
+#chat-history {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    background: #f5fbff;
+    border-radius: 7px;
+    margin-bottom: 15px;
+    padding: 12px;
+    min-height: 240px;
+    max-height: 52vh;
+}
+#chat-form {
+    display: flex;
+    gap: 10px;
+}
+#chat-input {
+    flex: 1 1 auto;
+    padding: 8px 12px;
+    font-size: 1rem;
+    border-radius: 18px;
+    border: 1px solid #bfe1ff;
+}
+#chat-form button {
+    padding: 8px 18px;
+    border-radius: 18px;
+    border: none;
+    background: linear-gradient(90deg, #3ebdf5, #43e97b);
+    color: #fff;
+    font-weight: bold;
+    letter-spacing: .5px;
+    cursor: pointer;
+}

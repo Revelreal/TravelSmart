@@ -29,7 +29,27 @@ document.getElementById('registerForm').onsubmit = function(e) {
         valid=false;
     }
     if(valid){
-        alert("注册成功！（样例，不会实际提交）");
-        // location.href="/login";
+        // alert("注册成功！（样例，不会实际提交）");
+        // 进行实际提交
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '/register');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            username: uname,
+            email: email,
+            password: pwd
+        }));
+        xhr.onload = function() {
+            if(xhr.status === 200){
+                alert("注册成功！");
+                // 重置表单
+                document.getElementById('registerForm').reset();
+                // 等待一秒后跳转到登录页面
+                setTimeout(()=>location.href="/login", 1000);
+            } else {
+                let resp = JSON.parse(xhr.responseText);
+                alert("注册失败！" + (resp.detail || ""));
+            }
+        }
     }
 }

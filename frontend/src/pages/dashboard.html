@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>TravelSmart 用户主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 左侧侧边栏 -->
+        <aside class="sidebar">
+            <div class="avatar"><img src="/static/default-avatar.png" alt="用户头像"></div>
+            <h2 id="user-name">用户名</h2>
+            <ul class="user-menu">
+                <li><a href="#">个人信息</a></li>
+                <li><a href="#">我的行程</a></li>
+                <li><a href="#">设置</a></li>
+                <li><a href="/etc/logout">退出登录</a></li>
+            </ul>
+        </aside>
+        <!-- 中间地图主窗 -->
+        <main class="map-main">
+            <div id="map-container">
+                <!-- 高德地图JS API会把地图插入这里 -->
+            </div>
+        </main>
+        <!-- 右侧 AI 问答/聊天区 -->
+        <aside class="ai-chat">
+            <div class="chat-header">AI 问答助手</div>
+            <div id="chat-history"></div>
+            <form id="chat-form">
+                <input type="text" id="chat-input" placeholder="问我点什么..." autocomplete="off" />
+                <button type="submit">发送</button>
+            </form>
+        </aside>
+    </div>
+    <!-- 高德地图JS API（需替换为你自己的Key） -->
+    <script src="https://webapi.amap.com/maps?v=2.0&key=你的高德Key"></script>
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>
