@@ -9,8 +9,7 @@ window.onload = function() {
     // document.getElementById('user-name').textContent = 获取的用户名;
 };
 
-// 简单AI问答区（仅前端示例，需结合API实现真正交互）
-document.getElementById('chat-form').onsubmit = function(e){
+document.getElementById('chat-form').onsubmit = async function(e){
     e.preventDefault();
     let inputBox = document.getElementById('chat-input');
     let msg = inputBox.value.trim();
@@ -19,15 +18,27 @@ document.getElementById('chat-form').onsubmit = function(e){
     let userDiv = document.createElement('div');
     userDiv.textContent = "你：" + msg;
     hist.appendChild(userDiv);
-
-    // 演示：假装AI回复
-    setTimeout(() => {
-        let aiDiv = document.createElement('div');
-        aiDiv.textContent = "AI助手：" + "（这里是AI回复内容, 实际应调用后端API）";
-        aiDiv.style.color = "#3779e3";
-        hist.appendChild(aiDiv);
-        hist.scrollTop = hist.scrollHeight;
-    }, 600);
-
     inputBox.value = '';
+
+    // 显示AI助手正在回复（可选优化体验）
+    let aiDiv = document.createElement('div');
+    aiDiv.textContent = "AI助手：思考中...";
+    aiDiv.style.color = "#3779e3";
+    hist.appendChild(aiDiv);
+    hist.scrollTop = hist.scrollHeight;
+
+    try {
+        // 异步请求后端AI接口
+        let resp = await fetch('/api/ai/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({question: msg})
+        });
+        let data = await resp.json();
+        aiDiv.textContent = "AI助手：" + data.answer;
+        hist.scrollTop = hist.scrollHeight;
+    } catch (e) {
+        aiDiv.textContent = "AI助手：请求失败，请稍后再试";
+        aiDiv.style.color = "#f33";
+    }
 };

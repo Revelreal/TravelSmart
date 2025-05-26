@@ -3,8 +3,7 @@ import os
 from fastapi import FastAPI
 from starlette.responses import RedirectResponse
 from starlette.staticfiles import StaticFiles
-
-from .routes import index, login, register, dashboard, etc
+from .routes import index, login, register, dashboard, etc, api
 
 app = FastAPI()
 
@@ -25,4 +24,5 @@ app.include_router(prefix="/index", router=index.router)
 app.include_router(prefix="/login", router=login.router)
 app.include_router(prefix="/register", router=register.router)
 app.include_router(prefix="/dashboard", router=dashboard.router)
+app.include_router(prefix="/api", router=api.router)
 app.include_router(prefix="/etc", router=etc.router)
