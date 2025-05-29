@@ -2,42 +2,58 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>TravelSmart 用户主页</title>
+    <title>浮层三栏 Demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/static/styles.css">
     <link rel="stylesheet" href="/static/dashboard.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- 左侧侧边栏 -->
-        <aside class="sidebar">
+    <!-- 左下角：菜单 -->
+    <button class="floating-btn left-toggle" title="展开菜单">☰</button>
+    <!-- 右下角：AI对话 -->
+    <button class="floating-btn right-toggle" title="展开问答">💬</button>
+    <!-- 下侧正中：加载地图 -->
+    <button id="load-map-btn" class="floating-btn loadmap-btn" title="加载地图">🗺️ 点此加载地图</button>
+
+    <!-- 左侧浮层菜单 -->
+    <aside class="sidebar collapsed">
+        <div class="inner">
             <div class="avatar"><img src="/static/default-avatar.png" alt="用户头像"></div>
             <h2 id="user-name">用户名</h2>
             <ul class="user-menu">
-                <li><a href="#">个人信息</a></li>
-                <li><a href="#">我的行程</a></li>
-                <li><a href="#">设置</a></li>
+                <li><a href="/profile">个人信息</a></li>
+                <li><a href="/my-trips">我的行程</a></li>
+                <li><a href="/etc/settings">基础设置</a></li>
                 <li><a href="/etc/logout">退出登录</a></li>
+                <li><a href="/etc/delete-account">注销账号</a></li>
+                <li><a href="/etc/help">帮助</a></li>
+                <li><a href="/etc/about">关于</a></li>
+                <li><a href="/etc/terms">服务条款</a></li>
+                <li><a href="/etc/contact">联系我们</a></li>
             </ul>
-        </aside>
-        <!-- 中间地图主窗 -->
-        <main class="map-main">
-            <div id="map-container">
-                <!-- 高德地图JS API会把地图插入这里 -->
-            </div>
-        </main>
-        <!-- 右侧 AI 问答/聊天区 -->
-        <aside class="ai-chat">
+            <div class="dragbar dragbar-left disabled"></div>
+        </div>
+    </aside>
+    <!-- 右侧浮层AI -->
+    <aside class="rightbar collapsed">
+        <div class="inner">
             <div class="chat-header">AI 问答助手</div>
             <div id="chat-history"></div>
-            <form id="chat-form">
-                <label for="chat-input"></label><input type="text" id="chat-input" placeholder="问我点什么..." autocomplete="off" />
+            <form id="chat-form" autocomplete="off">
+                <input type="text" id="chat-input" placeholder="问我点什么..." autocomplete="off"/>
                 <button type="submit">发送</button>
             </form>
-        </aside>
-    </div>
-    <!-- 高德地图JS API -->
-    <script src="https://webapi.amap.com/maps?v=2.0&key=513fce8c9a3e2473fad5b2a2963d8c4f"></script>
+            <div class="dragbar dragbar-right disabled"></div>
+        </div>
+    </aside>
+    <!-- 主内容始终全屏 -->
+    <main class="main-content">
+        <div id="map-centerer">
+            <div id="map-placeholder">
+                <div class="map-hint">点击下方“🗺️ 点此加载地图”按钮后展示地图</div>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/dashboard.js"></script>
 </body>
 </html>

@@ -1,0 +1,56 @@
+html, body {
+    height: 100%; margin: 0; padding: 0;
+    background: linear-gradient(120deg, #eaf6ff 0%, #fdf6f7 100%);
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+.logout-container {
+    height: 100vh; width: 100vw;
+    display: flex; align-items: center; justify-content: center;
+}
+.logout-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 6px 36px #b9c6fa29;
+    padding: 42px 32px 32px 32px;
+    min-width: 320px;
+    max-width: 95vw;
+    display: flex; flex-direction: column; align-items: center;
+}
+.logout-avatar img {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: #e1f0fc;
+    border: 3px solid #b6e3fa;
+    margin-bottom: 16px;
+}
+.logout-card h2 {
+    color: #df2a36; font-size: 1.45em; margin: 0 0 14px 0;
+}
+.logout-card .tip {
+    color: #888fb3; text-align: center; margin-bottom: 32px; font-size: 1em;
+}
+#logout-form {
+    display: flex; flex-direction: column; gap: 17px; align-items: center;
+}
+.logout-btn {
+    background: linear-gradient(90deg,#FF585B,#FF785A);
+    color: #fff; border: none; border-radius: 22px;
+    font-size: 1.08em; font-weight: bold;
+    padding: 11px 43px; cursor: pointer;
+    box-shadow: 0 2px 8px #ffd8df34;
+    transition: background 0.14s;
+}
+.logout-btn:hover { background: linear-gradient(90deg,#e43d41,#f97053);}
+.cancel-btn {
+    background: #f6fafd;
+    color: #567189;
+    border: none;
+    border-radius: 22px;
+    font-size: 1.08em;
+    padding: 9px 28px;
+    cursor: pointer;
+    transition: background 0.13s;
+    box-shadow: 0 1px 6px #cddeea22;
+    margin-top: 8px;
+}
+.cancel-btn:hover { background: #edf5fa; color: #247ba0;}

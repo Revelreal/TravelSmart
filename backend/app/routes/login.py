@@ -25,6 +25,8 @@ def login(req: LoginReq):
     # 生产推荐生成 session 或 jwt，前端保存
     # resp = JSONResponse(content={"message": "登录成功"})
     # resp.set_cookie(...)
+    # 获取用户名和邮箱存储到全局变量，后续请求可以直接使用
+
     return {"message": "登录成功", "username": req.username, "nickname": user.get("nickname", "")}
 
 
