@@ -63,6 +63,32 @@ class DBHelper:
         self.cursor.execute(sql, params or ())
         return self.cursor.fetchone()
 
+    # 注册用户
+    def create_user(self, username, password, nickname=None, avatar=None, phone=None, email=None, city=None):
+        # 查询用户是否已存在
+        exists_sql = "SELECT id FROM Users WHERE username=%s;"
+        if self.fetchone(exists_sql, (username,)):
+            return False, "用户已存在"
+        insert_sql = '''
+                     INSERT INTO Users (username, password, nickname, avatar, phone, email, city)
+                     VALUES (%s, %s, %s, %s, %s, %s, %s) \
+                     '''
+        self.execute(insert_sql, (username, password, nickname, avatar, phone, email, city))
+        return True, "注册成功"
+
+        # 校验用户
+    def verify_user(self, username, password):
+        check_sql = "SELECT id FROM Users WHERE username=%s AND password=%s;"
+        result = self.fetchone(check_sql, (username, password))
+        if not result:
+            # 判断具体失败原因
+            sql = "SELECT id FROM Users WHERE username=%s;"
+            if not self.fetchone(sql, (username,)):
+                return False, "用户不存在"
+            else:
+                return False, "密码错误"
+        return True, "登录成功"
+
 
 # 以下为创建表的函数，可根据需要调用
 def create_spots_table(m_db):
