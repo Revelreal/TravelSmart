@@ -1,8 +1,9 @@
 import os
+from urllib.request import Request
 
 from fastapi import FastAPI
 import gradio as gr
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, HTMLResponse
 from starlette.staticfiles import StaticFiles
 
 # 导入各个页面
@@ -10,6 +11,7 @@ from MainProject.app.welcome.login import login_page
 from MainProject.app.welcome.register import register_page
 from MainProject.app.homepage.settings import settings_page
 from MainProject.app.homepage.user_home import user_home_page
+from MainProject.app.homepage.admin_home import admin_home_page
 
 app = FastAPI()
 
@@ -35,3 +37,4 @@ gr.mount_gradio_app(app, login_page(), path="/welcome/login")
 gr.mount_gradio_app(app, register_page(), path="/welcome/register")
 gr.mount_gradio_app(app, settings_page(), path="/homepage/settings")
 gr.mount_gradio_app(app, user_home_page(), path="/homepage/user_home")
+gr.mount_gradio_app(app, admin_home_page(), path="/homepage/admin_home")

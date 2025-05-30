@@ -16,7 +16,11 @@ def login_page():
             ok, info = db.verify_user(u, p)
             db.close()
             if ok:
-                return f"✅ {info}，<a href='/homepage/user_home' target='_self'>进入主页</a>"
+                # 检查是否为管理员
+                if u == "admin":
+                    return f"✅ {info}，<a href='/homepage/admin_home' target='_self'>进入管理页</a>"
+                else:
+                    return f"✅ {info}，<a href='/homepage/user_home' target='_self'>进入主页</a>"
             else:
                 return f"❌ {info}"
 

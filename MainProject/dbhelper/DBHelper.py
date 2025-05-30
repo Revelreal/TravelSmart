@@ -143,9 +143,6 @@ def create_routes_table(m_db):
         duration INT,
         route_type VARCHAR(50),
         ai_feature JSON,
-        -- 外键约束可选加上，若有关联表：Spots(id)，Foods(id)
-        -- FOREIGN KEY (start_spot_id) REFERENCES Spots(id),
-        -- FOREIGN KEY (end_spot_id) REFERENCES Spots(id)
         INDEX idx_start_spot (start_spot_id),
         INDEX idx_end_spot (end_spot_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -165,7 +162,9 @@ def create_users_table(m_db):
         phone VARCHAR(20),
         email VARCHAR(100),
         city VARCHAR(50),
-        create_time DATETIME DEFAULT CURRENT_TIMESTAMP
+        create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+        online_status TINYINT DEFAULT 0 COMMENT '0离线 1在线',
+        last_active_time DATETIME DEFAULT NULL COMMENT '最近活动时间'
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     '''
     m_db.execute(create_sql)
@@ -198,4 +197,5 @@ def create_comments_table(m_db):
 #     create_users_table(db)
 #     create_comments_table(db)
 #     print(db.query("SHOW TABLES;"))
+#     db.query("ALTER TABLE Users ADD COLUMN online_status TINYINT DEFAULT 0 COMMENT '0离线 1在线', ADD COLUMN last_active_time DATETIME DEFAULT NULL COMMENT '最近活动时间'")
 #     db.close()
