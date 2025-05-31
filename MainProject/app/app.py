@@ -1,9 +1,8 @@
 import os
-from urllib.request import Request
 
 from fastapi import FastAPI
 import gradio as gr
-from starlette.responses import RedirectResponse, HTMLResponse
+from starlette.responses import RedirectResponse
 from starlette.staticfiles import StaticFiles
 
 # 导入各个页面

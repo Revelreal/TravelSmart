@@ -4,16 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="准备使用Gradio重构项目">
-      <change beforePath="$PROJECT_DIR$/.idea/TravelSmart.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/TravelSmart.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/homepage/admin_home.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/homepage/admin_home.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/homepage/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/homepage/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/homepage/user_home.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/homepage/user_home.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/welcome/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/welcome/login.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/dbhelper/DBHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/dbhelper/DBHelper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="Gradio重构模板">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +38,7 @@
     </favorite-branches>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="Gradio_TravelSmart" />
+        <entry key="$PROJECT_DIR$" value="develop" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -71,7 +63,8 @@
     },
     &quot;owner&quot;: &quot;Revelreal&quot;,
     &quot;repository&quot;: &quot;TravelSmart&quot;
-  }
+  },
+  &quot;editorReviewEnabled&quot;: false
 }</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -100,7 +93,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "develop 上的 #2",
     "last_opened_file_path": "D:/repos3/TravelSmart",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
@@ -151,7 +144,8 @@
       <workItem from="1748572341885" duration="281000" />
       <workItem from="1748572941938" duration="1373000" />
       <workItem from="1748574348507" duration="7039000" />
-      <workItem from="1748585160988" duration="3269000" />
+      <workItem from="1748585160988" duration="3425000" />
+      <workItem from="1748653259901" duration="2092000" />
     </task>
     <task id="LOCAL-00001" summary="基础界面功能搭建中...">
       <option name="closed" value="true" />
@@ -177,7 +171,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748582177646</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Gradio重构模板">
+      <option name="closed" value="true" />
+      <created>1748588508886</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1748588508886</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -209,10 +211,11 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="基础界面功能搭建中..." />
     <MESSAGE value="准备使用Gradio重构项目" />
-    <option name="LAST_COMMIT_MESSAGE" value="准备使用Gradio重构项目" />
+    <MESSAGE value="Gradio重构模板" />
+    <option name="LAST_COMMIT_MESSAGE" value="Gradio重构模板" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/TravelSmart$main.coverage" NAME="main 覆盖结果" MODIFIED="1748588059515" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
+    <SUITE FILE_PATH="coverage/TravelSmart$main.coverage" NAME="main 覆盖结果" MODIFIED="1748655194957" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
     <SUITE FILE_PATH="coverage/TravelSmart$DBHelper.coverage" NAME="DBHelper 覆盖结果" MODIFIED="1748586928548" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
     <SUITE FILE_PATH="coverage/TravelSmart$app.coverage" NAME="app 覆盖结果" MODIFIED="1748581085974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app" />
   </component>
