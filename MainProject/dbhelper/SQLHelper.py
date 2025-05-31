@@ -1,16 +1,17 @@
+# MainProject/dbhelper/SQLHelper.py
 import toml
 import os
 from pymysql import connect, cursors
 
 
-def load_db_config(filename="../../db_config.toml"):
+def load_db_config(filename="../../config.toml"):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), filename))
     config = toml.load(abs_path)
     return config["mysql"]
 
 
 class SQLHelper:
-    def __init__(self, config_path="../../db_config.toml"):
+    def __init__(self, config_path="../../config.toml"):
         db_conf = load_db_config(config_path)
         host = db_conf.get("host")
         port = db_conf.get("port")

@@ -1,16 +1,17 @@
+# MainProject/dbhelper/MONGOHelper.py
 import toml
 from pymongo import MongoClient
 import os
 
 
-def load_mongodb_config(filename="../db_config.toml"):
+def load_mongodb_config(filename="../config.toml"):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), filename))
     config = toml.load(abs_path)
     return config["mongodb"]
 
 
 class MongoHelper:
-    def __init__(self, config_path="../../db_config.toml"):
+    def __init__(self, config_path="../../config.toml"):
         conf = load_mongodb_config(config_path)
         host = conf["host"]
         port = conf["port"]

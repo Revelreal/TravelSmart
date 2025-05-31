@@ -1,3 +1,4 @@
+# configuration file for database connection
 [mysql]
 host = "8.153.88.50"
 port = 3306
@@ -12,3 +13,7 @@ port = 27017
 username = ""
 password = ""
 database = "SmartTravel"
+
+[ai]
+api = "https://api.deepbricks.ai/v1/chat/completions"
+key = "sk-5docNm9DYSqBZhiq6Gq93fijNr4zd0Hddqr80vC3riuQSQf0"

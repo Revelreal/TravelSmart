@@ -1,11 +1,9 @@
-import os
-
+# MainProject/app.py:
+# This file is used to define the routing of the web application.
 from fastapi import FastAPI
 import gradio as gr
 from starlette.responses import RedirectResponse
-from starlette.staticfiles import StaticFiles
 
-# 导入各个页面
 
 # welcome 页面
 from MainProject.app.welcome.login import login_page
@@ -21,6 +19,7 @@ from MainProject.app.settings.user_settings import user_settings
 from MainProject.app.settings.root_settings import root_settings
 from MainProject.app.settings.admin_settings import admin_settings
 
+# root 页面
 app = FastAPI()
 
 

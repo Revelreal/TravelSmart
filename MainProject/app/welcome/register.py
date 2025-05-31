@@ -1,3 +1,4 @@
+# MainProject/app/welcome/register.py:
 import gradio as gr
 from MainProject.dbhelper.SQLHelper import SQLHelper
 
@@ -38,6 +39,7 @@ def register_page():
                     # 注意：只在HTML组件内返回JS才会生效
                     return (
                         "✅ 注册成功，<a href='/welcome/login' style='color:#166fb2;font-size:1.1em;font-weight:bold;'>立即登录</a>"
+                        "<script>setTimeout(function(){window.location.href='/welcome/login'},2000);</script>"
                     )
                 else:
                     return f"❌ 注册失败：{msginfo}"

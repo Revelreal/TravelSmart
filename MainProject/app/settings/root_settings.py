@@ -1,16 +1,16 @@
-# app/settings/root_settings.py
+# MainProject/app/settings/root_settings.py
 import gradio as gr
 
 
 def system_info():
     # 这里你应该用实际代码动态获取
     return {
-        "应用名称": "SmartTravel (演示版)",
+        "应用名称": "SmartTravel",
         "数据库主机": "8.153.88.50",
         "当前版本": "v1.2.3",
-        "维护人员": "admin@smarttravel.com",
+        "维护人员": "jiangxiaoxuan0316@gmail.com",
         "部署时间": "2024-05-31",
-        "如有紧急问题，请联系": "superadmin@smarttravel.com"
+        "如有紧急问题，请联系": "13141736871"
     }
 
 

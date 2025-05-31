@@ -1,3 +1,4 @@
+# MainProject/app/homepage/user_home.py:
 import gradio as gr
 from MainProject.app.API.ai_service import ask_ai_sync, test_connection
 
