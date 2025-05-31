@@ -4,15 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="基本功能完善">
+    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="Merge remote-tracking branch 'origin/develop' into develop">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/API/chat_events.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/API/map_events.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/API/ai_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/API/ai_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/API/ai_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/homepage/admin_home.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/homepage/admin_home.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/homepage/root_home.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/homepage/root_home.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/homepage/user_home.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/homepage/user_home.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/settings/admin_settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/settings/admin_settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/settings/root_settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/settings/root_settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/welcome/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/welcome/login.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/welcome/register.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/welcome/register.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/dbhelper/MONGOHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/dbhelper/MONGOHelper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/dbhelper/SQLHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/dbhelper/SQLHelper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db_config.toml" beforeDir="false" afterPath="$PROJECT_DIR$/config.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -259,7 +265,7 @@
       <workItem from="1748574348507" duration="7039000" />
       <workItem from="1748585160988" duration="3425000" />
       <workItem from="1748653259901" duration="2867000" />
-      <workItem from="1748658805614" duration="25668000" />
+      <workItem from="1748658805614" duration="29262000" />
     </task>
     <task id="LOCAL-00001" summary="基础界面功能搭建中...">
       <option name="closed" value="true" />
@@ -317,7 +323,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748681169574</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Merge remote-tracking branch 'origin/develop' into develop">
+      <option name="closed" value="true" />
+      <created>1748689158471</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1748689158471</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -352,7 +366,8 @@
     <MESSAGE value="2025.5.31 9.47" />
     <MESSAGE value="Gradio重构模板" />
     <MESSAGE value="基本功能完善" />
-    <option name="LAST_COMMIT_MESSAGE" value="基本功能完善" />
+    <MESSAGE value="Merge remote-tracking branch 'origin/develop' into develop" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/develop' into develop" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TravelSmart$SQLHelper.coverage" NAME="SQLHelper 覆盖结果" MODIFIED="1748682646819" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />

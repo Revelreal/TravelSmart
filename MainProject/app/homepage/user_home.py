@@ -1,143 +1,154 @@
 import gradio as gr
-from MainProject.app.API.ai_service import ask_ai_sync, test_connection
-
-
-def amap_map():
-    """地图展示组件"""
-    return gr.HTML(
-        "<div style='height:400px; background:#d0eaf9; display:flex; align-items:center; justify-content:center; font-size:2em;'>🗺 这里是地图展示区域</div>"
-    )
+from MainProject.app.API.ai_service import ask_ai_sync
+from MainProject.auth_utils import verify_token
 
 
 def build_ai_messages(history, question):
-    """构建发送给AI的消息格式"""
     messages = []
-    # 遍历历史，处理messages格式
     for msg in (history or []):
         if isinstance(msg, dict) and 'role' in msg and 'content' in msg:
             messages.append(msg)
-
     if question and question.strip():
         messages.append({"role": "user", "content": str(question)})
     return messages
 
 
-def ai_chat_func(history, question):
-    """AI聊天处理函数"""
-    # 守护history为列表格式
+# AI接口（必须token核查）
+def ai_chat_func(history, question, token):
+    # 1. token认证
+    info = verify_token(token)
+    if not info or not info.get("username"):
+        raise gr.Error("认证失效，请刷新页面重新登录")
     history = history or []
-
     if not question or not question.strip():
-        # 添加一个错误消息到历史记录
         error_msg = {"role": "assistant", "content": "提问不能为空"}
         return history + [error_msg], ""
-
-    # 先添加用户消息到历史记录
     user_msg = {"role": "user", "content": str(question)}
     updated_history = history + [user_msg]
-
-    # 构建发送给AI的messages
     messages = build_ai_messages(history, question)
-
     try:
-        # 使用同步版本，避免异步问题
         answer = ask_ai_sync(messages)
     except Exception as e:
         answer = f"AI请求错误: {str(e)}"
-        print(f"详细错误信息: {e}")  # 添加调试信息
-
-    # 添加AI回复到历史记录
     ai_msg = {"role": "assistant", "content": answer}
     final_history = updated_history + [ai_msg]
-
     return final_history, ""
 
 
-def user_home_page():
-    """创建用户主页界面"""
-    with gr.Blocks(title="用户主页") as demo:
-        # 左下角的用户设置（固定悬浮按钮）
-        gr.HTML("""
-            <a href='/settings/user_settings' target='_self'
-                style='
-                    position: fixed;
-                    left: 32px;
-                    bottom: 32px;
-                    z-index: 9999;
-                    background: #111;
-                    color: #fff;
-                    border-radius: 50%;
-                    width: 52px;
-                    height: 52px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    text-decoration: none;
-                    box-shadow: 0 2px 14px rgba(0,0,0,0.18);
-                    font-size: 2em;
-                    transition: background 0.15s;
-                '
-                onmouseover="this.style.background='#333'"
-                onmouseout="this.style.background='#111'"
-                title="用户设置"
-            >⚙️</a>
-        """)
+# 地图/其它功能，同理加token参数和校验...
 
-        # 页面标题
-        gr.Markdown("## 🏠 欢迎来到 TravelSmart 用户主页")
+def create_map_ui(token_box):
+    # token_box: gr.Textbox, 页面已另外预先定义
 
-        # 主要内容区域
+    # 支持动态token的地图iframe生成
+    def _iframe_html(token: str):
+        # token为None时iframe不渲染
+        if not token:
+            return '<div style="color:red;padding:20px">未登录/参数缺失，无法加载地图</div>'
+        return f"""
+        <iframe
+            id="map-iframe"
+            src="/api/map?token={token}"
+            style="width:100%; height:480px; border:none;"
+            allow="geolocation"
+        ></iframe>
+        """
+
+    with gr.Column(scale=3):
+        with gr.Group(elem_classes="map-border"):
+            map_html = gr.HTML()  # 用于动态展示iframe
+
         with gr.Row():
-            # 左侧地图区域
-            with gr.Column(scale=3, min_width=440):
-                amap_map()
+            lng = gr.Number(value=116.397428, label="经度", elem_id="lng_input", precision=6)
+            lat = gr.Number(value=39.90923, label="纬度", elem_id="lat_input", precision=6)
+            zoom = gr.Slider(3, 18, value=13, label="缩放级别", step=0.1, elem_id="zoom_slider")
 
-            # 右侧AI助手区域
+        # == token变化时动态更新iframe ==
+        token_box.change(
+            _iframe_html,
+            inputs=token_box,
+            outputs=map_html
+        )
+        # 页面初次装载也手动触发一次（防止加载时不出现地图）
+        # 注意：如果你在demo.load返回token时，可以同步调用map_html.update...
+
+    return lng, lat, zoom, map_html
+
+
+def create_user_home_app():
+    with gr.Blocks(
+            title="TravelSmart",
+            css="""
+        .map-border { border: 1px solid #ddd; border-radius: 8px; padding: 8px; }
+        #map-iframe { min-height: 480px !important; }
+        .userbar-text {
+            font-size:1.10em;
+            color:#365;
+            text-align:right;
+            margin-top:10px;
+            margin-right:42px;
+        }
+        #float-setting-btn {
+            position: fixed;
+            left: 32px;
+            bottom: 32px;
+            z-index: 9999;
+            background: #111;
+            color: #fff;
+            border-radius: 50%;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 2em;
+            box-shadow: 0 2px 14px rgba(0,0,0,0.18);
+            transition: background 0.15s;
+        }
+        #float-setting-btn:hover { background:#333;}
+        """
+    ) as demo:
+        # -------- 必要控件 --------
+        token_box = gr.Textbox(visible=False)
+        userbar = gr.HTML("正在加载...", elem_classes="userbar-text")
+        settings_btn_html = gr.HTML("", elem_id="setting-float-html")  # 悬浮窗按钮
+
+        # -------- load回调，token流转，并输出拼接好的设置按钮HTML --------
+        def load_user(request: gr.Request):
+            token = request.query_params.get("token", "")
+            info = verify_token(token)
+            if not info or not info.get("username"):
+                raise gr.Error("未登录或令牌无效，请重新登录")
+            username = info["username"]
+            userbar_html = f"👤 当前用户：<b>{username}</b>"
+            settings_btn = (
+                f'<a href="/settings/user_settings?token={token}" id="float-setting-btn" title="设置">&#9881;</a>'
+            )
+            return token, userbar_html, settings_btn
+
+        demo.load(
+            fn=load_user,
+            inputs=None,
+            outputs=[token_box, userbar, settings_btn_html]
+        )
+
+        gr.Markdown("## 🏠 TravelSmart 用户主页")
+        with gr.Row():
+            create_map_ui(token_box)  # 地图组件
             with gr.Column(scale=2, min_width=280):
                 gr.Markdown("### 🤖 AI 智能助手")
                 gr.Markdown("欢迎使用 TravelSmart AI 助手，可以咨询任何旅行问题")
-
-                # 使用messages格式的Chatbot
                 chatbot = gr.Chatbot(type="messages", show_label=False)
                 msg = gr.Textbox(placeholder="输入问题，回车提问...")
 
-                # 绑定提交事件
+                # -------- 交互：所有调用都带token校验 --------
                 msg.submit(
-                    ai_chat_func,
-                    inputs=[chatbot, msg],
+                    fn=ai_chat_func,
+                    inputs=[chatbot, msg, token_box],
                     outputs=[chatbot, msg]
                 )
 
-        # 页脚
-        gr.HTML(
-            "<div style='text-align:center;color:#97a; font-size:0.95em; margin-top:30px;'>© 2024 TravelSmart</div>"
-        )
+        gr.HTML("<div style='text-align:center;color:#97a;margin-top:30px;'>© 2024 TravelSmart</div>")
 
     return demo
-
-
-# 主程序入口
-if __name__ == "__main__":
-    print("正在启动 TravelSmart 用户主页...")
-
-    # 检查AI服务连接
-    print("检查AI服务连接...")
-    if test_connection():
-        print("✓ AI服务连接正常")
-        demo = user_home_page()
-        demo.launch(
-            server_name="0.0.0.0",  # 允许外部访问
-            server_port=7860,  # 默认端口
-            share=False,  # 不创建公共链接
-            debug=True  # 启用调试模式
-        )
-    else:
-        print("✗ AI服务连接失败，请检查网络和API配置")
-        print("程序将仍然启动，但AI功能可能不可用")
-        demo = user_home_page()
-        demo.launch(
-            server_name="0.0.0.0",
-            server_port=7860,
-            share=False,
-            debug=True
-        )

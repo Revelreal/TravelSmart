@@ -1,16 +1,17 @@
+# MainProject/dbhelper/SQLHelper.py
 import toml
 import os
 from pymysql import connect, cursors
 
 
-def load_db_config(filename="../../db_config.toml"):
+def load_db_config(filename="../../config.toml"):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), filename))
     config = toml.load(abs_path)
     return config["mysql"]
 
 
 class SQLHelper:
-    def __init__(self, config_path="../../db_config.toml"):
+    def __init__(self, config_path="../../config.toml"):
         db_conf = load_db_config(config_path)
         host = db_conf.get("host")
         port = db_conf.get("port")
@@ -185,6 +186,76 @@ class SQLHelper:
         u = self.fetchone("SELECT role_id FROM Users WHERE id=%s", (user_id,))
         return bool(u and u['role_id'] == 1)
 
+    def register_user(self, user_info):
+        """
+        注册新用户
+        :param user_info: 用户信息字典，必须包含以下字段：
+            - username: 用户名
+            - password: 密码
+            - role_name: 角色名称（如 "user"、"admin"、"root"）
+            - nickname: 昵称（可选）
+            - phone: 电话（可选）
+            - email: 邮箱（可选）
+            - city: 城市（可选）
+        :return: (bool, str) 注册是否成功，以及错误信息（如果失败）
+        """
+        try:
+            # 1. 检查必填字段
+            required_fields = ["username", "password", "role_name"]
+            for field in required_fields:
+                if field not in user_info:
+                    return False, f"缺少必填字段: {field}"
+
+            username = user_info["username"]
+            password = user_info["password"]
+            role_name = user_info["role_name"]
+
+            # 2. 检查用户名是否已存在
+            if self.is_username_exists(username):
+                return False, "用户名已存在"
+
+            # 3. 获取角色ID
+            role = self.fetchone("SELECT id FROM Roles WHERE role_name=%s", (role_name,))
+            if not role:
+                return False, f"角色 '{role_name}' 不存在"
+
+            role_id = role["id"]
+
+            # 4. 设置默认状态为 "正常"（status_id=1）
+            status_id = 1
+
+            # 5. 插入用户数据
+            sql = """
+                  INSERT INTO Users (username, password, nickname, phone, email, city, status_id, role_id) \
+                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
+                  """
+            params = (
+                username,
+                password,
+                user_info.get("nickname", ""),
+                user_info.get("phone"),
+                user_info.get("email"),
+                user_info.get("city"),
+                status_id,
+                role_id,
+            )
+
+            self.execute(sql, params)
+            return True, "注册成功"
+
+        except Exception as e:
+            print(f"注册用户失败: {e}")
+            return False, f"注册失败: {str(e)}"
+
+    def update_user_password(self, username, new_password):
+        """重置用户密码"""
+        sql = "UPDATE Users SET password=%s, last_active_time=NOW() WHERE username=%s"
+        try:
+            self.execute(sql, (new_password, username))
+            return True, "密码重置成功"
+        except Exception as e:
+            return False, f"密码重置失败: {str(e)}"
+
 
 if __name__ == "__main__":
     db = SQLHelper()
@@ -194,7 +265,7 @@ if __name__ == "__main__":
     # db.create_users_table()
     # 测试插入3种不同身份和状态的用户
     # db.create_user("rootuser",  "pwroot",  "超级管理员", status_id=1, role_id=1)
-    # db.create_user("admin001",  "pwadmin", "普通管理员", status_id=2, role_id=2)
+    db.create_user("admin001",  "pwadmin", "普通管理员", status_id=2, role_id=2)
     # db.create_user("tommy",     "pwuser",  "小明",       status_id=1, role_id=3)
     db.show_users()
     db.close()

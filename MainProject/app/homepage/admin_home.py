@@ -1,22 +1,35 @@
 import gradio as gr
 import pandas as pd
 from MainProject.dbhelper.SQLHelper import SQLHelper
+from MainProject.auth_utils import verify_token
+
+
+# 严格校验管理员权限，默认admin和root都可访问（如只允许admin，请去掉 'root'）
+def require_admin(token):
+    info = verify_token(token)
+    if not info or not info.get("username"):
+        raise gr.Error("认证失败或无权限，请重新登录")
+    if info.get("role") not in ("admin", "root"):
+        raise gr.Error("权限不足，仅管理员可访问本页面！")
+    return info
 
 
 def get_users():
     db = SQLHelper()
     users = db.query(
         """
-        SELECT u.id, u.username, u.nickname, u.email, u.phone, u.city, r.role_name
+        SELECT u.id, u.username, u.nickname, u.email, u.phone, u.city, r.role_name, u.role_id
         FROM Users u LEFT JOIN Roles r ON u.role_id = r.id
         ORDER BY u.id LIMIT 30
         """
     )
     db.close()
-    return pd.DataFrame(users) if users else pd.DataFrame(columns=["id", "username", "nickname", "email", "phone", "city", "role_name"])
+    columns = ["id", "username", "nickname", "email", "phone", "city", "role_name", "role_id"]
+    return pd.DataFrame(users, columns=columns) if users else pd.DataFrame(columns=columns)
 
 
-def add_user(username, nickname, email):
+def add_user(username, nickname, email, token):
+    require_admin(token)
     if not username or not email:
         return "❌ 用户名和邮箱必填"
     db = SQLHelper()
@@ -37,8 +50,8 @@ def add_user(username, nickname, email):
         db.close()
         return f"❌ 添加异常：{e}"
 
-
-def update_user(user_id, nickname, email, phone, city):
+def update_user(user_id, nickname, email, phone, city, token):
+    require_admin(token)
     try:
         user_id = int(user_id)
     except Exception:
@@ -51,7 +64,6 @@ def update_user(user_id, nickname, email, phone, city):
     if user["role_id"] == 1:
         db.close()
         return "❌ 禁止修改 root 用户"
-    # 邮箱不得重复
     if email:
         check = db.fetchone("SELECT id FROM Users WHERE email=%s AND id!=%s", (email, user_id))
         if check:
@@ -65,7 +77,8 @@ def update_user(user_id, nickname, email, phone, city):
     return f"✅ ID 为 {user_id} 的用户信息已更新"
 
 
-def delete_user(user_id):
+def delete_user(user_id, token):
+    require_admin(token)
     try:
         user_id = int(user_id)
     except Exception:
@@ -78,22 +91,56 @@ def delete_user(user_id):
     if user['role_id'] == 1:
         db.close()
         return "❌ 不允许删除 root 用户"
+    if user['role_id'] == 2:
+        db.close()
+        return "❌ 不允许删除 admin 用户"
     db.execute("DELETE FROM Users WHERE id=%s", (user_id,))
     db.close()
     return f"✅ ID 为 {user_id} 的用户已删除"
 
 
-def admin_home_page():
+def create_admin_home_app():
     with gr.Blocks(title="管理员后台") as demo:
-        gr.Markdown("# 👨‍💼 管理员控制台")
+        token_box = gr.Textbox(visible=False)
+        adminbar = gr.HTML("正在认证管理员身份...", elem_classes="userbar-text")
+        settings_btn_html = gr.HTML("", elem_id="setting-float-html")
 
+        def load_admin(request: gr.Request):
+            token = request.query_params.get("token", "")
+            info = require_admin(token)
+            username = info["username"]
+            welcome_html = f"<b>👨‍💼 管理员 {username}</b>，欢迎来到后台控制台！"
+            settings_btn = (
+                f'<a href="/settings/admin_settings?token={token}" id="to_admin_settings" '
+                f'style="position: fixed; right: 36px; bottom: 36px; z-index: 9999; width: 56px; height: 56px; border-radius: 50%;'
+                f'background: #007BFF; color: #fff; font-size: 30px; font-weight: bold;'
+                f'display: flex; align-items: center; justify-content: center;'
+                f'box-shadow: 0 2px 14px rgba(0,0,0,0.18); text-decoration:none; transition: background 0.18s;"'
+                f'onmouseover="this.style.background=\'#1557b1\'" '
+                f'onmouseout="this.style.background=\'#007BFF\'" '
+                f'title="跳转设置页面">⚙️</a>'
+            )
+            return token, welcome_html, settings_btn
+
+        demo.load(
+            fn=load_admin,
+            inputs=None,
+            outputs=[token_box, adminbar, settings_btn_html]
+        )
+
+        gr.Markdown("# 👨‍💼 管理员控制台")
         with gr.Tabs():
             with gr.TabItem("👥 用户管理"):
                 gr.Markdown("## 用户列表")
                 refresh_btn = gr.Button("🔄 刷新列表")
-                users_df = gr.Dataframe(value=get_users(), interactive=False)
-                refresh_btn.click(fn=get_users, outputs=users_df)
-
+                users_df = gr.Dataframe(
+                    value=get_users()[["id", "username", "nickname", "email", "phone", "city", "role_name"]],
+                    interactive=False
+                )
+                refresh_btn.click(
+                    fn=lambda token: get_users()[["id", "username", "nickname", "email", "phone", "city", "role_name"]],
+                    inputs=token_box, outputs=users_df
+                )
                 gr.Markdown("## ➕ 添加用户")
                 with gr.Row():
                     new_username = gr.Textbox(label="用户名")
@@ -103,10 +150,12 @@ def admin_home_page():
                     add_output = gr.Markdown()
                 add_btn.click(
                     fn=add_user,
-                    inputs=[new_username, new_nickname, new_email],
+                    inputs=[new_username, new_nickname, new_email, token_box],
                     outputs=add_output
-                ).then(fn=get_users, outputs=users_df)
-
+                ).then(
+                    lambda token: get_users()[["id", "username", "nickname", "email", "phone", "city", "role_name"]],
+                    inputs=token_box, outputs=users_df
+                )
                 gr.Markdown("## 📝 修改用户信息")
                 with gr.Row():
                     upd_id = gr.Number(label="用户ID", precision=0)
@@ -118,48 +167,23 @@ def admin_home_page():
                 upd_output = gr.Markdown()
                 upd_btn.click(
                     fn=update_user,
-                    inputs=[upd_id, upd_nickname, upd_email, upd_phone, upd_city],
+                    inputs=[upd_id, upd_nickname, upd_email, upd_phone, upd_city, token_box],
                     outputs=upd_output
-                ).then(fn=get_users, outputs=users_df)
-
+                ).then(
+                    lambda token: get_users()[["id", "username", "nickname", "email", "phone", "city", "role_name"]],
+                    inputs=token_box, outputs=users_df
+                )
                 gr.Markdown("## ❌ 删除用户")
                 del_id = gr.Number(label="用户ID", precision=0)
                 del_btn = gr.Button("删除用户")
                 del_output = gr.Markdown()
                 del_btn.click(
                     fn=delete_user,
-                    inputs=[del_id],
+                    inputs=[del_id, token_box],
                     outputs=del_output
-                ).then(fn=get_users, outputs=users_df)
-
-        # ============ 右下角悬浮跳转设置按钮 =============
-        gr.HTML("""
-            <a href='/settings/admin_settings' target='_self'
-                style="
-                    position: fixed;
-                    right: 36px;
-                    bottom: 36px;
-                    z-index: 9999;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 56px;
-                    height: 56px;
-                    background: #007BFF;
-                    color: #fff;
-                    border-radius: 50%;
-                    text-align: center;
-                    box-shadow: 0 2px 14px rgba(0,0,0,0.18);
-                    font-size: 30px;
-                    font-weight: bold;
-                    transition: background 0.18s;
-                    text-decoration:none;
-                "
-                onmouseover="this.style.background='#1557b1'"
-                onmouseout="this.style.background='#007BFF'"
-                title="跳转设置页面"
-            >⚙️</a>
-        """)
-        # ===============================================
-
+                ).then(
+                    lambda token: get_users()[["id", "username", "nickname", "email", "phone", "city", "role_name"]],
+                    inputs=token_box, outputs=users_df
+                )
+        gr.HTML("<div style='text-align:center;color:#97a;margin-top:30px;'>© 2024 AdminBackend</div>")
     return demo

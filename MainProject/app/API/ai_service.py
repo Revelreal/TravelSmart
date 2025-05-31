@@ -1,13 +1,114 @@
+# MainProject/app/API/ai_service.py
 import requests
 import logging
-import time
+import toml
+import os
+
+from MainProject.auth_utils import verify_token
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-API_URL = "https://api.deepbricks.ai/v1/chat/completions"
-API_KEY = "sk-5docNm9DYSqBZhiq6Gq93fijNr4zd0Hddqr80vC3riuQSQf0"
+
+# 读取配置文件（支持相对路径）
+def load_default_config(filename="../../../config.toml"):
+    """
+    加载指定路径的配置文件
+    :param filename: 配置文件的相对路径
+    :return: 配置字典或None
+    """
+    try:
+        abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), filename))
+        logger.info(f"尝试加载配置文件: {abs_path}")
+
+        if not os.path.exists(abs_path):
+            logger.warning(f"配置文件不存在: {abs_path}")
+            return None
+
+        config = toml.load(abs_path)
+        logger.info("配置文件加载成功")
+        return config
+    except Exception as e:
+        logger.error(f"加载配置文件失败: {e}")
+        return None
+
+
+def get_config_value(config, *keys, default=None):
+    """
+    从配置字典中安全获取嵌套值
+    :param config: 配置字典
+    :param keys: 嵌套的键，如 'ai', 'api'
+    :param default: 默认值
+    :return: 配置值或默认值
+    """
+    if not config:
+        return default
+
+    current = config
+    for key in keys:
+        if isinstance(current, dict) and key in current:
+            current = current[key]
+        else:
+            return default
+    return current
+
+
+# 读取配置文件（当前目录）
+def load_config():
+    """
+    按优先级加载配置文件：
+    1. 先尝试当前目录 config.toml
+    2. 再尝试相对路径 ../../../config.toml
+    3. 最后使用默认配置
+    :return: (api_url, api_key) 元组
+    """
+    config = None
+
+    # 尝试当前目录
+    config_file = "config.toml"
+    if os.path.exists(config_file):
+        try:
+            logger.info(f"尝试加载当前目录配置文件: {config_file}")
+            config = toml.load(config_file)
+            logger.info("当前目录配置文件加载成功")
+        except Exception as e:
+            logger.error(f"读取当前目录配置文件失败: {e}")
+            config = None
+    else:
+        logger.warning(f"当前目录配置文件不存在: {config_file}")
+
+    # 如果当前目录配置不存在，尝试默认路径
+    if config is None:
+        config = load_default_config("../../../config.toml")
+
+    # 解析配置
+    if config:
+        api_url = get_config_value(config, "ai", "api")
+        api_key = get_config_value(config, "ai", "key")
+
+        if not api_url or not api_key:
+            logger.error("配置文件中缺少必要的ai.api或ai.key字段")
+            return None, None
+
+        logger.info("AI配置加载成功")
+        return api_url, api_key
+    else:
+        logger.warning("无法加载任何配置文件")
+        return None, None
+
+
+# 加载配置
+API_URL, API_KEY = load_config()
+
+# 如果配置文件读取失败，使用硬编码的默认值
+if not API_URL or not API_KEY:
+    logger.warning("使用默认配置")
+    API_URL = "https://api.deepbricks.ai/v1/chat/completions"
+    API_KEY = "sk-5docNm9DYSqBZhiq6Gq93fijNr4zd0Hddqr80vC3riuQSQf0"
+
+logger.info(f"API URL: {API_URL}")
+logger.info(f"API KEY: {API_KEY[:20]}...")  # 只显示前20个字符保护隐私
 
 
 def test_connection():
@@ -57,7 +158,7 @@ def ask_ai_sync(messages):
             API_URL,
             headers=headers,
             json=payload,
-            timeout=30  # 30秒超时
+            timeout=10  # 10秒超时
         )
 
         logger.info(f"API响应状态码: {response.status_code}")
@@ -126,6 +227,29 @@ def ask_ai_sync(messages):
 async def ask_ai(messages):
     """异步包装器，实际调用同步函数"""
     return ask_ai_sync(messages)
+
+
+def ai_infer(messages, token=None):
+    """
+    根据token识别当前提问用户，并提交AI请求
+    :param messages: AI消息列表
+    :param token: 用户JWT，可能来自前端/接口
+    :return: dict { answer: AI回复, user: 用户信息 }
+    """
+    uinfo = verify_token(token) if token else None
+    username = uinfo["username"] if uinfo else "anonymous"
+
+    # 打印日志，你也可以写数据库
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"[AI提问] 用户: {username}，消息数: {len(messages)}，内容首条: {messages[0] if messages else ''}")
+
+    # 也可以把用户名/nickname加入messages历史上下文，如需精准定制回复
+    answer = ask_ai_sync(messages)
+    return {
+        "answer": answer,
+        "user": uinfo or {"username": "anonymous"}
+    }
 
 
 # 测试函数

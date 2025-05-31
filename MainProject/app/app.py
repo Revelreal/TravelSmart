@@ -1,51 +1,66 @@
-import os
-
 from fastapi import FastAPI
-import gradio as gr
+from gradio import mount_gradio_app
+from fastapi import Request, HTTPException
+from fastapi.responses import HTMLResponse
 from starlette.responses import RedirectResponse
-from starlette.staticfiles import StaticFiles
 
-# 导入各个页面
+from MainProject.app.API.map_service import MapService
 
-# welcome 页面
-from MainProject.app.welcome.login import login_page
-from MainProject.app.welcome.register import register_page
+from MainProject.app.welcome.login import create_login_app
+from MainProject.app.welcome.register import create_register_app
+from MainProject.app.welcome.forgot_password import create_forgot_password_app
 
-# homepage 页面
-from MainProject.app.homepage.root_home import root_home_page
-from MainProject.app.homepage.user_home import user_home_page
-from MainProject.app.homepage.admin_home import admin_home_page
+from MainProject.app.homepage.user_home import create_user_home_app
+from MainProject.app.homepage.admin_home import create_admin_home_app
+from MainProject.app.homepage.root_home import create_root_home_app
 
-# settings 页面
-from MainProject.app.settings.user_settings import user_settings
-from MainProject.app.settings.root_settings import root_settings
-from MainProject.app.settings.admin_settings import admin_settings
+from MainProject.app.settings.user_settings import create_user_settings
+from MainProject.app.settings.admin_settings import create_admin_settings
+from MainProject.app.settings.root_settings import create_root_settings
 
+from MainProject.auth_utils import verify_token
+
+# 路由服务
 app = FastAPI()
+# 高德地图服务
+map_service = MapService()
 
 
-# 首页 `/` 自动跳转到登录页
+# =================== 路由注册 =========================
 @app.get("/")
 def root():
     return RedirectResponse(url="/welcome/login")
 
 
-# `/welcome` 也跳转到登录页
-@app.get("/welcome")
-def welcome_root():
+@app.get("/welcome/")
+def welcome():
     return RedirectResponse(url="/welcome/login")
 
 
-# welcome 页面
-gr.mount_gradio_app(app, login_page(), path="/welcome/login")
-gr.mount_gradio_app(app, register_page(), path="/welcome/register")
+# welcome页面
+app = mount_gradio_app(app, create_login_app(), path="/welcome/login")
+app = mount_gradio_app(app, create_register_app(), path="/welcome/register")
+app = mount_gradio_app(app, create_forgot_password_app(), path="/welcome/forgot_password")
+# homepage页面
+app = mount_gradio_app(app, create_user_home_app(), path="/homepage/user_home")
+app = mount_gradio_app(app, create_admin_home_app(), path="/homepage/admin_home")
+app = mount_gradio_app(app, create_root_home_app(), path="/homepage/root_home")
+# settings页面
+app = mount_gradio_app(app, create_user_settings(), path="/settings/user_settings")
+app = mount_gradio_app(app, create_admin_settings(), path="/settings/admin_settings")
+app = mount_gradio_app(app, create_root_settings(), path="/settings/root_settings")
 
-# homepage 页面
-gr.mount_gradio_app(app, root_home_page(), path="/homepage/root_home")
-gr.mount_gradio_app(app, admin_home_page(), path="/homepage/admin_home")
-gr.mount_gradio_app(app, user_home_page(), path="/homepage/user_home")
 
-# settings 页面
-gr.mount_gradio_app(app, user_settings(), path="/settings/user_settings")
-gr.mount_gradio_app(app, root_settings(), path="/settings/root_settings")
-gr.mount_gradio_app(app, admin_settings(), path="/settings/admin_settings")
+# =================== 服务注册 =========================
+# 地图服务
+@app.get("/api/map", response_class=HTMLResponse)
+async def show_amap(request: Request):
+    # 1. 获取token
+    token = request.query_params.get("token", "")
+    # 2. 校验token
+    info = verify_token(token)
+    if not info or not info.get("username"):
+        # 3. 鉴权失败直接拒绝
+        raise HTTPException(status_code=401, detail="未授权：请登录后再访问地图功能")
+    # 4. token通过返回地图html
+    return map_service.get_map_html()

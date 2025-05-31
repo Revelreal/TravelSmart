@@ -1,0 +1,27 @@
+# configuration file for database connection
+[mysql]
+host = "8.153.88.50"
+port = 3306
+user = "developer"
+password = "pipinstall"
+database = "SmartTravel"
+charset = "utf8mb4"
+
+[mongodb]
+host = "8.153.88.50"
+port = 27017
+username = ""
+password = ""
+database = "SmartTravel"
+
+[ai]
+api = "https://api.deepbricks.ai/v1/chat/completions"
+key = "sk-5docNm9DYSqBZhiq6Gq93fijNr4zd0Hddqr80vC3riuQSQf0"
+
+[session]
+SECRET_KEY = "secretkey1024568521569475aklshdw"
+ALGORITHM = "HS256"
+TOKEN_EXPIRE_MINUTES = 30
+
+[amap]
+amap_key = "513fce8c9a3e2473fad5b2a2963d8c4f"
