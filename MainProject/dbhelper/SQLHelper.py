@@ -169,6 +169,22 @@ class SQLHelper:
         for row in rows:
             print(row)
 
+    def get_user_by_id(self, user_id):
+        return self.fetchone("SELECT * FROM Users WHERE id=%s", (user_id,))
+
+    def get_user_by_username(self, username):
+        return self.fetchone("SELECT * FROM Users WHERE username=%s", (username,))
+
+    def is_username_exists(self, username):
+        return bool(self.fetchone("SELECT id FROM Users WHERE username=%s", (username,)))
+
+    def is_email_exists(self, email):
+        return bool(self.fetchone("SELECT id FROM Users WHERE email=%s", (email,)))
+
+    def is_root_user(self, user_id):
+        u = self.fetchone("SELECT role_id FROM Users WHERE id=%s", (user_id,))
+        return bool(u and u['role_id'] == 1)
+
 
 if __name__ == "__main__":
     db = SQLHelper()
@@ -177,7 +193,7 @@ if __name__ == "__main__":
     # db.create_role_table()
     # db.create_users_table()
     # 测试插入3种不同身份和状态的用户
-    db.create_user("rootuser",  "pwroot",  "超级管理员", status_id=1, role_id=1)
+    # db.create_user("rootuser",  "pwroot",  "超级管理员", status_id=1, role_id=1)
     # db.create_user("admin001",  "pwadmin", "普通管理员", status_id=2, role_id=2)
     # db.create_user("tommy",     "pwuser",  "小明",       status_id=1, role_id=3)
     db.show_users()

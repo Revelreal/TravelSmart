@@ -5,7 +5,6 @@ from MainProject.dbhelper.SQLHelper import SQLHelper
 
 def get_users():
     db = SQLHelper()
-    # 展示role信息便于管理（可隐藏role_name列）
     users = db.query(
         """
         SELECT u.id, u.username, u.nickname, u.email, u.phone, u.city, r.role_name
@@ -14,21 +13,20 @@ def get_users():
         """
     )
     db.close()
-    if users:
-        return pd.DataFrame(users)
-    return pd.DataFrame(columns=["id", "username", "nickname", "email", "phone", "city", "role_name"])
+    return pd.DataFrame(users) if users else pd.DataFrame(columns=["id", "username", "nickname", "email", "phone", "city", "role_name"])
 
 
 def add_user(username, nickname, email):
     if not username or not email:
         return "❌ 用户名和邮箱必填"
     db = SQLHelper()
-    exists = db.fetchone("SELECT id FROM Users WHERE username=%s", (username,))
-    if exists:
+    if db.is_username_exists(username):
         db.close()
         return f"❌ 用户名 {username} 已存在"
+    if db.is_email_exists(email):
+        db.close()
+        return f"❌ 邮箱 {email} 已存在"
     try:
-        # 新添加的用户为普通用户（role_id=3），如需为其它角色请按需调整
         ok, msg = db.create_user(username, "123456", nickname or username, None, email, None, 1, 3)
         db.close()
         if ok:
@@ -41,15 +39,24 @@ def add_user(username, nickname, email):
 
 
 def update_user(user_id, nickname, email, phone, city):
+    try:
+        user_id = int(user_id)
+    except Exception:
+        return "❌ 用户ID格式不正确"
     db = SQLHelper()
-    user = db.fetchone("SELECT role_id FROM Users WHERE id=%s", (user_id,))
+    user = db.get_user_by_id(user_id)
     if not user:
         db.close()
         return f"❌ 未找到 ID 为 {user_id} 的用户"
-    # 假设root角色ID为1
     if user["role_id"] == 1:
         db.close()
-        return "❌ 不允许修改 root 用户"
+        return "❌ 禁止修改 root 用户"
+    # 邮箱不得重复
+    if email:
+        check = db.fetchone("SELECT id FROM Users WHERE email=%s AND id!=%s", (email, user_id))
+        if check:
+            db.close()
+            return "❌ 此邮箱已被其他账号占用"
     db.execute(
         "UPDATE Users SET nickname=%s, email=%s, phone=%s, city=%s WHERE id=%s",
         (nickname, email, phone, city, user_id)
@@ -59,13 +66,16 @@ def update_user(user_id, nickname, email, phone, city):
 
 
 def delete_user(user_id):
+    try:
+        user_id = int(user_id)
+    except Exception:
+        return "❌ 用户ID格式不正确"
     db = SQLHelper()
-    user = db.fetchone("SELECT role_id FROM Users WHERE id=%s", (user_id,))
+    user = db.get_user_by_id(user_id)
     if not user:
         db.close()
         return f"❌ 未找到 ID 为 {user_id} 的用户"
-    # 假设root角色ID为1
-    if user["role_id"] == 1:
+    if user['role_id'] == 1:
         db.close()
         return "❌ 不允许删除 root 用户"
     db.execute("DELETE FROM Users WHERE id=%s", (user_id,))

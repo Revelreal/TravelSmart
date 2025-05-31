@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="@8.153.88.50">
+  <database-model serializer="dbm" dbms="MONGO" family-id="MONGO" format-version="4.53">
+    <root id="1">
+      <ServerVersion>7.0.20</ServerVersion>
+    </root>
+    <schema id="2" parent="1" name="READ__ME_TO_RECOVER_YOUR_DATA"/>
+    <schema id="3" parent="1" name="SmartTrave">
+      <LastIntrospectionLocalTimestamp>2025-05-31.04:29:23</LastIntrospectionLocalTimestamp>
+    </schema>
+    <schema id="4" parent="1" name="SmartTravel"/>
+    <schema id="5" parent="1" name="admin"/>
+    <schema id="6" parent="1" name="config"/>
+    <table id="7" parent="3" name="Comments"/>
+    <table id="8" parent="3" name="Foods"/>
+    <table id="9" parent="3" name="Routes"/>
+    <table id="10" parent="3" name="Spots"/>
+    <column id="11" parent="10" name="_id">
+      <Position>1</Position>
+      <StoredType>ObjectId|12s</StoredType>
+    </column>
+    <column id="12" parent="10" name="address">
+      <Position>2</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="13" parent="10" name="city">
+      <Position>3</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="14" parent="10" name="description">
+      <Position>4</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="15" parent="10" name="images">
+      <Position>5</Position>
+      <StoredType>list|4999545s</StoredType>
+    </column>
+    <column id="16" parent="10" name="latitude">
+      <Position>6</Position>
+      <StoredType>Double|8s</StoredType>
+    </column>
+    <column id="17" parent="10" name="longitude">
+      <Position>7</Position>
+      <StoredType>Double|8s</StoredType>
+    </column>
+    <column id="18" parent="10" name="name">
+      <Position>8</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="19" parent="10" name="open_time">
+      <Position>9</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="20" parent="10" name="recommend_level">
+      <Position>10</Position>
+      <StoredType>Int32|4s</StoredType>
+    </column>
+    <column id="21" parent="10" name="type">
+      <Position>11</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <index id="22" parent="10" name="_id_">
+      <ColNames>_id</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <index id="23" parent="10" name="city_1">
+      <ColNames>city</ColNames>
+    </index>
+    <index id="24" parent="10" name="name_1">
+      <ColNames>name</ColNames>
+    </index>
+  </database-model>
+</dataSource>
