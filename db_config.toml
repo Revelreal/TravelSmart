@@ -1,0 +1,7 @@
+[database]
+host = "8.153.88.50"
+port = 3306
+user = "developer"
+password = "pipinstall"
+database = "SmartTravel"
+charset = "utf8mb4"

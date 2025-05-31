@@ -1,14 +1,22 @@
+import toml
 from pymysql import cursors, connect
 
 
+def load_db_config(filename="db_config.toml"):
+    config = toml.load(filename)
+    return config["database"]
+
+
 class DBHelper:
-    def __init__(self,
-                 host="8.153.88.50",
-                 port=3306,
-                 user="developer",
-                 password="pipinstall",
-                 database="SmartTravel",
-                 charset="utf8mb4"):
+    def __init__(self, config_path="../../db_config.toml"):
+        db_conf = load_db_config(config_path)
+        host = db_conf.get("host")
+        port = db_conf.get("port")
+        user = db_conf.get("user")
+        password = db_conf.get("password")
+        database = db_conf.get("database")
+        charset = db_conf.get("charset", "utf8mb4")
+
         # 先连不带database参数，检查/创建数据库
         temp_conn = connect(
             host=host,
@@ -19,11 +27,11 @@ class DBHelper:
             autocommit=True
         )
         temp_cursor = temp_conn.cursor()
-        temp_cursor.execute("SHOW DATABASES LIKE %s;", ("SmartTravel",))
+        temp_cursor.execute("SHOW DATABASES LIKE %s;", (database,))
         result = temp_cursor.fetchone()
         if not result:
-            temp_cursor.execute("CREATE DATABASE SmartTravel DEFAULT CHARSET utf8mb4;")
-            print("已创建数据库 SmartTravel")
+            temp_cursor.execute(f"CREATE DATABASE {database} DEFAULT CHARSET {charset};")
+            print(f"已创建数据库 {database}")
         temp_cursor.close()
         temp_conn.close()
 
@@ -38,6 +46,8 @@ class DBHelper:
             autocommit=True
         )
         self.cursor = self.conn.cursor(cursors.DictCursor)
+
+    # 以下方法与你之前的定义一致...
 
     def query(self, sql, params=None):
         self.cursor.execute(sql, params or ())
@@ -77,6 +87,7 @@ class DBHelper:
         return True, "注册成功"
 
         # 校验用户
+
     def verify_user(self, username, password):
         check_sql = "SELECT id FROM Users WHERE username=%s AND password=%s;"
         result = self.fetchone(check_sql, (username, password))
@@ -189,13 +200,13 @@ def create_comments_table(m_db):
     print("Comments表创建完成")
 
 
-# if __name__ == "__main__":
-#     db = DBHelper()
+if __name__ == "__main__":
+     db = DBHelper()
 #     create_spots_table(db)
 #     create_foods_table(db)
 #     create_routes_table(db)
 #     create_users_table(db)
 #     create_comments_table(db)
 #     print(db.query("SHOW TABLES;"))
-#     db.query("ALTER TABLE Users ADD COLUMN online_status TINYINT DEFAULT 0 COMMENT '0离线 1在线', ADD COLUMN last_active_time DATETIME DEFAULT NULL COMMENT '最近活动时间'")
-#     db.close()
+     db.query("SELECT * FROM Users;")
+     db.close()
