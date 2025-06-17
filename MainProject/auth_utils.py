@@ -19,13 +19,14 @@ ALGORITHM = _cfg.get("ALGORITHM", "HS256")
 TOKEN_EXPIRE_MINUTES = int(_cfg.get("TOKEN_EXPIRE_MINUTES", 60))
 
 
-# ====== 生成JWT token（只用用户名、角色、exp） ======
-def create_token(username: str, role: str, duration_min: int = None) -> str:
+# ====== 生成JWT token（包含用户名、ID、角色、exp） ======
+def create_token(username: str, user_id: str, role: str, duration_min: int = None) -> str:
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=duration_min if duration_min is not None else TOKEN_EXPIRE_MINUTES
     )
     payload = {
         "username": username,
+        "id": user_id,  # 添加用户ID
         "role": role.lower(),
         "exp": expire
     }
@@ -39,6 +40,7 @@ def verify_token(token: str) -> Optional[Dict[str, Any]]:
     返回:
         {
             "username": ...,
+            "id": ...,  # 用户ID
             "role": ...,
             "exp": ...
         }
@@ -46,10 +48,11 @@ def verify_token(token: str) -> Optional[Dict[str, Any]]:
     """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        if not payload.get("username") or not payload.get("role"):
+        if not payload.get("username") or not payload.get("role") or not payload.get("id"):
             return None
         return {
             "username": payload["username"],
+            "id": payload["id"],
             "role": payload["role"],
             "exp": payload["exp"]
         }

@@ -18,6 +18,8 @@ from MainProject.app.settings.user_settings import create_user_settings
 from MainProject.app.settings.admin_settings import create_admin_settings
 from MainProject.app.settings.root_settings import create_root_settings
 
+from MainProject.app.API.reviews import create_reviews_app
+
 from MainProject.auth_utils import verify_token
 
 # 路由服务
@@ -49,6 +51,8 @@ app = mount_gradio_app(app, create_root_home_app(), path="/homepage/root_home")
 app = mount_gradio_app(app, create_user_settings(), path="/settings/user_settings")
 app = mount_gradio_app(app, create_admin_settings(), path="/settings/admin_settings")
 app = mount_gradio_app(app, create_root_settings(), path="/settings/root_settings")
+# =================== 接口注册 ===========================
+app = mount_gradio_app(app, create_reviews_app(), path="/api/reviews")
 
 
 # =================== 服务注册 =========================

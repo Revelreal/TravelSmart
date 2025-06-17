@@ -4,22 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="Merge remote-tracking branch 'origin/develop' into develop">
+    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="基于token的用户认证已完善。有几个后门：root用户可以凭token登陆任意界面，管理员可以凭token登陆普通用户界面/设置，如果他们愿意修改链接的话。">
+      <change afterPath="$PROJECT_DIR$/MainProject/app/API/preferences.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MainProject/app/API/reviews.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MainProject/app/API/trips.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/API/ai_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/API/ai_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/API/map_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/API/map_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/homepage/admin_home.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/homepage/admin_home.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/homepage/root_home.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/homepage/root_home.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/homepage/user_home.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/homepage/user_home.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/settings/admin_settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/settings/admin_settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/settings/root_settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/settings/root_settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/welcome/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/welcome/login.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/welcome/register.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/welcome/register.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/auth_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/auth_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/dbhelper/MONGOHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/dbhelper/MONGOHelper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/dbhelper/SQLHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/dbhelper/SQLHelper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_config.toml" beforeDir="false" afterPath="$PROJECT_DIR$/config.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,8 +27,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="CSS File" />
-        <option value="HTML File" />
         <option value="JavaScript File" />
+        <option value="HTML File" />
         <option value="Python Script" />
       </list>
     </option>
@@ -50,6 +47,12 @@
         </map>
       </branch-storage>
     </favorite-branches>
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="develop" />
@@ -95,52 +98,55 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python 测试.Python 测试 (user_home.py 内).executor": "Run",
-    "Python.DBHelper.executor": "Run",
-    "Python.MONGOHelper.executor": "Run",
-    "Python.SQLHelper.executor": "Run",
-    "Python.ai.executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.common.executor": "Run",
-    "Python.login.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.user_home.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "develop 上的 #2",
-    "last_opened_file_path": "D:/repos3/TravelSmart",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "advanced.settings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python 测试.Python 测试 (user_home.py 内).executor&quot;: &quot;Run&quot;,
+    &quot;Python.DBHelper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.MONGOHelper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.SQLHelper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ai.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.auth_utils.executor&quot;: &quot;Run&quot;,
+    &quot;Python.common.executor&quot;: &quot;Run&quot;,
+    &quot;Python.login.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.user_home.executor&quot;: &quot;Run&quot;,
+    &quot;Python.卖弄.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop 上的 #2&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/repos3/TravelSmart&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mongo",
-      "mysql_aurora"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mongo&quot;,
+      &quot;mysql_aurora&quot;
     ],
-    "com.intellij.ide.scratch.LRUPopupBuilder$1/SQL 方言": [
-      "MySQL"
+    &quot;com.intellij.ide.scratch.LRUPopupBuilder$1/SQL 方言&quot;: [
+      &quot;MySQL&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\repos3\TravelSmart" />
       <recent name="D:\repos3\TravelSmart\MainProject" />
+      <recent name="D:\repos3\TravelSmart\MainProject\services" />
+      <recent name="D:\repos3\TravelSmart" />
       <recent name="D:\repos3\TravelSmart\MainProject\dbhelper" />
       <recent name="D:\repos3\TravelSmart\MainProject\app\static" />
-      <recent name="D:\repos3\TravelSmart\MainProject\app\settings" />
     </key>
   </component>
   <component name="RunManager" selected="Python.main">
@@ -232,9 +238,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
-        <item itemvalue="Python 测试.Python 测试 (user_home.py 内)" />
-        <item itemvalue="Python.SQLHelper" />
         <item itemvalue="Python.MONGOHelper" />
+        <item itemvalue="Python.SQLHelper" />
+        <item itemvalue="Python 测试.Python 测试 (user_home.py 内)" />
       </list>
     </recent_temporary>
   </component>
@@ -265,7 +271,49 @@
       <workItem from="1748574348507" duration="7039000" />
       <workItem from="1748585160988" duration="3425000" />
       <workItem from="1748653259901" duration="2867000" />
-      <workItem from="1748658805614" duration="29262000" />
+      <workItem from="1748658805614" duration="29343000" />
+      <workItem from="1748839087599" duration="41000" />
+      <workItem from="1748928470451" duration="1239000" />
+      <workItem from="1748953655016" duration="4832000" />
+      <workItem from="1749026091764" duration="5925000" />
+      <workItem from="1749032232959" duration="179000" />
+      <workItem from="1749032731673" duration="7000" />
+      <workItem from="1749033854149" duration="195000" />
+      <workItem from="1749034207904" duration="2562000" />
+      <workItem from="1749041366475" duration="111000" />
+      <workItem from="1749041516049" duration="143000" />
+      <workItem from="1749041699058" duration="1546000" />
+      <workItem from="1749043869787" duration="622000" />
+      <workItem from="1749044557043" duration="27000" />
+      <workItem from="1749044662602" duration="549000" />
+      <workItem from="1749097717377" duration="2333000" />
+      <workItem from="1749107552158" duration="1664000" />
+      <workItem from="1749811423277" duration="10842000" />
+      <workItem from="1749881920573" duration="3355000" />
+      <workItem from="1749885305364" duration="826000" />
+      <workItem from="1749886302368" duration="8855000" />
+      <workItem from="1749981217896" duration="226000" />
+      <workItem from="1749981485745" duration="6000" />
+      <workItem from="1749981767195" duration="8000" />
+      <workItem from="1749981791354" duration="2000" />
+      <workItem from="1749981882371" duration="60000" />
+      <workItem from="1749982013682" duration="543000" />
+      <workItem from="1749982877351" duration="4000" />
+      <workItem from="1749982893917" duration="9000" />
+      <workItem from="1749982983624" duration="39000" />
+      <workItem from="1749983290787" duration="2768000" />
+      <workItem from="1749988448687" duration="2914000" />
+      <workItem from="1749991747881" duration="274000" />
+      <workItem from="1749992344405" duration="365000" />
+      <workItem from="1749992947305" duration="8376000" />
+      <workItem from="1750002737993" duration="633000" />
+      <workItem from="1750040032171" duration="183000" />
+      <workItem from="1750045698331" duration="4366000" />
+      <workItem from="1750052795497" duration="4033000" />
+      <workItem from="1750058657119" duration="6954000" />
+      <workItem from="1750120267267" duration="89000" />
+      <workItem from="1750129433200" duration="966000" />
+      <workItem from="1750130586578" duration="13648000" />
     </task>
     <task id="LOCAL-00001" summary="基础界面功能搭建中...">
       <option name="closed" value="true" />
@@ -331,13 +379,42 @@
       <option name="project" value="LOCAL" />
       <updated>1748689158471</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Merge remote-tracking branch 'origin/develop' into develop">
+      <option name="closed" value="true" />
+      <created>1748693033485</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1748693033485</updated>
+    </task>
+    <task id="LOCAL-00010" summary="基于token的用户认证已完善。有几个后门：root用户可以凭token登陆任意界面，管理员可以凭token登陆普通用户界面/设置，如果他们愿意修改链接的话。">
+      <option name="closed" value="true" />
+      <created>1750073513887</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1750073513887</updated>
+    </task>
+    <task id="LOCAL-00011" summary="基于token的用户认证已完善。有几个后门：root用户可以凭token登陆任意界面，管理员可以凭token登陆普通用户界面/设置，如果他们愿意修改链接的话。">
+      <option name="closed" value="true" />
+      <created>1750073810996</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1750073810996</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="b9fc5970-b5ce-4a8e-a0f1-7b1b79888b8a" value="TOOL_WINDOW" />
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
@@ -357,6 +434,11 @@
             </State>
           </value>
         </entry>
+        <entry key="b9fc5970-b5ce-4a8e-a0f1-7b1b79888b8a">
+          <value>
+            <State />
+          </value>
+        </entry>
       </map>
     </option>
   </component>
@@ -367,17 +449,20 @@
     <MESSAGE value="Gradio重构模板" />
     <MESSAGE value="基本功能完善" />
     <MESSAGE value="Merge remote-tracking branch 'origin/develop' into develop" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/develop' into develop" />
+    <MESSAGE value="基于token的用户认证已完善。有几个后门：root用户可以凭token登陆任意界面，管理员可以凭token登陆普通用户界面/设置，如果他们愿意修改链接的话。" />
+    <option name="LAST_COMMIT_MESSAGE" value="基于token的用户认证已完善。有几个后门：root用户可以凭token登陆任意界面，管理员可以凭token登陆普通用户界面/设置，如果他们愿意修改链接的话。" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/TravelSmart$SQLHelper.coverage" NAME="SQLHelper 覆盖结果" MODIFIED="1748682646819" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
-    <SUITE FILE_PATH="coverage/TravelSmart$main.coverage" NAME="main 覆盖结果" MODIFIED="1748688649371" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
-    <SUITE FILE_PATH="coverage/TravelSmart$user_home.coverage" NAME="user_home 覆盖结果" MODIFIED="1748688580035" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/homepage" />
+    <SUITE FILE_PATH="coverage/TravelSmart$SQLHelper.coverage" NAME="SQLHelper 覆盖结果" MODIFIED="1750058069775" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
+    <SUITE FILE_PATH="coverage/TravelSmart$main.coverage" NAME="main 覆盖结果" MODIFIED="1750145219535" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
+    <SUITE FILE_PATH="coverage/TravelSmart$user_home.coverage" NAME="user_home 覆盖结果" MODIFIED="1749041630389" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/homepage" />
     <SUITE FILE_PATH="coverage/TravelSmart$DBHelper.coverage" NAME="DBHelper 覆盖结果" MODIFIED="1748659199619" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
-    <SUITE FILE_PATH="coverage/TravelSmart$MONGOHelper.coverage" NAME="MONGOHelper 覆盖结果" MODIFIED="1748668113437" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
+    <SUITE FILE_PATH="coverage/TravelSmart$MONGOHelper.coverage" NAME="MONGOHelper 覆盖结果" MODIFIED="1750137428237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
     <SUITE FILE_PATH="coverage/TravelSmart$common.coverage" NAME="common 覆盖结果" MODIFIED="1748683017862" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app" />
-    <SUITE FILE_PATH="coverage/TravelSmart$.coverage" NAME=" 覆盖结果" MODIFIED="1748688635058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/homepage" />
+    <SUITE FILE_PATH="coverage/TravelSmart$.coverage" NAME="卖弄 覆盖结果" MODIFIED="1750002408267" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/TravelSmart$app.coverage" NAME="app 覆盖结果" MODIFIED="1748581085974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app" />
     <SUITE FILE_PATH="coverage/TravelSmart$login.coverage" NAME="login 覆盖结果" MODIFIED="1748684672832" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/welcome" />
+    <SUITE FILE_PATH="coverage/TravelSmart$auth_utils.coverage" NAME="auth_utils 覆盖结果" MODIFIED="1749985449781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
+    <SUITE FILE_PATH="coverage/TravelSmart$test.coverage" NAME="test 覆盖结果" MODIFIED="1749031993397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/static" />
   </component>
 </project>

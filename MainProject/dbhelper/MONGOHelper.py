@@ -1,7 +1,9 @@
-# MainProject/dbhelper/MONGOHelper.py
+import pymongo
+from datetime import datetime
 import toml
-from pymongo import MongoClient
 import os
+
+from pymongo import MongoClient
 
 
 def load_mongodb_config(filename="../config.toml"):
@@ -25,16 +27,28 @@ class MongoHelper:
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
 
+        # 构建连接URI
+        if username and password:
+            uri = f"mongodb://{username}:{password}@{host}:{port}"
+        else:
+            uri = f"mongodb://{host}:{port}"
+
+        self.client = pymongo.MongoClient(uri)
+        self.db = self.client[db_name]
+        print(f"已连接到数据库: {db_name}")
+
     def get_collection(self, name):
         return self.db[name]
 
     def create_collection_with_indexes(self, name, indexes=None):
-        # collection不会重复创建；可创建所需索引
+        # 创建集合（如果不存在）
         if name not in self.db.list_collection_names():
             self.db.create_collection(name)
             print(f"集合 {name} 已创建")
         else:
             print(f"集合 {name} 已存在")
+
+        # 创建索引
         if indexes:
             col = self.get_collection(name)
             for idx in indexes:
@@ -42,97 +56,47 @@ class MongoHelper:
             print(f"集合 {name} 索引已建立：{indexes}")
 
     def drop_collection(self, name):
-        self.db.drop_collection(name)
-        print(f"集合 {name} 已删除")
-
-    def insert_test(self, col_name, doc):
-        col = self.get_collection(col_name)
-        col.insert_one(doc)
-        print(f"向 {col_name} 插入了测试文档")
+        if name in self.db.list_collection_names():
+            self.db.drop_collection(name)
+            print(f"集合 {name} 已删除")
+        else:
+            print(f"集合 {name} 不存在，无需删除")
 
     def close(self):
         self.client.close()
+        print("数据库连接已关闭")
 
 
-# ----- 各表/集合的“建表”和“删表”函数 -----
-
-def create_spots_collection(mh: MongoHelper):
-    indexes = [
-        [("city", 1)],
-        [("name", 1)]
-    ]
-    mh.create_collection_with_indexes("Spots", indexes)
-
-
-def drop_spots_collection(mh: MongoHelper):
-    mh.drop_collection("Spots")
-
-
-def create_foods_collection(mh: MongoHelper):
-    indexes = [
-        [("city", 1)],
-        [("name", 1)]
-    ]
-    mh.create_collection_with_indexes("Foods", indexes)
-
-
-def drop_foods_collection(mh: MongoHelper):
-    mh.drop_collection("Foods")
-
-
-def create_routes_collection(mh: MongoHelper):
-    indexes = [
-        [("name", 1)],
-        [("start_spot_id", 1)],
-        [("end_spot_id", 1)]
-    ]
-    mh.create_collection_with_indexes("Routes", indexes)
-
-
-def drop_routes_collection(mh: MongoHelper):
-    mh.drop_collection("Routes")
-
-
-def create_comments_collection(mh: MongoHelper):
+def create_reviews_collection(mongo_helper):
+    """创建评价表"""
     indexes = [
         [("user_id", 1)],
-        [("target_id", 1), ("target_type", 1)]
+        [("target_id", 1)],
+        [("target_type", 1)],
+        [("created_at", -1)]
     ]
-    mh.create_collection_with_indexes("Comments", indexes)
+    mongo_helper.create_collection_with_indexes("Reviews", indexes)
 
 
-def drop_comments_collection(mh: MongoHelper):
-    mh.drop_collection("Comments")
+def get_target_reviews(mongo_helper, target_id, target_type=None, limit=10, skip=0):
+    """获取指定目标的评价"""
+    collection = mongo_helper.get_collection("Reviews")
+    query = {"target_id": target_id}
+    if target_type:
+        query["target_type"] = target_type
+
+    # 按时间倒序排列
+    reviews = collection.find(query).sort("created_at", -1).skip(skip).limit(limit)
+    return list(reviews)
 
 
+def get_user_reviews(mongo_helper, user_id, limit=10, skip=0):
+    """获取用户的所有评价"""
+    collection = mongo_helper.get_collection("Reviews")
+    reviews = collection.find({"user_id": user_id}).sort("created_at", -1).skip(skip).limit(limit)
+    return list(reviews)
+
+
+# 主程序测试
 if __name__ == "__main__":
-    mh = MongoHelper()
-    # 建表：
-    create_spots_collection(mh)
-    create_foods_collection(mh)
-    create_routes_collection(mh)
-    create_comments_collection(mh)
-    # 插入一条测试数据（任选一表演示）
-    mh.insert_test("Spots", {
-        "name": "外滩",
-        "description": "上海著名地标",
-        "address": "上海市黄浦区中山东一路",
-        "longitude": 121.490317,
-        "latitude": 31.241701,
-        "type": "地标",
-        "images": [],
-        "open_time": "全天",
-        "city": "上海",
-        "recommend_level": 5
-    })
-    # 读取数据
-    create_routes_collection(mh)
-    col = mh.get_collection("Spots")
-    for doc in col.find():
-        print(doc)
-    # 删表示例（启用请解除注释）
-    # drop_spots_collection(mh)
-    # drop_foods_collection(mh)
-    # drop_routes_collection(mh)
-    # drop_comments_collection(mh)
-    mh.close()
+    pass

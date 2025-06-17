@@ -1,4 +1,3 @@
-# MainProject/app/homepage/user_home.py:
 import gradio as gr
 from MainProject.app.API.ai_service import ask_ai_sync
 from MainProject.auth_utils import verify_token
@@ -36,44 +35,27 @@ def ai_chat_func(history, question, token):
     return final_history, ""
 
 
-# 地图/其它功能，同理加token参数和校验...
-
 def create_map_ui(token_box):
-    # token_box: gr.Textbox, 页面已另外预先定义
-
-    # 支持动态token的地图iframe生成
     def _iframe_html(token: str):
-        # token为None时iframe不渲染
         if not token:
             return '<div style="color:red;padding:20px">未登录/参数缺失，无法加载地图</div>'
+        # 仅注册iframe
         return f"""
         <iframe
-            id="map-iframe"
-            src="/api/map?token={token}"
-            style="width:100%; height:480px; border:none;"
-            allow="geolocation"
-        ></iframe>
+            id='map-iframe'
+            src='/api/map?token={token}'
+            style='width:100%; height:680px; border:none;'
+            allow='geolocation'></iframe>
         """
 
     with gr.Column(scale=3):
         with gr.Group(elem_classes="map-border"):
-            map_html = gr.HTML()  # 用于动态展示iframe
+            map_html = gr.HTML()
 
-        with gr.Row():
-            lng = gr.Number(value=116.397428, label="经度", elem_id="lng_input", precision=6)
-            lat = gr.Number(value=39.90923, label="纬度", elem_id="lat_input", precision=6)
-            zoom = gr.Slider(3, 18, value=13, label="缩放级别", step=0.1, elem_id="zoom_slider")
+        # 1. token变动时注册iframe
+        token_box.change(_iframe_html, inputs=token_box, outputs=map_html)
 
-        # == token变化时动态更新iframe ==
-        token_box.change(
-            _iframe_html,
-            inputs=token_box,
-            outputs=map_html
-        )
-        # 页面初次装载也手动触发一次（防止加载时不出现地图）
-        # 注意：如果你在demo.load返回token时，可以同步调用map_html.update...
-
-    return lng, lat, zoom, map_html
+    return map_html
 
 
 def create_user_home_app():
@@ -81,60 +63,125 @@ def create_user_home_app():
             title="TravelSmart",
             css="""
         .map-border { border: 1px solid #ddd; border-radius: 8px; padding: 8px; }
-        #map-iframe { min-height: 480px !important; }
-        .userbar-text {
-            font-size:1.10em;
-            color:#365;
-            text-align:right;
-            margin-top:10px;
-            margin-right:42px;
+        #map-iframe { min-height: 580px !important; }
+
+        /* 顶部导航栏样式 */
+        .top-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            border-radius: 8px;
         }
-        #float-setting-btn {
-            position: fixed;
-            left: 32px;
-            bottom: 32px;
-            z-index: 9999;
-            background: #111;
-            color: #fff;
+
+        /* 用户头像样式 */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            width: 52px;
-            height: 52px;
+            background: #4a6baf;
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-decoration: none;
-            font-size: 2em;
-            box-shadow: 0 2px 14px rgba(0,0,0,0.18);
-            transition: background 0.15s;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
         }
-        #float-setting-btn:hover { background:#333;}
+
+        /* 用户名称样式 */
+        .username-display {
+            margin-left: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* 左侧用户区域 */
+        .user-area {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 右侧功能按钮区 */
+        .nav-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        /* 导航按钮样式 */
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #555;
+            text-decoration: none;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        /* 页面标题样式 */
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
         """
     ) as demo:
         # -------- 必要控件 --------
         token_box = gr.Textbox(visible=False)
-        userbar = gr.HTML("正在加载...", elem_classes="userbar-text")
-        settings_btn_html = gr.HTML("", elem_id="setting-float-html")  # 悬浮窗按钮
+        navbar_html = gr.HTML("", elem_id="top-navbar")
 
-        # -------- load回调，token流转，并输出拼接好的设置按钮HTML --------
+        # -------- load回调，token流转，并输出拼接好的导航栏HTML --------
         def load_user(request: gr.Request):
             token = request.query_params.get("token", "")
             info = verify_token(token)
             if not info or not info.get("username"):
                 raise gr.Error("未登录或令牌无效，请重新登录")
+
             username = info["username"]
-            userbar_html = f"👤 当前用户：<b>{username}</b>"
-            settings_btn = (
-                f'<a href="/settings/user_settings?token={token}" id="float-setting-btn" title="设置">&#9881;</a>'
-            )
-            return token, userbar_html, settings_btn
+            avatar_letter = username[0].upper()  # 获取用户名第一个字符作为头像
+
+            # 构建导航栏HTML
+            navbar = f'''
+            <div class="top-navbar">
+                <div class="user-area">
+                    <div class="user-avatar">{avatar_letter}</div>
+                    <span class="username-display">{username}</span>
+                </div>
+                <h1 class="page-title">TravelSmart 用户主页</h1>
+                <div class="nav-buttons">
+                    <a href="/api/trips?token={token}" class="nav-btn" title="我的行程">🧳</a>
+                    <a href="/api/reviews?token={token}" class="nav-btn" title="我的评价">⭐</a>
+                    <a href="/api/preferences?token={token}" class="nav-btn" title="旅行偏好">❤️</a>
+                    <a href="/settings/user_settings?token={token}" class="nav-btn" title="用户设置">⚙️</a>
+                </div>
+            </div>
+            '''
+
+            return token, navbar
 
         demo.load(
             fn=load_user,
             inputs=None,
-            outputs=[token_box, userbar, settings_btn_html]
+            outputs=[token_box, navbar_html]
         )
 
-        gr.Markdown("## 🏠 TravelSmart 用户主页")
         with gr.Row():
             create_map_ui(token_box)  # 地图组件
             with gr.Column(scale=2, min_width=280):
@@ -153,3 +200,4 @@ def create_user_home_app():
         gr.HTML("<div style='text-align:center;color:#97a;margin-top:30px;'>© 2024 TravelSmart</div>")
 
     return demo
+

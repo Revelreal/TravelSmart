@@ -20,7 +20,8 @@ def create_login_app():
                 if not success:
                     return "❌ 用户名或密码错误", ""
                 role = info["role_name"].lower()
-                token = create_token(info["username"], role)
+                id = info["id"]
+                token = create_token(user_id=id, username=info["username"], role=role)
                 dest = {
                     "root": "/homepage/root_home",
                     "admin": "/homepage/admin_home",

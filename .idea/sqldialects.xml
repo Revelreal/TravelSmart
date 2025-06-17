@@ -3,6 +3,7 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/MainProject/app/homepage/admin_home.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/MainProject/app/homepage/root_home.py" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/MainProject/app/homepage/user_home.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/MainProject/app/settings/admin_settings.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/MainProject/app/settings/user_settings.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/MainProject/app/welcome/login.py" dialect="MySQL" />
