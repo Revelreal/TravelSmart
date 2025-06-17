@@ -175,6 +175,7 @@ def get_targets_by_type(target_type):
         return []
     finally:
         mh.close()
+    return None
 
 
 def get_all_tags(target_type=None):

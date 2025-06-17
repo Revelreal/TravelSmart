@@ -4,70 +4,182 @@
     <root id="1">
       <ServerVersion>7.0.20</ServerVersion>
     </root>
-    <schema id="2" parent="1" name="READ__ME_TO_RECOVER_YOUR_DATA"/>
-    <schema id="3" parent="1" name="SmartTrave">
-      <LastIntrospectionLocalTimestamp>2025-05-31.04:29:23</LastIntrospectionLocalTimestamp>
+    <schema id="2" parent="1" name="READ__ME_TO_RECOVER_YOUR_DATA">
+      <LastIntrospectionLocalTimestamp>2025-06-17.22:27:50</LastIntrospectionLocalTimestamp>
     </schema>
-    <schema id="4" parent="1" name="SmartTravel"/>
-    <schema id="5" parent="1" name="admin"/>
-    <schema id="6" parent="1" name="config"/>
-    <table id="7" parent="3" name="Comments"/>
-    <table id="8" parent="3" name="Foods"/>
-    <table id="9" parent="3" name="Routes"/>
-    <table id="10" parent="3" name="Spots"/>
-    <column id="11" parent="10" name="_id">
+    <schema id="3" parent="1" name="SmartTravel">
+      <LastIntrospectionLocalTimestamp>2025-06-17.22:27:50</LastIntrospectionLocalTimestamp>
+    </schema>
+    <schema id="4" parent="1" name="admin">
+      <LastIntrospectionLocalTimestamp>2025-06-17.22:27:50</LastIntrospectionLocalTimestamp>
+    </schema>
+    <schema id="5" parent="1" name="config">
+      <LastIntrospectionLocalTimestamp>2025-06-17.22:27:50</LastIntrospectionLocalTimestamp>
+    </schema>
+    <table id="6" parent="2" name="README"/>
+    <table id="7" parent="3" name="Itineraries"/>
+    <table id="8" parent="3" name="ItineraryDays"/>
+    <table id="9" parent="3" name="ItineraryItems"/>
+    <table id="10" parent="5" name="system.sessions"/>
+    <column id="11" parent="6" name="_id">
       <Position>1</Position>
       <StoredType>ObjectId|12s</StoredType>
     </column>
-    <column id="12" parent="10" name="address">
+    <column id="12" parent="6" name="content">
       <Position>2</Position>
       <StoredType>String|12s</StoredType>
     </column>
-    <column id="13" parent="10" name="city">
-      <Position>3</Position>
-      <StoredType>String|12s</StoredType>
-    </column>
-    <column id="14" parent="10" name="description">
-      <Position>4</Position>
-      <StoredType>String|12s</StoredType>
-    </column>
-    <column id="15" parent="10" name="images">
-      <Position>5</Position>
-      <StoredType>list|4999545s</StoredType>
-    </column>
-    <column id="16" parent="10" name="latitude">
-      <Position>6</Position>
-      <StoredType>Double|8s</StoredType>
-    </column>
-    <column id="17" parent="10" name="longitude">
-      <Position>7</Position>
-      <StoredType>Double|8s</StoredType>
-    </column>
-    <column id="18" parent="10" name="name">
-      <Position>8</Position>
-      <StoredType>String|12s</StoredType>
-    </column>
-    <column id="19" parent="10" name="open_time">
-      <Position>9</Position>
-      <StoredType>String|12s</StoredType>
-    </column>
-    <column id="20" parent="10" name="recommend_level">
-      <Position>10</Position>
-      <StoredType>Int32|4s</StoredType>
-    </column>
-    <column id="21" parent="10" name="type">
-      <Position>11</Position>
-      <StoredType>String|12s</StoredType>
-    </column>
-    <index id="22" parent="10" name="_id_">
+    <index id="13" parent="6" name="_id_">
       <ColNames>_id</ColNames>
       <Unique>1</Unique>
     </index>
-    <index id="23" parent="10" name="city_1">
-      <ColNames>city</ColNames>
+    <column id="14" parent="7" name="_id">
+      <Position>1</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="15" parent="7" name="created_at">
+      <Position>1</Position>
+      <StoredType>ISODate|91s</StoredType>
+    </column>
+    <column id="16" parent="7" name="days">
+      <Position>1</Position>
+      <StoredType>list|4999545s</StoredType>
+    </column>
+    <column id="17" parent="7" name="start_date">
+      <Position>1</Position>
+      <StoredType>ISODate|91s</StoredType>
+    </column>
+    <column id="18" parent="7" name="title">
+      <Position>1</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="19" parent="7" name="updated_at">
+      <Position>1</Position>
+      <StoredType>ISODate|91s</StoredType>
+    </column>
+    <column id="20" parent="7" name="days.day_number">
+      <Position>2</Position>
+      <StoredType>Int32|4s</StoredType>
+    </column>
+    <column id="21" parent="7" name="status">
+      <Position>2</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="22" parent="7" name="user_id">
+      <Position>2</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="23" parent="7" name="days.items">
+      <Position>3</Position>
+      <StoredType>list|4999545s</StoredType>
+    </column>
+    <column id="24" parent="7" name="username">
+      <Position>3</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="25" parent="7" name="days.items.address">
+      <Position>4</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="26" parent="7" name="days.items.day_number">
+      <Position>5</Position>
+      <StoredType>Int32|4s</StoredType>
+    </column>
+    <column id="27" parent="7" name="days.items.name">
+      <Position>6</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="28" parent="7" name="days.items.notes">
+      <Position>7</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="29" parent="7" name="days.items.poi_id">
+      <Position>8</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="30" parent="7" name="days.items.time_slot">
+      <Position>9</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="31" parent="7" name="days.items.type">
+      <Position>10</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="32" parent="7" name="days_count">
+      <Position>11</Position>
+      <StoredType>Int32|4s</StoredType>
+    </column>
+    <column id="33" parent="7" name="description">
+      <Position>12</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="34" parent="7" name="end_date">
+      <Position>13</Position>
+      <StoredType>ISODate|91s</StoredType>
+    </column>
+    <index id="35" parent="7" name="_id_">
+      <ColNames>_id</ColNames>
+      <Unique>1</Unique>
     </index>
-    <index id="24" parent="10" name="name_1">
-      <ColNames>name</ColNames>
+    <column id="36" parent="8" name="_id">
+      <Position>1</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="37" parent="8" name="date">
+      <Position>1</Position>
+      <StoredType>ISODate|91s</StoredType>
+    </column>
+    <column id="38" parent="8" name="day_number">
+      <Position>1</Position>
+      <StoredType>Int32|4s</StoredType>
+    </column>
+    <column id="39" parent="8" name="itinerary_id">
+      <Position>1</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <index id="40" parent="8" name="_id_">
+      <ColNames>_id</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <column id="41" parent="9" name="_id">
+      <Position>1</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="42" parent="9" name="address">
+      <Position>1</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="43" parent="9" name="day_id">
+      <Position>1</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="44" parent="9" name="day_number">
+      <Position>1</Position>
+      <StoredType>Int32|4s</StoredType>
+    </column>
+    <column id="45" parent="9" name="name">
+      <Position>1</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="46" parent="9" name="time_slot">
+      <Position>1</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="47" parent="9" name="type">
+      <Position>1</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="48" parent="9" name="notes">
+      <Position>2</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <column id="49" parent="9" name="poi_id">
+      <Position>3</Position>
+      <StoredType>String|12s</StoredType>
+    </column>
+    <index id="50" parent="9" name="_id_">
+      <ColNames>_id</ColNames>
+      <Unique>1</Unique>
     </index>
   </database-model>
 </dataSource>
