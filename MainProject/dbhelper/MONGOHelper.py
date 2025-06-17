@@ -1,5 +1,4 @@
 import pymongo
-from datetime import datetime
 import toml
 import os
 
@@ -95,8 +94,3 @@ def get_user_reviews(mongo_helper, user_id, limit=10, skip=0):
     collection = mongo_helper.get_collection("Reviews")
     reviews = collection.find({"user_id": user_id}).sort("created_at", -1).skip(skip).limit(limit)
     return list(reviews)
-
-
-# 主程序测试
-if __name__ == "__main__":
-    pass

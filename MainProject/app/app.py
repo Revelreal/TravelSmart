@@ -19,6 +19,7 @@ from MainProject.app.settings.admin_settings import create_admin_settings
 from MainProject.app.settings.root_settings import create_root_settings
 
 from MainProject.app.API.reviews import create_reviews_app
+from MainProject.app.API.preferences import create_travel_preferences_app
 
 from MainProject.auth_utils import verify_token
 
@@ -53,6 +54,7 @@ app = mount_gradio_app(app, create_admin_settings(), path="/settings/admin_setti
 app = mount_gradio_app(app, create_root_settings(), path="/settings/root_settings")
 # =================== 接口注册 ===========================
 app = mount_gradio_app(app, create_reviews_app(), path="/api/reviews")
+app = mount_gradio_app(app, create_travel_preferences_app(), path="/api/preferences")
 
 
 # =================== 服务注册 =========================

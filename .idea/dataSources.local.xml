@@ -5,6 +5,7 @@
       <database-info product="MySQL" version="8.0.42-0ubuntu0.20.04.1" jdbc-version="4.2" driver-name="Amazon Web Services (AWS) Advanced JDBC Wrapper" driver-version="Amazon Web Services (AWS) Advanced JDBC Wrapper 2.3.7 ( Revision: 7591851e8da4e1c705ba232a8bd07824a5cfd276 )" dbms="MYSQL" exact-version="8.0.42" exact-driver-version="2.3">
         <extra-name-characters>#@</extra-name-characters>
         <identifier-quote-string>`</identifier-quote-string>
+        <jdbc-catalog-is-schema>true</jdbc-catalog-is-schema>
       </database-info>
       <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
       <secret-storage>master_key</secret-storage>
