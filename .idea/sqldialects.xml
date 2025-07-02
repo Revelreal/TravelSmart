@@ -2,13 +2,17 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/MainProject/app/API/preferences.py" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/MainProject/app/homepage/admin_home.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/MainProject/app/homepage/root_home.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/MainProject/app/homepage/user_home.py" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/MainProject/app/notice/admin_notice_page.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/MainProject/app/settings/admin_settings.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/MainProject/app/settings/user_settings.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/MainProject/app/welcome/login.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/MainProject/app/welcome/register.py" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/MainProject/dbhelper/NoticeManager.py" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/MainProject/dbhelper/SQLHelper.py" dialect="MySQL" />
+  </component>
+  <component name="SqlResolveMappings">
+    <file url="file://$PROJECT_DIR$/MainProject/dbhelper/NoticeManager.py" scope="{&quot;node&quot;:{  &quot;@negative&quot;:&quot;1&quot;,  &quot;group&quot;:{   &quot;@kind&quot;:&quot;root&quot;,   &quot;node&quot;:{    &quot;@negative&quot;:&quot;1&quot;   }  } }}" />
   </component>
 </project>

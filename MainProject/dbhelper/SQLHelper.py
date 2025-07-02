@@ -188,11 +188,10 @@ class SQLHelper:
 
     def register_user(self, user_info):
         """
-        注册新用户
+        注册新用户，默认注册为普通用户(user)角色
         :param user_info: 用户信息字典，必须包含以下字段：
             - username: 用户名
             - password: 密码
-            - role_name: 角色名称（如 "user"、"admin"、"root"）
             - nickname: 昵称（可选）
             - phone: 电话（可选）
             - email: 邮箱（可选）
@@ -201,33 +200,32 @@ class SQLHelper:
         """
         try:
             # 1. 检查必填字段
-            required_fields = ["username", "password", "role_name"]
+            required_fields = ["username", "password"]
             for field in required_fields:
                 if field not in user_info:
                     return False, f"缺少必填字段: {field}"
 
             username = user_info["username"]
             password = user_info["password"]
-            role_name = user_info["role_name"]
 
             # 2. 检查用户名是否已存在
             if self.is_username_exists(username):
                 return False, "用户名已存在"
 
-            # 3. 获取角色ID
-            role = self.fetchone("SELECT id FROM Roles WHERE role_name=%s", (role_name,))
-            if not role:
-                return False, f"角色 '{role_name}' 不存在"
+            # 3. 检查邮箱是否已存在(如果提供了邮箱)
+            if user_info.get("email") and self.is_email_exists(user_info["email"]):
+                return False, "邮箱已被注册"
 
-            role_id = role["id"]
+            # 4. 默认设置为普通用户角色(user, role_id=3)
+            role_id = 3
 
-            # 4. 设置默认状态为 "正常"（status_id=1）
+            # 5. 设置默认状态为 "正常"（status_id=1）
             status_id = 1
 
-            # 5. 插入用户数据
+            # 6. 插入用户数据
             sql = """
-                  INSERT INTO Users (username, password, nickname, phone, email, city, status_id, role_id) \
-                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
+                  INSERT INTO Users (username, password, nickname, phone, email, city, status_id, role_id)
+                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                   """
             params = (
                 username,

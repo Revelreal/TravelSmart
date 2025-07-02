@@ -1,4 +1,3 @@
-# MainProject/app/settings/admin_settings.py
 import gradio as gr
 from MainProject.dbhelper.SQLHelper import SQLHelper
 from MainProject.auth_utils import verify_token
@@ -60,11 +59,6 @@ def change_pwd(oldpwd, newpwd, newpwd2, username):
         return f"❌ 修改失败：{e}"
 
 
-def admin_announce(content, username):
-    # 实际应写入公告表，这里模拟
-    return f"✅ 公告已发布：{content[:20]}..." if content else "❌ 公告内容不能为空"
-
-
 def load_simple_stat():
     db = SQLHelper()
     try:
@@ -89,6 +83,7 @@ def create_admin_settings():
     with gr.Blocks(title="管理员设置页面") as page:
         token_box = gr.Textbox(visible=False)
         welcome_msg = gr.HTML("<div style='font-size:1.15em;color:#117ac9'>正在认证...</div>")
+
         with gr.Tabs():
             with gr.Tab("个人信息"):
                 nickname = gr.Textbox(label="昵称")
@@ -98,20 +93,32 @@ def create_admin_settings():
                 save_btn = gr.Button("保存个人信息")
                 reload_btn = gr.Button("⟳ 刷新最新数据")
                 tip = gr.Markdown()
+
             with gr.Tab("修改密码"):
                 oldpwd = gr.Textbox(label="原密码", type="password")
                 newpwd = gr.Textbox(label="新密码", type="password")
                 newpwd2 = gr.Textbox(label="重复新密码", type="password")
                 pwd_btn = gr.Button("提交修改")
                 pwd_tip = gr.Markdown()
-            with gr.Tab("推送公告"):
-                ann = gr.Textbox(label="公告内容", lines=4, placeholder="此公告将显示给用户")
-                ann_btn = gr.Button("发布公告")
-                ann_tip = gr.Markdown()
+
+            with gr.Tab("公告系统"):
+                # 替换为简单的链接跳转界面
+                gr.Markdown("### 📢 公告系统管理")
+
+                gr.Markdown("""
+                请点击下方按钮进入相应的公告系统页面：
+
+                - **查看公告**：进入公告查看界面，可以浏览所有公告
+                - **管理公告**：进入公告管理界面，可以添加、编辑、删除公告
+                """)
+
+                notice_links = gr.HTML("")  # 将在页面加载时填充链接
+
             with gr.Tab("工作台概览（简要统计）"):
                 gr.Markdown("#### 你的管理面板（统计数据演示）")
                 stat_box = gr.JSON(value=load_simple_stat(), label="当前数据简报")
                 stat_btn = gr.Button("⟳ 刷新统计数据")
+
             with gr.Tab("安全提示"):
                 gr.Markdown("""
                     - 请妥善保管账户及密码，勿外泄。
@@ -126,12 +133,25 @@ def create_admin_settings():
             info = require_admin(token)
             username = info["username"]
             welcome = f"🛠️ 管理员，<b>{username}</b>，你好！"
-            return token, welcome
+
+            # 创建公告系统链接按钮
+            notice_links_html = f"""
+            <div style="display: flex; gap: 15px; margin: 20px 0;">
+                <a href="/notice/user_notice?token={token}" class="gr-button gr-button-lg" target="_blank">
+                    📢 查看公告
+                </a>
+                <a href="/notice/admin_notice?token={token}" class="gr-button gr-button-lg" target="_blank">
+                    ⚙️ 管理公告
+                </a>
+            </div>
+            """
+
+            return token, welcome, notice_links_html
 
         page.load(
             fn=load_admin_page,
             inputs=None,
-            outputs=[token_box, welcome_msg]
+            outputs=[token_box, welcome_msg, notice_links]
         )
 
         # 填充信息
@@ -168,16 +188,6 @@ def create_admin_settings():
             outputs=pwd_tip
         )
 
-        # 公告
-        def ann_pub(content, token):
-            info = require_admin(token)
-            return admin_announce(content, info["username"])
-
-        ann_btn.click(
-            fn=ann_pub,
-            inputs=[ann, token_box],
-            outputs=ann_tip
-        )
         # 工作台统计
         stat_btn.click(
             fn=load_simple_stat,

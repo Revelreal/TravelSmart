@@ -22,6 +22,9 @@ from MainProject.app.API.reviews import create_reviews_app
 from MainProject.app.API.preferences import create_travel_preferences_app
 from MainProject.app.API.trips import create_itinerary_app
 
+from MainProject.app.notice.notice_page import create_notice_view_app
+from MainProject.app.notice.admin_notice_page import create_notice_admin_app
+
 from MainProject.auth_utils import verify_token
 
 # 路由服务
@@ -57,6 +60,9 @@ app = mount_gradio_app(app, create_root_settings(), path="/settings/root_setting
 app = mount_gradio_app(app, create_reviews_app(), path="/api/reviews")
 app = mount_gradio_app(app, create_travel_preferences_app(), path="/api/preferences")
 app = mount_gradio_app(app, create_itinerary_app(), path="/api/trips")
+app = mount_gradio_app(app, create_notice_view_app(), path="/notice/user_notice")
+app = mount_gradio_app(app, create_notice_admin_app(), path="/notice/admin_notice")
+
 
 
 # =================== 服务注册 =========================
