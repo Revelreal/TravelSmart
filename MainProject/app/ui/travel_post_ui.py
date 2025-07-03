@@ -1,4 +1,4 @@
-# MainProject/ui/travel_post_ui.py
+# MainProject/app/ui/travel_post_ui.py
 import gradio as gr
 from MainProject.app.services.travel_post_service import TravelPostService
 

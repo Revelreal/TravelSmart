@@ -4,37 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="部署了公告系统">
-      <change afterPath="$PROJECT_DIR$/MainProject/.idea/MainProject.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/app/services/friendship_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/app/services/message_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/app/services/travel_post_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/app/services/user_profile_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/app/ui/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/app/ui/friends_component_ui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/app/ui/friendship_ui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/app/ui/message_ui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/app/ui/travel_post_ui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/app/ui/user_profile_ui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/dbhelper/database_setup.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainProject/dbhelper/mongo_setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4505d2eb-c390-44ee-aa1a-84ce3441e4d9.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/4505d2eb-c390-44ee-aa1a-84ce3441e4d9.xml" afterDir="false" />
+    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="修改了注册界面的出错，增加了好友聊天、动态界面、初步进行拓展，但功能稳定性仍在测试，内容仍然需要完善。">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/536614e2-a647-4af3-ae97-62557d181694.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/536614e2-a647-4af3-ae97-62557d181694.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/API/ai_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/API/ai_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/chat/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/services/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/homepage/user_home.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/homepage/user_home.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/dbhelper/SQLHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/dbhelper/SQLHelper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.toml" beforeDir="false" afterPath="$PROJECT_DIR$/config.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/ui/message_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/ui/message_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/ui/travel_post_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/ui/travel_post_ui.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -370,7 +344,7 @@
       <workItem from="1751433577841" duration="24734000" />
       <workItem from="1751461722710" duration="2600000" />
       <workItem from="1751466434055" duration="8842000" />
-      <workItem from="1751508997922" duration="8748000" />
+      <workItem from="1751508997922" duration="12865000" />
     </task>
     <task id="LOCAL-00001" summary="基础界面功能搭建中...">
       <option name="closed" value="true" />
@@ -492,7 +466,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751449293876</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="修改了注册界面的出错，增加了好友聊天、动态界面、初步进行拓展，但功能稳定性仍在测试，内容仍然需要完善。">
+      <option name="closed" value="true" />
+      <created>1751521871737</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1751521871737</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -542,7 +524,8 @@
     <MESSAGE value="模块完善：导航定位，评论查看、用户偏好、" />
     <MESSAGE value="模块完善：导航定位，评论查看、用户偏好、旅行计划定制，形成第二版本" />
     <MESSAGE value="部署了公告系统" />
-    <option name="LAST_COMMIT_MESSAGE" value="部署了公告系统" />
+    <MESSAGE value="修改了注册界面的出错，增加了好友聊天、动态界面、初步进行拓展，但功能稳定性仍在测试，内容仍然需要完善。" />
+    <option name="LAST_COMMIT_MESSAGE" value="修改了注册界面的出错，增加了好友聊天、动态界面、初步进行拓展，但功能稳定性仍在测试，内容仍然需要完善。" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TravelSmart$SQLHelper.coverage" NAME="SQLHelper 覆盖结果" MODIFIED="1750058069775" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
@@ -559,7 +542,7 @@
     <SUITE FILE_PATH="coverage/TravelSmart$auth_utils.coverage" NAME="auth_utils 覆盖结果" MODIFIED="1749985449781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
     <SUITE FILE_PATH="coverage/TravelSmart$NoticeManager.coverage" NAME="NoticeManager 覆盖结果" MODIFIED="1751440022548" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
     <SUITE FILE_PATH="coverage/TravelSmart$admin_home.coverage" NAME="admin_home 覆盖结果" MODIFIED="1751441296862" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/homepage" />
-    <SUITE FILE_PATH="coverage/TravelSmart$main.coverage" NAME="main 覆盖结果" MODIFIED="1751521295557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
+    <SUITE FILE_PATH="coverage/TravelSmart$main.coverage" NAME="main 覆盖结果" MODIFIED="1751525261849" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
     <SUITE FILE_PATH="coverage/TravelSmart$MONGOHelper.coverage" NAME="MONGOHelper 覆盖结果" MODIFIED="1750137428237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
     <SUITE FILE_PATH="coverage/TravelSmart$notice_page.coverage" NAME="notice_page 覆盖结果" MODIFIED="1751440420468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/notice" />
     <SUITE FILE_PATH="coverage/TravelSmart$test.coverage" NAME="test 覆盖结果" MODIFIED="1749031993397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/static" />

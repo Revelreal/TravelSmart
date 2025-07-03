@@ -1184,7 +1184,7 @@ workspace|schema||workspaceuser|localhost|UPDATE|G
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <Current>1</Current>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-07-02.13:06:29</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-07-03.06:45:14</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="289" parent="1" name="academic_scheduler">
@@ -1197,7 +1197,7 @@ workspace|schema||workspaceuser|localhost|UPDATE|G
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <Grants>user|||mysql.session|localhost|SELECT|G</Grants>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-07-02.13:06:29</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-07-03.06:45:14</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="292" parent="1" name="performance_schema">

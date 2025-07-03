@@ -1,13 +1,17 @@
+# MainProject/app/ui/message_ui.py
 import gradio as gr
-import pandas as pd
 import logging
-from typing import Dict, Any, List, Union, Optional
+import time
+from typing import Dict
+
+import pandas as pd
+
 from MainProject.app.services.message_service import MessageService
 from MainProject.app.services.friendship_service import FriendshipService
 
 
 def create_message_ui(user_info_state: gr.State) -> Dict[str, gr.components.Component]:
-    # 初始化服务（添加类型注解）
+    # 初始化服务
     message_service: MessageService = MessageService()
     friendship_service: FriendshipService = FriendshipService()
     logger: logging.Logger = logging.getLogger(__name__)
@@ -16,121 +20,366 @@ def create_message_ui(user_info_state: gr.State) -> Dict[str, gr.components.Comp
         # ========== UI布局 ==========
         gr.Markdown("## 消息中心")
 
+        # 状态变量
+        selected_friend = gr.State(None)
+        last_update_time = gr.State(time.time())
+        auto_refresh = gr.State(True)
+        view_mode = gr.State("list")  # "list" 或 "chat"
+
+        # 响应式布局
         with gr.Row():
-            # 好友列表列（添加类型注解）
-            with gr.Column(scale=1):
-                with gr.Group():
-                    gr.Markdown("### 好友列表")
-                    friend_list: gr.DataFrame = gr.Dataframe(
-                        headers=["用户名", "昵称", "状态", "未读消息"],
-                        interactive=False,
-                        type="pandas"  # 明确指定使用pandas格式
-                    )
-                    refresh_friends_btn: gr.Button = gr.Button("刷新好友列表", variant="secondary")
+            # 左侧面板 - 好友列表/聊天列表
+            with gr.Column(scale=1, elem_id="message-left-panel"):
+                # 顶部导航栏
+                with gr.Row(elem_id="message-nav"):
+                    back_btn = gr.Button("← 返回", visible=False, elem_id="back-btn")
+                    title_md = gr.Markdown("### 最近消息", elem_id="message-title")
 
-            # 聊天窗口列（添加类型注解）
-            with gr.Column(scale=2):
-                with gr.Group():
-                    gr.Markdown("### 聊天窗口")
-                    selected_friend: gr.State = gr.State()  # 明确类型为gr.State
-                    friend_info: gr.Markdown = gr.Markdown("请从左侧选择好友开始聊天")
+                # 搜索框
+                search_box = gr.Textbox(
+                    placeholder="搜索好友...",
+                    show_label=False,
+                    elem_id="friend-search"
+                )
 
-                    chat_history: gr.Chatbot = gr.Chatbot(
-                        label="聊天记录",
-                        height=400,
-                        show_label=False,
-                        bubble_full_width=False
-                    )
+                # 使用DataFrame代替HTML组件
+                friend_df = gr.DataFrame(
+                    value=pd.DataFrame(columns=["friend_id", "name", "preview", "time", "unread"]),
+                    headers=["好友", "预览", "时间", "未读"],  # 4个表头
+                    col_count=(4, "fixed"),  # 修改为显示4列，与headers匹配
+                    interactive=False,
+                    elem_id="friend-dataframe"
+                )
+                # 底部工具栏
+                with gr.Row(elem_id="message-toolbar"):
+                    refresh_btn = gr.Button("🔄 刷新", variant="secondary")
+                    show_friends_btn = gr.Button("👥 好友列表", variant="secondary")
 
+            # 右侧面板 - 聊天窗口
+            with gr.Column(scale=2, elem_id="message-right-panel"):
+                # 聊天头部
+                with gr.Row(elem_id="chat-header"):
+                    friend_info = gr.Markdown("请选择好友开始聊天", elem_id="friend-info")
+
+                # 使用Chatbot组件代替HTML
+                chat_history = gr.Chatbot(
+                    value=[],
+                    elem_id="chat-history",
+                    height=400,
+                    bubble_full_width=False,
+                    show_label=False
+                )
+
+                # 消息输入区
+                with gr.Group(elem_id="message-input-area"):
                     with gr.Row():
-                        message_input: gr.Textbox = gr.Textbox(
+                        message_input = gr.Textbox(
                             placeholder="输入消息...",
-                            lines=2,
-                            max_lines=5,
-                            container=False
+                            show_label=False,
+                            lines=3,
+                            max_lines=8,
+                            elem_id="message-input"
                         )
-                        send_btn: gr.Button = gr.Button("发送", variant="primary")
+                        send_btn = gr.Button("发送", variant="primary", elem_id="send-btn")
 
-                    refresh_chat_btn: gr.Button = gr.Button("刷新聊天记录", variant="secondary")
+                # 底部工具栏
+                with gr.Row(elem_id="chat-toolbar"):
+                    auto_refresh_toggle = gr.Checkbox(
+                        label="自动刷新",
+                        value=True,
+                        interactive=True,
+                        elem_id="auto-refresh"
+                    )
+                    manual_refresh_btn = gr.Button("刷新聊天", variant="secondary")
 
-        # ========== 核心功能函数（添加完整类型注解）==========
-        def load_chat_friends(user_data: Optional[Dict[str, Any]]) -> pd.DataFrame:
-            """加载好友列表（严格类型处理）"""
-            default_df = pd.DataFrame(
-                [["请先登录", "", "", 0]],
-                columns=["用户名", "昵称", "状态", "未读消息"]
-            )
+        # 自定义CSS
+        gr.HTML("""
+                <style>
+                    /* 整体布局 */
+                    #message-left-panel, #message-right-panel {
+                        border: 1px solid #e0e0e0;
+                        border-radius: 8px;
+                        padding: 0 !important;
+                        height: 600px;
+                        display: flex;
+                        flex-direction: column;
+                        overflow: hidden;
+                    }
+                
+                    /* 导航栏 */
+                    #message-nav, #chat-header {
+                        padding: 10px 15px;
+                        border-bottom: 1px solid #e0e0e0;
+                    }
+                
+                    /* 搜索框 */
+                    #friend-search {
+                        margin: 10px;
+                    }
+                
+                    /* 好友列表样式 */
+                    #friend-dataframe {
+                        flex: 1;
+                        overflow-y: auto;
+                    }
+                    #friend-dataframe table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    #friend-dataframe tr {
+                        cursor: pointer;
+                        transition: background-color 0.2s;
+                    }
+                    #friend-dataframe tr:hover {
+                        background-color: #f5f5f5;
+                    }
+                    #friend-dataframe tr.active {
+                        background-color: #e6f7ff;
+                    }
+                
+                    /* 未读消息样式 */
+                    .unread-badge {
+                        border-radius: 10px;
+                        padding: 0 6px;
+                        font-size: 12px;
+                        min-width: 18px;
+                        text-align: center;
+                    }
+                
+                    /* 移动端适配 */
+                    @media (max-width: 768px) {
+                        #message-left-panel.chat-view {
+                            display: none;
+                        }
+                        #message-right-panel.list-view {
+                            display: none;
+                        }
+                    }
+                </style>
+                """)
 
-            if not user_data or not isinstance(user_data, dict):
-                return default_df
+        # ========== 核心功能函数 ==========
+        def format_time(timestamp):
+            """格式化时间显示"""
+            if not timestamp:
+                return ""
+
+            # 如果是字符串，尝试转换为时间对象
+            if isinstance(timestamp, str):
+                try:
+                    from datetime import datetime
+                    timestamp = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+                except:
+                    return timestamp
+
+            # 获取当前时间
+            from datetime import datetime
+            now = datetime.now()
+
+            # 如果是今天的消息，只显示时间
+            if timestamp.date() == now.date():
+                return timestamp.strftime("%H:%M")
+            # 如果是昨天的消息
+            elif (now.date() - timestamp.date()).days == 1:
+                return "昨天 " + timestamp.strftime("%H:%M")
+            # 如果是今年的消息
+            elif timestamp.year == now.year:
+                return timestamp.strftime("%m-%d %H:%M")
+            # 其他情况显示完整日期
+            else:
+                return timestamp.strftime("%Y-%m-%d %H:%M")
+
+        def load_chat_messages(friend_id, user_data):
+            """加载聊天记录"""
+            if not user_data or not friend_id:
+                return []
 
             try:
-                # 类型安全访问
                 user_id = str(user_data.get("user_id", ""))
-                if not user_id:
-                    return default_df
 
-                # 获取数据（添加类型转换）
-                friends: List[Dict[str, Any]] = friendship_service.get_friends(user_id) or []
-                unread_counts: List[Dict[str, Any]] = message_service.get_unread_message_count(user_id) or []
+                # 获取消息记录
+                messages = message_service.get_recent_messages(user_id, friend_id, limit=50)
 
-                # 构建安全数据结构
-                unread_dict: Dict[str, int] = {
-                    str(item.get("sender_id", "")): int(item.get("count", 0))
-                    for item in unread_counts
-                    if item and "sender_id" in item
-                }
+                # 标记为已读
+                message_service.mark_messages_as_read(user_id, friend_id)
 
-                data: List[List[Union[str, int]]] = []
-                for friend in friends:
-                    if not isinstance(friend, dict):
+                # 格式化聊天记录
+                chat = []
+                for msg in messages:
+                    if not isinstance(msg, dict):
                         continue
 
-                    friend_id = str(friend.get("friend_id", ""))
-                    data.append([
-                        str(friend.get("username", "")),
-                        str(friend.get("nickname", "")),
-                        str(friend.get("status", "")),
-                        int(unread_dict.get(friend_id, 0))
-                    ])
+                    content = str(msg.get("content", ""))
+                    if msg.get("direction") == "sent":
+                        chat.append([content, None])
+                    else:
+                        chat.append([None, content])
 
-                return pd.DataFrame(
-                    data,
-                    columns=["用户名", "昵称", "状态", "未读消息"]
-                ).fillna("")
+                return chat
+            except Exception as e:
+                logger.error(f"加载聊天记录失败: {str(e)}")
+                return [[f"加载失败: {str(e)}", None]]
+
+        def load_friend_dataframe(user_data, mode="recent"):
+            """加载好友列表DataFrame"""
+            if not user_data:
+                return pd.DataFrame(columns=["friend_id", "name", "preview", "time", "unread"])
+
+            try:
+                user_id = str(user_data.get("user_id", ""))
+
+                # 获取好友列表
+                friends = friendship_service.get_friends(user_id) or []
+                friends_dict = {str(f.get("friend_id")): f for f in friends if f}
+
+                # 获取未读消息数
+                unread_counts = message_service.get_unread_message_count(user_id) or []
+                unread_dict = {str(item.get("sender_id", "")): int(item.get("count", 0))
+                               for item in unread_counts if item}
+
+                data = []
+
+                if mode == "recent":
+                    # 获取有过对话的用户ID列表
+                    conversation_user_ids = message_service.get_conversation_users(user_id)
+
+                    # 首先添加有未读消息的好友
+                    unread_friends = []
+                    for friend_id, count in unread_dict.items():
+                        if count > 0 and friend_id in friends_dict:
+                            unread_friends.append(friend_id)
+
+                    # 然后添加最近聊天的好友
+                    recent_friends = [uid for uid in conversation_user_ids
+                                      if uid in friends_dict and uid not in unread_friends]
+
+                    # 合并列表，确保未读消息的好友排在前面
+                    chat_order = unread_friends + recent_friends
+
+                    # 如果没有聊天记录，显示所有好友
+                    if not chat_order:
+                        chat_order = [str(f.get("friend_id")) for f in friends if f]
+
+                    # 生成数据
+                    for friend_id in chat_order:
+                        if friend_id not in friends_dict:
+                            continue
+
+                        friend = friends_dict[friend_id]
+                        name = friend.get("nickname") or friend.get("username") or "用户"
+                        unread = unread_dict.get(friend_id, 0)
+
+                        # 获取最后一条消息预览
+                        last_message = "暂无消息"
+                        last_time = ""
+                        messages = message_service.get_recent_messages(user_id, friend_id, limit=1)
+                        if messages:
+                            last_message = messages[0].get("content", "")[:20]
+                            last_time = format_time(messages[0].get("created_at"))
+
+                        data.append({
+                            "friend_id": friend_id,
+                            "name": name,
+                            "preview": last_message,
+                            "time": last_time,
+                            "unread": unread
+                        })
+                else:
+                    # 显示所有好友
+                    for friend in friends:
+                        if not friend:
+                            continue
+
+                        friend_id = str(friend.get("friend_id", ""))
+                        name = friend.get("nickname") or friend.get("username") or "用户"
+                        status = friend.get("status", "")
+
+                        data.append({
+                            "friend_id": friend_id,
+                            "name": name,
+                            "preview": status,
+                            "time": "",
+                            "unread": unread_dict.get(friend_id, 0)
+                        })
+
+                # 创建DataFrame
+                df = pd.DataFrame(data)
+                if len(df) > 0:
+                    # 隐藏friend_id列，但保留数据
+                    visible_df = df[["name", "preview", "time", "unread"]]
+                    return df
+                else:
+                    return pd.DataFrame(columns=["friend_id", "name", "preview", "time", "unread"])
 
             except Exception as e:
                 logger.error(f"加载好友列表失败: {str(e)}")
-                return default_df
+                return pd.DataFrame(columns=["friend_id", "name", "preview", "time", "unread"])
 
-        def select_friend(evt: gr.SelectData, friends_data, user_data):
-            """选择好友并加载聊天记录（修复ID获取问题）"""
+        def send_message_handler(friend_id, message, user_data):
+            """发送消息处理函数"""
             if not user_data:
-                return None, "请先登录", []
+                return friend_id, "", []  # 返回空列表而不是HTML
+
+            if not friend_id:
+                return friend_id, "", []  # 返回空列表而不是HTML
 
             try:
-                # 获取选择的好友信息
-                selected = friends_data.iloc[evt.index[0]]
-                username = selected["用户名"]
+                # 消息处理
+                clean_msg = str(message).strip()
+                if not clean_msg:
+                    return friend_id, "", gr.update()
 
-                # 修复方案：直接从好友列表数据中获取friend_id（因为friends_data来自get_friends查询）
-                friend_id = None
-                if isinstance(selected, pd.Series) and 'friend_id' in friends_data.columns:
-                    friend_id = str(selected['friend_id'])
-                else:
-                    # 备用方案：通过username从好友列表数据中查找
-                    friends_list = friendship_service.get_friends(user_data["user_id"])
-                    for friend in friends_list:
-                        if friend.get("username") == username:
-                            friend_id = str(friend.get("friend_id"))
-                            break
+                # 发送消息
+                success, result = message_service.send_message(
+                    sender_id=str(user_data.get("user_id", "")),
+                    receiver_id=friend_id,
+                    content=clean_msg
+                )
+
+                if not success:
+                    # 返回错误消息
+                    return friend_id, message, [[f"发送失败: {result}", None]]
+
+                # 重新加载聊天记录
+                messages = message_service.get_recent_messages(
+                    user_id=str(user_data["user_id"]),
+                    friend_id=friend_id
+                )
+
+                # 格式化聊天记录
+                chat = []
+                for msg in messages:
+                    if not isinstance(msg, dict):
+                        continue
+
+                    content = str(msg.get("content", ""))
+                    if msg.get("direction") == "sent":
+                        chat.append([content, None])
+                    else:
+                        chat.append([None, content])
+
+                return friend_id, "", chat
+            except Exception as e:
+                logger.error(f"发送消息失败: {str(e)}")
+                return friend_id, message, [[f"发送失败: {str(e)}", None]]
+
+        def select_friend_handler(evt: gr.SelectData, df, user_data):
+            """选择好友处理函数"""
+            if not user_data or df.empty:
+                return None, "请先登录", [], gr.update(visible=True), gr.update(visible=False), "chat", "返回"
+
+            try:
+                # 从DataFrame获取选中行的friend_id
+                selected_row = df.iloc[evt.index[0]]
+                friend_id = selected_row["friend_id"]
 
                 if not friend_id:
-                    return None, "获取好友ID失败", []
+                    return None, "请选择好友", [], gr.update(visible=True), gr.update(visible=False), "chat", "返回"
 
-                display_name = selected["昵称"] or selected["用户名"]
+                # 获取好友信息
+                name = selected_row["name"]
 
-                # 加载消息记录
+                # 加载聊天记录
                 messages = message_service.get_recent_messages(
                     user_id=str(user_data["user_id"]),
                     friend_id=friend_id
@@ -154,133 +403,170 @@ def create_message_ui(user_info_state: gr.State) -> Dict[str, gr.components.Comp
                     else:
                         chat.append([None, content])
 
-                return friend_id, f"正在与 {display_name} 聊天", chat
-
+                # 在移动端切换到聊天视图
+                return friend_id, f"### {name}", chat, gr.update(visible=True), gr.update(visible=False), "chat", "返回"
             except Exception as e:
-                logging.error(f"选择好友失败: {str(e)}")
-                return None, f"加载聊天失败: {str(e)}", []
+                logger.error(f"选择好友失败: {str(e)}")
+                return None, f"加载失败: {str(e)}", [], gr.update(visible=True), gr.update(visible=False), "chat", "返回"
 
-        def send_message(
-                friend_id: Optional[str],
-                message: str,
-                chat_history: List[List[Optional[str]]],
-                user_data: Optional[Dict[str, Any]]
-        ) -> tuple[Optional[str], str, List[List[Optional[str]]], Optional[gr.Warning]]:
-            """发送消息（严格类型处理）"""
-            default_return = (None, "", chat_history, gr.Warning("系统错误"))
+        def back_to_list():
+            """返回到消息列表"""
+            return None, "请选择好友开始聊天", [], gr.update(visible=False), gr.update(visible=True), "list", "最近消息"
 
-            if not isinstance(user_data, dict):
-                return None, "", chat_history, gr.Warning("请先登录")
+        def auto_refresh_handler(friend_id, user_data, auto_refresh, last_update):
+            """自动刷新处理函数"""
+            current_time = time.time()
 
-            if not isinstance(friend_id, str) or not friend_id:
-                return None, "", chat_history, gr.Warning("请选择好友")
+            # 如果不需要自动刷新或者没有选择好友，返回原样
+            if not auto_refresh or not friend_id or not user_data:
+                return gr.update(), current_time
+
+            # 如果距离上次更新不到5秒，不更新
+            if current_time - last_update < 5:
+                return gr.update(), last_update
 
             try:
-                # 消息处理
-                clean_msg: str = str(message).strip()
-                if not clean_msg:
-                    return None, "", chat_history, gr.Warning("消息不能为空")
-
-                # 发送消息（添加类型检查）
-                if not hasattr(message_service, 'send_message'):
-                    return None, clean_msg, chat_history, gr.Warning("服务不可用")
-
-                success, result = message_service.send_message(
-                    sender_id=str(user_data.get("user_id", "")),
-                    receiver_id=friend_id,
-                    content=clean_msg
-                )
-
-                if not success:
-                    return None, clean_msg, chat_history, gr.Warning(str(result))
-
-                # 更新聊天记录（确保类型安全）
-                new_chat: List[List[Optional[str]]] = chat_history + [[clean_msg, None]]
-                return friend_id, "", new_chat, None
-
+                # 重新加载聊天记录
+                return load_chat_messages(friend_id, user_data), current_time
             except Exception as e:
-                logger.error(f"发送消息失败: {str(e)}")
-                return None, str(message), chat_history, gr.Warning(f"发送失败: {str(e)}")
+                logger.error(f"自动刷新失败: {str(e)}")
+                return gr.update(), current_time
 
-        def refresh_chat(
-                friend_id: Optional[str],
-                chat_history: List[List[Optional[str]]],
-                user_data: Optional[Dict[str, Any]]
-        ) -> List[List[Optional[str]]]:
-            """刷新聊天（严格类型处理）"""
-            if not isinstance(user_data, dict) or not isinstance(friend_id, str):
-                return chat_history
+        def search_friends(query, user_data, view_mode):
+            """搜索好友"""
+            if not user_data:
+                return gr.update()
 
             try:
-                # 获取消息（添加服务检查）
-                if not hasattr(message_service, 'get_recent_messages'):
-                    return chat_history
+                # 如果搜索框为空，加载默认列表
+                if not query:
+                    return load_friend_dataframe(user_data, "recent" if view_mode == "list" else "friends")
 
-                messages: List[Dict[str, Any]] = message_service.get_recent_messages(
-                    user_id=str(user_data.get("user_id", "")),
-                    friend_id=friend_id
-                ) or []
+                user_id = str(user_data.get("user_id", ""))
 
-                # 构建新记录（严格None处理）
-                new_chat: List[List[Optional[str]]] = []
-                for msg in messages:
-                    if not isinstance(msg, dict):
+                # 获取好友列表
+                friends = friendship_service.get_friends(user_id) or []
+
+                # 过滤符合搜索条件的好友
+                filtered_friends = []
+                for friend in friends:
+                    if not friend:
                         continue
 
-                    direction = str(msg.get("direction", ""))
-                    content = str(msg.get("content", "")) if msg.get("content") is not None else ""
+                    name = friend.get("nickname") or friend.get("username") or ""
+                    if query.lower() in name.lower():
+                        filtered_friends.append(friend)
 
-                    if direction == "sent":
-                        new_chat.append([content, None])
-                    else:
-                        new_chat.append([None, content])
+                # 构建数据
+                data = []
+                for friend in filtered_friends:
+                    friend_id = str(friend.get("friend_id", ""))
+                    name = friend.get("nickname") or friend.get("username") or "用户"
 
-                return new_chat if new_chat else chat_history
+                    data.append({
+                        "friend_id": friend_id,
+                        "name": name,
+                        "preview": "点击开始聊天",
+                        "time": "",
+                        "unread": 0
+                    })
 
+                # 创建DataFrame
+                df = pd.DataFrame(data)
+                if len(df) == 0:
+                    df = pd.DataFrame(columns=["friend_id", "name", "preview", "time", "unread"])
+
+                return df
             except Exception as e:
-                logger.error(f"刷新聊天失败: {str(e)}")
-                return chat_history
+                logger.error(f"搜索好友失败: {str(e)}")
+                return pd.DataFrame(columns=["friend_id", "name", "preview", "time", "unread"])
 
         # ========== 事件绑定 ==========
-        refresh_friends_btn.click(
-            fn=load_chat_friends,
-            inputs=[user_info_state],
-            outputs=[friend_list]
-        )
+        # 初始加载
+        user_info_state.change(fn=load_friend_dataframe, inputs=[user_info_state], outputs=[friend_df])
+        # 刷新按钮
+        refresh_btn.click(fn=load_friend_dataframe, inputs=[user_info_state], outputs=[friend_df]).then(
+            fn=lambda: time.time(),outputs=last_update_time)
+        # 切换好友列表/聊天列表
+        show_friends_btn.click(fn=lambda mode: ("friends" if mode == "recent" else "recent"), inputs=[view_mode], outputs=[view_mode]).then(
+            fn=lambda mode, user: load_friend_dataframe(user, mode), inputs=[view_mode, user_info_state], outputs=[friend_df]).then(
+            fn=lambda mode: "好友列表" if mode == "friends" else "最近消息", inputs=[view_mode], outputs=[title_md])
+        # 返回按钮
+        back_btn.click(fn=back_to_list, outputs=[selected_friend, friend_info, chat_history, back_btn, show_friends_btn, view_mode, title_md])
+        # 选择好友
+        friend_df.select(fn=select_friend_handler, inputs=[friend_df, user_info_state], outputs=[selected_friend, friend_info, chat_history, back_btn, show_friends_btn, view_mode, title_md])
 
-        friend_list.select(
-            fn=select_friend,
-            inputs=[friend_list, user_info_state],
-            outputs=[selected_friend, friend_info, chat_history]
+        # 发送消息
+        send_btn.click(
+            fn=send_message_handler,
+            inputs=[selected_friend, message_input, user_info_state],
+            outputs=[selected_friend, message_input, chat_history]  # 替换chat_container为chat_history
+        ).then(
+            fn=lambda: time.time(),
+            outputs=last_update_time
         )
 
         message_input.submit(
-            fn=send_message,
-            inputs=[selected_friend, message_input, chat_history, user_info_state],
-            outputs=[selected_friend, message_input, chat_history, friend_info],
-            api_name="send_msg"
+            fn=send_message_handler,
+            inputs=[selected_friend, message_input, user_info_state],
+            outputs=[selected_friend, message_input, chat_history]  # 替换chat_container为chat_history
+        ).then(
+            fn=lambda: time.time(),
+            outputs=last_update_time
         )
 
-        send_btn.click(
-            fn=send_message,
-            inputs=[selected_friend, message_input, chat_history, user_info_state],
-            outputs=[selected_friend, message_input, chat_history, friend_info]
+        # 手动刷新聊天
+        manual_refresh_btn.click(
+            fn=lambda friend_id, user: load_chat_messages(friend_id, user),
+            inputs=[selected_friend, user_info_state],
+            outputs=chat_history
+        ).then(
+            fn=lambda: time.time(),
+            outputs=last_update_time
         )
 
-        refresh_chat_btn.click(
-            fn=refresh_chat,
-            inputs=[selected_friend, chat_history, user_info_state],
-            outputs=[chat_history]
+        # 自动刷新设置
+        auto_refresh_toggle.change(
+            fn=lambda value: value,
+            inputs=[auto_refresh_toggle],
+            outputs=[auto_refresh]
         )
 
-        user_info_state.change(
-            fn=load_chat_friends,
-            inputs=[user_info_state],
-            outputs=[friend_list]
+        # 搜索功能
+        search_box.change(
+            fn=search_friends,
+            inputs=[search_box, user_info_state, view_mode],
+            outputs=[friend_df]  # 替换recent_chats和friend_list为friend_df
+        )
+
+        # 自动刷新定时器
+        # 添加自定义JavaScript来实现定时刷新
+        gr.HTML("""
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 每5秒触发一次刷新按钮点击
+            setInterval(function() {
+                const refreshBtn = document.getElementById('auto-refresh-trigger');
+                if (refreshBtn) {
+                    refreshBtn.click();
+                }
+            }, 5000);
+        });
+        </script>
+        """)
+
+        # 添加一个隐藏的按钮作为刷新触发器
+        auto_refresh_trigger = gr.Button("刷新", visible=False, elem_id="auto-refresh-trigger")
+
+        # 绑定刷新触发器的点击事件
+        auto_refresh_trigger.click(
+            fn=auto_refresh_handler,
+            inputs=[selected_friend, user_info_state, auto_refresh, last_update_time],
+            outputs=[chat_history, last_update_time]
         )
 
     return {
-        "friend_list": friend_list,
+        "friend_list": friend_df,
         "chat_history": chat_history,
         "selected_friend": selected_friend
     }
