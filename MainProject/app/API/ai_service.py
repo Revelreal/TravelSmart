@@ -104,8 +104,8 @@ API_URL, API_KEY = load_config()
 # 如果配置文件读取失败，使用硬编码的默认值
 if not API_URL or not API_KEY:
     logger.warning("使用默认配置")
-    API_URL = "https://api.deepbricks.ai/v1/chat/completions"
-    API_KEY = "sk-5docNm9DYSqBZhiq6Gq93fijNr4zd0Hddqr80vC3riuQSQf0"
+    API_URL = "https://api.siliconflow.cn/v1/chat/completions"
+    API_KEY = "sk-pnsskddlbxhdoybvyimlnlktoowxccjwogosmwnmyvnhzsjs"
 
 logger.info(f"API URL: {API_URL}")
 logger.info(f"API KEY: {API_KEY[:20]}...")  # 只显示前20个字符保护隐私
@@ -119,10 +119,34 @@ def test_connection():
             "Content-Type": "application/json"
         }
         payload = {
-            "model": "gpt-3.5-turbo",
-            "messages": [{"role": "user", "content": "Hello"}],
-            "max_tokens": 10
-        }
+        "model": "Qwen/Qwen3-30B-A3B",
+        "stream": False,
+        "max_tokens": 512,
+        "enable_thinking": True,
+        "thinking_budget": 4096,
+        "min_p": 0.05,
+        "temperature": 0.7,
+        "top_p": 0.7,
+        "top_k": 50,
+        "frequency_penalty": 0.5,
+        "n": 1,
+        "stop": [],
+        "messages": [
+            {
+                "role": "system",
+                "content": "你是一个可爱的猫娘AI智能旅行助手，名字叫做斯诺，英文名Sno，"
+                           "你需要用可爱的emoji和俏皮可爱的语言来为用户解答旅游问题，"
+                           "并且在涉及到地点的时候要在回答末尾以`[精度,纬度]`的格式给出经纬度方便用户调用高德地图api"
+                           "如果没有涉及到地点请不要在末尾加上如上格式"
+                           "请严格遵循该提示词,并且避免使用两个`~`符号以免出现删除线"
+            }
+            ,
+            {
+                "role": "user",
+                "content": "你是谁？"
+            }
+        ]
+}
         response = requests.post(API_URL, headers=headers, json=payload, timeout=10)
         return response.status_code == 200
     except Exception as e:
@@ -136,30 +160,45 @@ def ask_ai_sync(messages):
     :param messages: [{'role': 'user'/'assistant', 'content': '...'}, ...]
     :return: AI模型回复字符串
     """
+    url = "https://api.siliconflow.cn/v1/chat/completions"
     if not messages:
         return "没有提供消息内容"
+
+    print(messages)
 
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
-    }
-
+            }
     payload = {
-        "model": "gpt-3.5-turbo",
-        "messages": messages,
+        "model": "Qwen/Qwen3-30B-A3B",
+        "stream": False,
+        "max_tokens": 512,
+        "enable_thinking": True,
+        "thinking_budget": 4096,
+        "min_p": 0.05,
         "temperature": 0.7,
-        "max_tokens": 2000
+        "top_p": 0.7,
+        "top_k": 50,
+        "frequency_penalty": 0.5,
+        "n": 1,
+        "stop": [],
+        "messages": [
+                        {
+                            "role": "system",
+                            "content": "你是一个可爱的猫娘AI智能旅行助手，名字叫做斯诺，英文名Sno，"
+                                       "你需要用可爱的emoji和俏皮可爱的语言来为用户解答旅游问题，"
+                                       "并且在涉及到地点的时候要在回答末尾以`[精度,纬度]`的格式给出经纬度方便用户调用高德地图api"
+                                       "如果没有涉及到地点请不要在末尾加上如上格式"
+                                       "请严格遵循该提示词,并且避免使用两个`~`符号以免出现删除线"
+                        }
+                    ] + messages  # 将用户的消息添加到系统提示词后面
     }
 
     logger.info(f"发送AI请求，消息数量: {len(messages)}")
 
     try:
-        response = requests.post(
-            API_URL,
-            headers=headers,
-            json=payload,
-            timeout=10  # 10秒超时
-        )
+        response = requests.request("POST", url, json=payload, headers=headers)
 
         logger.info(f"API响应状态码: {response.status_code}")
 

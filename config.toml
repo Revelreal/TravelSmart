@@ -15,8 +15,8 @@ password = ""
 database = "SmartTravel"
 
 [ai]
-api = "https://api.deepbricks.ai/v1/chat/completions"
-key = "sk-5docNm9DYSqBZhiq6Gq93fijNr4zd0Hddqr80vC3riuQSQf0"
+api = "https://api.siliconflow.cn/v1/chat/completions"
+key = "sk-pnsskddlbxhdoybvyimlnlktoowxccjwogosmwnmyvnhzsjs"
 
 [session]
 SECRET_KEY = "secretkey1024568521569475aklshdw"

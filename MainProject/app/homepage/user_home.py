@@ -221,9 +221,9 @@ def create_user_home_app():
                         <span class="menu-item-icon">🔈</span>
                         <span class="menu-item-text">系统公告</span>
                     </a>
-                    <a href="/chat?token={token}" class="menu-item">
+                    <a href="/friends?token={token}" class="menu-item">
                         <span class="menu-item-icon">😀</span>
-                        <span class="menu-item-text">我的聊天</span>
+                        <span class="menu-item-text">我的好友</span>
                     </a>
                 </div>
             </div>

@@ -257,6 +257,7 @@ class SQLHelper:
 
 if __name__ == "__main__":
     db = SQLHelper()
+    # 删库跑路
     # db.drop_all_tables()
     # db.create_userstatus_table()
     # db.create_role_table()

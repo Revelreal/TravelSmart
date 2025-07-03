@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="94f65215-cf83-412b-a08c-01784561cf61" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/app/services/friendship_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/services/message_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/services/travel_post_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/services/user_profile_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/ui/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/ui/auth_helper.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/ui/friendship_ui.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/ui/message_ui.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/ui/travel_post_ui.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/ui/user_profile_ui.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dbhelper/database_setup.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dbhelper/mongo_setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/dataSources/4505d2eb-c390-44ee-aa1a-84ce3441e4d9.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/dataSources/4505d2eb-c390-44ee-aa1a-84ce3441e4d9.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/dataSources/536614e2-a647-4af3-ae97-62557d181694.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/dataSources/536614e2-a647-4af3-ae97-62557d181694.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/chat/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/homepage/user_home.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/homepage/user_home.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dbhelper/SQLHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/dbhelper/SQLHelper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../requirements.txt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "jiangxiaoxuan0721"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Revelreal/TravelSmart.git",
+    "accountId": "8bf47d0c-3d05-47c6-b2da-36f587e745b4"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="2zJtCXosvnGd3I6PcUD8kjU0miV" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "develop 上的 #2",
+    "last_opened_file_path": "D:/repos3/TravelSmart/MainProject",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-PY-251.26094.141" />
+        <option value="bundled-python-sdk-9f8e2b94138c-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26094.141" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="94f65215-cf83-412b-a08c-01784561cf61" name="更改" comment="" />
+      <created>1751460876870</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1751460876870</updated>
+      <workItem from="1751460879757" duration="127000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
