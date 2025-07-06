@@ -4,16 +4,31 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="修改了注册界面的出错，增加了好友聊天、动态界面、初步进行拓展，但功能稳定性仍在测试，内容仍然需要完善。">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/536614e2-a647-4af3-ae97-62557d181694.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/536614e2-a647-4af3-ae97-62557d181694.xml" afterDir="false" />
+    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="稳定版本，考虑优化界面布局">
+      <change afterPath="$PROJECT_DIR$/Test/like_function_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Test/post_model_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/ui/message_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/ui/message_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/services/message_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/services/message_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/services/travel_post_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/services/travel_post_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/services/user_profile_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/services/user_profile_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/ui/friends_component_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/ui/friends_component_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/ui/travel_post_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/ui/travel_post_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/ui/user_profile_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/ui/user_profile_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/welcome/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/welcome/login.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/welcome/register.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/welcome/register.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/auth_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/auth_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/dbhelper/MONGOHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/dbhelper/MONGOHelper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/dbhelper/NoticeManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/dbhelper/NoticeManager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExportToHTMLSettings">
+    <option name="printScope" value="4" />
+    <option name="OUTPUT_DIRECTORY" value="$PROJECT_DIR$/exportToHTML" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -107,10 +122,12 @@
     "Python.common.executor": "Run",
     "Python.database_setup.executor": "Run",
     "Python.friends_component_ui.executor": "Run",
+    "Python.liketest.executor": "Run",
     "Python.login.executor": "Run",
     "Python.main.executor": "Run",
     "Python.mongo_setup.executor": "Run",
     "Python.notice_page.executor": "Run",
+    "Python.post_model_test.executor": "Run",
     "Python.preferences.executor": "Run",
     "Python.test.executor": "Run",
     "Python.user_home.executor": "Run",
@@ -118,7 +135,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "develop 上的 #2",
     "last_opened_file_path": "D:/repos3/TravelSmart",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
@@ -150,7 +167,7 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.main">
-    <configuration name="database_setup" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="like_function_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="TravelSmart" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -159,35 +176,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MainProject/dbhelper" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Test" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MainProject/dbhelper/database_setup.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="friends_component_ui" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="TravelSmart" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MainProject/app/ui" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MainProject/app/ui/friends_component_ui.py" />
+      <option name="SCRIPT_NAME" value="D:\repos3\TravelSmart\Test\like_function_test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -242,6 +235,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="post_model_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="TravelSmart" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Test/post_model_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="Python 测试 (user_home.py 内)" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="TravelSmart" />
       <option name="ENV_FILES" value="" />
@@ -261,17 +276,16 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.friends_component_ui" />
-        <item itemvalue="Python.mongo_setup" />
-        <item itemvalue="Python.database_setup" />
+        <item itemvalue="Python.post_model_test" />
+        <item itemvalue="Python.like_function_test" />
         <item itemvalue="Python 测试.Python 测试 (user_home.py 内)" />
+        <item itemvalue="Python.mongo_setup" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-PY-251.26094.141" />
         <option value="bundled-python-sdk-9f8e2b94138c-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26094.141" />
       </set>
     </attachedChunks>
@@ -344,7 +358,10 @@
       <workItem from="1751433577841" duration="24734000" />
       <workItem from="1751461722710" duration="2600000" />
       <workItem from="1751466434055" duration="8842000" />
-      <workItem from="1751508997922" duration="12865000" />
+      <workItem from="1751508997922" duration="23735000" />
+      <workItem from="1751537174092" duration="8098000" />
+      <workItem from="1751625205935" duration="1000" />
+      <workItem from="1751713088183" duration="48000" />
     </task>
     <task id="LOCAL-00001" summary="基础界面功能搭建中...">
       <option name="closed" value="true" />
@@ -474,7 +491,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751521871737</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="稳定版本，考虑优化界面布局">
+      <option name="closed" value="true" />
+      <created>1751525870502</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1751525870502</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -525,7 +550,8 @@
     <MESSAGE value="模块完善：导航定位，评论查看、用户偏好、旅行计划定制，形成第二版本" />
     <MESSAGE value="部署了公告系统" />
     <MESSAGE value="修改了注册界面的出错，增加了好友聊天、动态界面、初步进行拓展，但功能稳定性仍在测试，内容仍然需要完善。" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改了注册界面的出错，增加了好友聊天、动态界面、初步进行拓展，但功能稳定性仍在测试，内容仍然需要完善。" />
+    <MESSAGE value="稳定版本，考虑优化界面布局" />
+    <option name="LAST_COMMIT_MESSAGE" value="稳定版本，考虑优化界面布局" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TravelSmart$SQLHelper.coverage" NAME="SQLHelper 覆盖结果" MODIFIED="1750058069775" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
@@ -542,7 +568,7 @@
     <SUITE FILE_PATH="coverage/TravelSmart$auth_utils.coverage" NAME="auth_utils 覆盖结果" MODIFIED="1749985449781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
     <SUITE FILE_PATH="coverage/TravelSmart$NoticeManager.coverage" NAME="NoticeManager 覆盖结果" MODIFIED="1751440022548" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
     <SUITE FILE_PATH="coverage/TravelSmart$admin_home.coverage" NAME="admin_home 覆盖结果" MODIFIED="1751441296862" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/homepage" />
-    <SUITE FILE_PATH="coverage/TravelSmart$main.coverage" NAME="main 覆盖结果" MODIFIED="1751525261849" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
+    <SUITE FILE_PATH="coverage/TravelSmart$main.coverage" NAME="main 覆盖结果" MODIFIED="1751550519987" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
     <SUITE FILE_PATH="coverage/TravelSmart$MONGOHelper.coverage" NAME="MONGOHelper 覆盖结果" MODIFIED="1750137428237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
     <SUITE FILE_PATH="coverage/TravelSmart$notice_page.coverage" NAME="notice_page 覆盖结果" MODIFIED="1751440420468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/notice" />
     <SUITE FILE_PATH="coverage/TravelSmart$test.coverage" NAME="test 覆盖结果" MODIFIED="1749031993397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/static" />

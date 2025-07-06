@@ -1,5 +1,4 @@
 # MainProject/app/services/user_profile_service.py
-
 from MainProject.dbhelper.SQLHelper import SQLHelper
 from MainProject.dbhelper.MONGOHelper import MongoHelper
 

@@ -10,135 +10,133 @@ def create_user_profile_ui(user_info_state):
 
     with gr.TabItem("个人中心"):
         gr.Markdown("## 个人中心")
+        # ==================== 个人资料标签页 ====================
+        with gr.TabItem("个人资料"):
+            with gr.Row():
+                with gr.Column(scale=1):
+                    login_status = gr.Markdown("请先登录")
 
-        with gr.Tabs():
-            # ==================== 个人资料标签页 ====================
-            with gr.TabItem("个人资料"):
+                    with gr.Group():
+                        gr.Markdown("### 查看其他用户")
+                        user_id_input = gr.Number(label="用户ID", precision=0)
+                        view_user_btn = gr.Button("查看")
+                        view_result = gr.Markdown()
+
+                with gr.Column(scale=2):
+                    with gr.Group():
+                        gr.Markdown("### 我的资料")
+                        profile_info = gr.HTML("请先登录查看个人资料")
+                        refresh_profile_btn = gr.Button("刷新")
+
+                    with gr.Group():
+                        gr.Markdown("### 编辑资料")
+                        nickname = gr.Textbox(label="昵称")
+                        city = gr.Textbox(label="城市")
+                        avatar = gr.File(label="上传头像")
+                        update_btn = gr.Button("更新")
+                        update_result = gr.Markdown()
+
+        # ==================== 统计信息标签页 ====================
+        with gr.TabItem("统计信息"):
+            with gr.Group():
+                gr.Markdown("### 我的数据概览")
+                stats_container = gr.HTML("加载中...")
+                refresh_stats_btn = gr.Button("刷新数据")
+
+        # ==================== 我的动态标签页 ====================
+        with gr.TabItem("我的动态"):
+            with gr.Group():
+                gr.Markdown("### 我发布的动态")
+
                 with gr.Row():
-                    with gr.Column(scale=1):
-                        login_status = gr.Markdown("请先登录")
+                    post_filter = gr.Radio(["全部", "公开", "仅好友", "私密"], label="筛选", value="全部")
+                    posts_page = gr.Slider(1, 10, value=1, step=1, label="页码")
+                    refresh_posts_btn = gr.Button("刷新")
 
-                        with gr.Group():
-                            gr.Markdown("### 查看其他用户")
-                            user_id_input = gr.Number(label="用户ID", precision=0)
-                            view_user_btn = gr.Button("查看")
-                            view_result = gr.Markdown()
+                my_posts = gr.HTML("加载中...")
+                posts_page_info = gr.Markdown("第 1 页，共 1 页")
 
-                    with gr.Column(scale=2):
-                        with gr.Group():
-                            gr.Markdown("### 我的资料")
-                            profile_info = gr.HTML("请先登录查看个人资料")
-                            refresh_profile_btn = gr.Button("刷新")
+                with gr.Row():
+                    prev_posts_page = gr.Button("上一页")
+                    next_posts_page = gr.Button("下一页")
+                    delete_post_btn = gr.Button("删除动态", variant="stop")
 
-                        with gr.Group():
-                            gr.Markdown("### 编辑资料")
-                            nickname = gr.Textbox(label="昵称")
-                            city = gr.Textbox(label="城市")
-                            avatar = gr.File(label="上传头像")
-                            update_btn = gr.Button("更新")
-                            update_result = gr.Markdown()
+                # 隐藏组件
+                selected_post_id = gr.Number(visible=False)
+                posts_current_page = gr.State(1)
+                posts_total_pages = gr.State(1)
 
-            # ==================== 统计信息标签页 ====================
-            with gr.TabItem("统计信息"):
-                with gr.Group():
-                    gr.Markdown("### 我的数据概览")
-                    stats_container = gr.HTML("加载中...")
-                    refresh_stats_btn = gr.Button("刷新数据")
+        # ==================== 我的收藏标签页 ====================
+        with gr.TabItem("我的收藏"):
+            with gr.Group():
+                gr.Markdown("### 我的收藏内容")
 
-            # ==================== 我的动态标签页 ====================
-            with gr.TabItem("我的动态"):
-                with gr.Group():
-                    gr.Markdown("### 我发布的动态")
+                with gr.Row():
+                    favorite_type = gr.Radio(["全部", "动态", "地点"], label="类型", value="全部")
+                    favorites_page = gr.Slider(1, 10, value=1, step=1, label="页码")
+                    refresh_favs_btn = gr.Button("刷新")
 
-                    with gr.Row():
-                        post_filter = gr.Radio(["全部", "公开", "仅好友", "私密"], label="筛选", value="全部")
-                        posts_page = gr.Slider(1, 10, value=1, step=1, label="页码")
-                        refresh_posts_btn = gr.Button("刷新")
+                favorites = gr.HTML("加载中...")
+                favs_page_info = gr.Markdown("第 1 页，共 1 页")
 
-                    my_posts = gr.HTML("加载中...")
-                    posts_page_info = gr.Markdown("第 1 页，共 1 页")
+                with gr.Row():
+                    prev_favs_page = gr.Button("上一页")
+                    next_favs_page = gr.Button("下一页")
+                    remove_fav_btn = gr.Button("取消收藏", variant="stop")
 
-                    with gr.Row():
-                        prev_posts_page = gr.Button("上一页")
-                        next_posts_page = gr.Button("下一页")
-                        delete_post_btn = gr.Button("删除动态", variant="stop")
+                # 隐藏组件
+                selected_fav_id = gr.Number(visible=False)
+                favs_current_page = gr.State(1)
+                favs_total_pages = gr.State(1)
 
-                    # 隐藏组件
-                    selected_post_id = gr.Number(visible=False)
-                    posts_current_page = gr.State(1)
-                    posts_total_pages = gr.State(1)
+        # ==================== 隐私设置标签页 ====================
+        with gr.TabItem("隐私设置"):
+            with gr.Group():
+                gr.Markdown("### 隐私与安全")
 
-            # ==================== 我的收藏标签页 ====================
-            with gr.TabItem("我的收藏"):
-                with gr.Group():
-                    gr.Markdown("### 我的收藏内容")
+                with gr.Row():
+                    with gr.Column():
+                        gr.Markdown("#### 资料可见性")
+                        profile_visibility = gr.Radio(
+                            ["public", "friends", "private"],
+                            label="个人资料",
+                            value="public"
+                        )
+                        post_privacy = gr.Radio(
+                            ["public", "friends", "private"],
+                            label="动态默认",
+                            value="public"
+                        )
 
-                    with gr.Row():
-                        favorite_type = gr.Radio(["全部", "动态", "地点"], label="类型", value="全部")
-                        favorites_page = gr.Slider(1, 10, value=1, step=1, label="页码")
-                        refresh_favs_btn = gr.Button("刷新")
+                    with gr.Column():
+                        gr.Markdown("#### 互动设置")
+                        allow_requests = gr.Checkbox(label="允许好友请求", value=True)
+                        show_online = gr.Checkbox(label="显示在线状态", value=True)
 
-                    favorites = gr.HTML("加载中...")
-                    favs_page_info = gr.Markdown("第 1 页，共 1 页")
+                save_btn = gr.Button("保存设置")
+                save_result = gr.Markdown()
 
-                    with gr.Row():
-                        prev_favs_page = gr.Button("上一页")
-                        next_favs_page = gr.Button("下一页")
-                        remove_fav_btn = gr.Button("取消收藏", variant="stop")
+        # ==================== 通知标签页 ====================
+        with gr.TabItem("通知"):
+            with gr.Group():
+                gr.Markdown("### 我的通知")
 
-                    # 隐藏组件
-                    selected_fav_id = gr.Number(visible=False)
-                    favs_current_page = gr.State(1)
-                    favs_total_pages = gr.State(1)
+                with gr.Row():
+                    notification_filter = gr.Radio(["全部", "未读", "已读"], label="筛选", value="全部")
+                    notifications_page = gr.Slider(1, 10, value=1, step=1, label="页码")
+                    refresh_notifs_btn = gr.Button("刷新")
 
-            # ==================== 隐私设置标签页 ====================
-            with gr.TabItem("隐私设置"):
-                with gr.Group():
-                    gr.Markdown("### 隐私与安全")
+                notifications = gr.HTML("加载中...")
+                notifs_page_info = gr.Markdown("第 1 页，共 1 页")
 
-                    with gr.Row():
-                        with gr.Column():
-                            gr.Markdown("#### 资料可见性")
-                            profile_visibility = gr.Radio(
-                                ["public", "friends", "private"],
-                                label="个人资料",
-                                value="public"
-                            )
-                            post_privacy = gr.Radio(
-                                ["public", "friends", "private"],
-                                label="动态默认",
-                                value="public"
-                            )
+                with gr.Row():
+                    prev_notifs_page = gr.Button("上一页")
+                    next_notifs_page = gr.Button("下一页")
+                    mark_read_btn = gr.Button("标记已读")
 
-                        with gr.Column():
-                            gr.Markdown("#### 互动设置")
-                            allow_requests = gr.Checkbox(label="允许好友请求", value=True)
-                            show_online = gr.Checkbox(label="显示在线状态", value=True)
-
-                    save_btn = gr.Button("保存设置")
-                    save_result = gr.Markdown()
-
-            # ==================== 通知标签页 ====================
-            with gr.TabItem("通知"):
-                with gr.Group():
-                    gr.Markdown("### 我的通知")
-
-                    with gr.Row():
-                        notification_filter = gr.Radio(["全部", "未读", "已读"], label="筛选", value="全部")
-                        notifications_page = gr.Slider(1, 10, value=1, step=1, label="页码")
-                        refresh_notifs_btn = gr.Button("刷新")
-
-                    notifications = gr.HTML("加载中...")
-                    notifs_page_info = gr.Markdown("第 1 页，共 1 页")
-
-                    with gr.Row():
-                        prev_notifs_page = gr.Button("上一页")
-                        next_notifs_page = gr.Button("下一页")
-                        mark_read_btn = gr.Button("标记已读")
-
-                    # 隐藏组件
-                    notifs_current_page = gr.State(1)
-                    notifs_total_pages = gr.State(1)
+                # 隐藏组件
+                notifs_current_page = gr.State(1)
+                notifs_total_pages = gr.State(1)
 
         # 初始加载按钮
         initial_load_btn = gr.Button("加载个人资料", visible=True)

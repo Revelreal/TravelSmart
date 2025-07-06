@@ -1,5 +1,4 @@
 # MainProject/app/services/travel_post_service.py
-
 from MainProject.dbhelper.SQLHelper import SQLHelper
 from MainProject.dbhelper.MONGOHelper import MongoHelper
 import datetime
@@ -137,8 +136,6 @@ class TravelPostService:
             self.db.execute("UPDATE TravelPosts SET view_count = view_count + 1 WHERE id = %s", (post_id,))
 
         return post
-
-        # services/travel_post_service.py (续)
 
     def get_posts(self, user_id=None, page=1, page_size=10, tag=None, location=None, friend_only=False):
         """获取动态列表（支持分页和筛选）"""
@@ -348,43 +345,6 @@ class TravelPostService:
 
             return True, "已收藏"
 
-    def comment_post(self, post_id, user_id, content):
-        """评论动态"""
-        # 检查动态是否存在且用户有权限查看
-        post = self.get_post(post_id, user_id)
-        if not post:
-            return False, "动态不存在或无权访问"
-
-        if not content or len(content.strip()) == 0:
-            return False, "评论内容不能为空"
-
-        # 添加评论
-        insert_sql = """
-                     INSERT INTO PostInteractions (post_id, user_id, interaction_type, comment_content)
-                     VALUES (%s, %s, 'comment', %s) \
-                     """
-        try:
-            self.db.execute(insert_sql, (post_id, user_id, content))
-            comment_id = self.db.cursor.lastrowid
-
-            # 添加通知
-            if post['user_id'] != user_id:
-                self.mongo.db.notifications.insert_one({
-                    'user_id': post['user_id'],
-                    'actor_id': user_id,
-                    'action': 'comment',
-                    'content_id': post_id,
-                    'content_type': 'post',
-                    'comment_id': comment_id,
-                    'comment_content': content,
-                    'is_read': False,
-                    'created_at': datetime.datetime.now()
-                })
-
-            return True, comment_id
-        except Exception as e:
-            return False, f"评论失败: {str(e)}"
-
     def get_comments(self, post_id, page=1, page_size=20):
         """获取动态评论"""
         offset = (page - 1) * page_size
@@ -571,3 +531,301 @@ class TravelPostService:
             'page_size': page_size,
             'total_pages': (total + page_size - 1) // page_size
         }
+
+    def get_post_detail(self, post_id, user_id=None):
+        """
+        获取单个动态的详细信息，包括内容、媒体、交互状态等
+
+        Args:
+            post_id: 动态ID
+            user_id: 查看者ID，用于检查权限和个人交互状态
+
+        Returns:
+            包含动态详情的字典，如果没有权限或动态不存在则返回None
+        """
+        # 首先使用已有的get_post方法获取基本数据
+        post = self.get_post(post_id, user_id)
+
+        if not post:
+            return None
+
+        # 获取更详细的信息
+        try:
+            # 获取所有媒体文件
+            media_sql = """
+                        SELECT id, media_type, media_url, thumbnail_url, created_at
+                        FROM PostMedia
+                        WHERE post_id = %s
+                        ORDER BY id ASC \
+                        """
+            post['media'] = self.db.query(media_sql, (post_id,))
+
+            # 获取点赞用户列表(限制数量)
+            likes_sql = """
+                        SELECT u.id, u.username, u.nickname, u.avatar
+                        FROM PostInteractions pi
+                        JOIN Users u ON pi.user_id = u.id
+                        WHERE pi.post_id = %s AND pi.interaction_type = 'like'
+                        ORDER BY pi.created_at DESC
+                        LIMIT 10 \
+                        """
+            post['recent_likes'] = self.db.query(likes_sql, (post_id,))
+
+            # 获取评论计数和最新评论
+            comments_data = self.get_comments(post_id, page=1, page_size=5)
+            post['recent_comments'] = comments_data['comments']
+            post['comment_count'] = comments_data['total']
+
+            # 从MongoDB获取富文本内容和其他元数据
+            details = self.mongo.db.travel_post_details.find_one({'post_id': int(post_id)})
+            if details:
+                # 添加富文本内容
+                post['rich_content'] = details.get('rich_content', post['content'])
+
+                # 添加其他可能的元数据
+                post['metadata'] = {
+                    'device': details.get('device'),
+                    'app_version': details.get('app_version'),
+                    'draft_saved_count': details.get('draft_saved_count'),
+                    'edit_history': details.get('edit_history', [])
+                }
+
+                # 如果有地理位置坐标
+                if details.get('location') and details['location'].get('coordinates'):
+                    post['location_coordinates'] = details['location']['coordinates']
+
+                # 添加相关动态推荐
+                if details.get('related_posts'):
+                    post['related_posts'] = details['related_posts']
+
+            # 增加用户交互状态检查
+            if user_id:
+                # 检查用户与发布者的关系
+                is_friend_sql = """
+                                SELECT 1
+                                FROM Friendships
+                                WHERE ((user_id = %s AND friend_id = %s) OR (user_id = %s AND friend_id = %s))
+                                AND status = 'accepted'
+                                LIMIT 1 \
+                                """
+                is_friend = self.db.fetchone(is_friend_sql, (user_id, post['user_id'], post['user_id'], user_id))
+                post['is_friend_with_author'] = bool(is_friend)
+
+                # 检查是否已收藏
+                favorite_sql = """
+                               SELECT 1
+                               FROM PostInteractions
+                               WHERE post_id = %s AND user_id = %s AND interaction_type = 'favorite'
+                               LIMIT 1 \
+                               """
+                favorite = self.db.fetchone(favorite_sql, (post_id, user_id))
+                post['user_favorited'] = bool(favorite)
+
+                # 检查是否已点赞
+                like_sql = """
+                           SELECT 1
+                           FROM PostInteractions
+                           WHERE post_id = %s AND user_id = %s AND interaction_type = 'like'
+                           LIMIT 1 \
+                           """
+                like = self.db.fetchone(like_sql, (post_id, user_id))
+                post['user_liked'] = bool(like)
+
+                # 记录查看历史（如果需要）
+                if user_id != post['user_id']:
+                    self._record_view_history(post_id, user_id)
+
+            return post
+
+        except Exception as e:
+            print(f"获取动态详情时发生错误: {str(e)}")
+            # 如果有错误，返回基本信息
+            return post
+
+    def _record_view_history(self, post_id, user_id):
+        """记录用户查看历史"""
+        try:
+            # First check if the table exists
+            check_table_sql = """
+                SELECT COUNT(*) as count
+                FROM information_schema.tables
+                WHERE table_schema = DATABASE()
+                AND table_name = 'UserViewHistory'
+            """
+            result = self.db.fetchone(check_table_sql)
+
+            if not result or result.get('count', 0) == 0:
+                # Table doesn't exist, so create it
+                create_table_sql = """
+                    CREATE TABLE IF NOT EXISTS UserViewHistory (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        user_id INT NOT NULL,
+                        content_id INT NOT NULL,
+                        content_type VARCHAR(20) NOT NULL,
+                        view_count INT DEFAULT 1,
+                        last_viewed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        INDEX idx_user_content (user_id, content_id, content_type)
+                    )
+                """
+                self.db.execute(create_table_sql)
+
+            # Now proceed with the original logic
+            check_sql = """
+                        SELECT id, view_count
+                        FROM UserViewHistory
+                        WHERE user_id = %s AND content_id = %s AND content_type = 'post'
+                        LIMIT 1 \
+                        """
+            existing = self.db.fetchone(check_sql, (user_id, post_id))
+
+            if existing:
+                # 更新现有记录
+                update_sql = """
+                             UPDATE UserViewHistory
+                             SET view_count = view_count + 1, last_viewed_at = NOW()
+                             WHERE id = %s \
+                             """
+                self.db.execute(update_sql, (existing['id'],))
+            else:
+                # 创建新记录
+                insert_sql = """
+                             INSERT INTO UserViewHistory 
+                             (user_id, content_id, content_type, view_count, last_viewed_at)
+                             VALUES (%s, %s, 'post', 1, NOW()) \
+                             """
+                self.db.execute(insert_sql, (user_id, post_id))
+
+        except Exception as e:
+            # 记录历史失败不应影响主流程
+            print(f"记录查看历史时出错: {str(e)}")
+
+    def add_comment(self, post_id, user_id, content):
+        """
+        向动态添加评论
+
+        Args:
+            post_id: 动态ID
+            user_id: 评论者用户ID
+            content: 评论内容
+
+        Returns:
+            成功返回评论ID，失败返回错误信息
+        """
+        if not content or not content.strip():
+            return {"success": False, "message": "评论内容不能为空"}
+
+        # 检查动态是否存在且用户有权限查看
+        post = self.get_post(post_id, user_id)
+        if not post:
+            return {"success": False, "message": "动态不存在或无权访问"}
+
+        try:
+            # 添加评论
+            insert_sql = """
+                         INSERT INTO PostInteractions 
+                         (post_id, user_id, interaction_type, comment_content, created_at)
+                         VALUES (%s, %s, 'comment', %s, NOW()) \
+                         """
+            self.db.execute(insert_sql, (post_id, user_id, content))
+            comment_id = self.db.cursor.lastrowid
+
+            # 获取评论者信息
+            user_sql = "SELECT username, nickname, avatar FROM Users WHERE id = %s"
+            user_info = self.db.fetchone(user_sql, (user_id,))
+
+            # 创建评论对象
+            comment = {
+                'id': comment_id,
+                'post_id': post_id,
+                'user_id': user_id,
+                'username': user_info.get('username', ''),
+                'nickname': user_info.get('nickname', ''),
+                'avatar': user_info.get('avatar', ''),
+                'comment_content': content,
+                'created_at': datetime.datetime.now()
+            }
+
+            # 添加通知
+            if post['user_id'] != user_id:
+                self.mongo.db.notifications.insert_one({
+                    'user_id': post['user_id'],
+                    'actor_id': user_id,
+                    'actor_name': user_info.get('nickname') or user_info.get('username', '用户'),
+                    'actor_avatar': user_info.get('avatar', ''),
+                    'action': 'comment',
+                    'content_id': int(post_id),
+                    'content_type': 'post',
+                    'content_title': post.get('title', ''),
+                    'comment_id': comment_id,
+                    'comment_content': content[:100],  # 存储评论预览
+                    'is_read': False,
+                    'created_at': datetime.datetime.now()
+                })
+
+            # 检查评论中是否有@提及用户
+            mentions = self._extract_mentions(content)
+            if mentions:
+                self._process_mentions(mentions, post_id, user_id, comment_id, content, post.get('title', ''))
+
+            return {
+                "success": True,
+                "comment_id": comment_id,
+                "comment": comment
+            }
+
+        except Exception as e:
+            return {"success": False, "message": f"评论失败: {str(e)}"}
+
+    def _extract_mentions(self, content):
+        """从评论内容中提取@的用户名"""
+        import re
+        # 匹配@username格式的提及
+        mentions = re.findall(r'@(\w+)', content)
+        return mentions
+
+    def _process_mentions(self, mentions, post_id, commenter_id, comment_id, comment_content, post_title):
+        """处理评论中@提及的用户，发送通知"""
+        try:
+            # 获取提及的用户信息
+            if not mentions:
+                return
+
+            # 获取评论者信息
+            commenter_sql = "SELECT username, nickname, avatar FROM Users WHERE id = %s"
+            commenter = self.db.fetchone(commenter_sql, (commenter_id,))
+            commenter_name = commenter.get('nickname') or commenter.get('username', '用户')
+
+            # 查找用户名匹配的用户
+            placeholders = ', '.join(['%s'] * len(mentions))
+            users_sql = f"""
+                         SELECT id, username, nickname
+                         FROM Users
+                         WHERE username IN ({placeholders}) \
+                         """
+            mentioned_users = self.db.query(users_sql, tuple(mentions))
+
+            # 为每个被提及的用户创建通知
+            for user in mentioned_users:
+                # 避免给自己发通知
+                if user['id'] == commenter_id:
+                    continue
+
+                self.mongo.db.notifications.insert_one({
+                    'user_id': user['id'],
+                    'actor_id': commenter_id,
+                    'actor_name': commenter_name,
+                    'actor_avatar': commenter.get('avatar', ''),
+                    'action': 'mention',
+                    'content_id': int(post_id),
+                    'content_type': 'post',
+                    'content_title': post_title,
+                    'comment_id': comment_id,
+                    'comment_content': comment_content[:100],
+                    'is_read': False,
+                    'created_at': datetime.datetime.now()
+                })
+
+        except Exception as e:
+            # 提及处理失败不应影响主评论流程
+            print(f"处理用户提及时出错: {str(e)}")
