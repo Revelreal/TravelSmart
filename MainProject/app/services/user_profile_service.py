@@ -497,4 +497,3 @@ class UserProfileService:
             import traceback
             traceback.print_exc()
             return None
-

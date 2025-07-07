@@ -5,93 +5,15 @@ import time
 import gradio as gr
 from MainProject.app.services.user_profile_service import UserProfileService
 from MainProject.app.services.travel_post_service import TravelPostService
+from MainProject.app.services.user_stats_service import UserStatsService  # 新增导入
+from MainProject.app.ui.common_components import create_post_detail_view, create_styled_likes_display, create_styled_comments_display
 
-
-def create_post_detail_view(container, is_from_favorites=False):
-    """创建通用的动态详情视图"""
-    with container:
-        with gr.Group(visible=False) as detail_view:
-            with gr.Row():
-                back_btn = gr.Button("⬅️ 返回")
-
-            with gr.Group(elem_classes="detail-container"):
-                post_title = gr.Markdown("### 标题")
-                post_meta = gr.Markdown("*发布信息*")
-                post_privacy = gr.Markdown("*可见性*")
-                post_tags = gr.Markdown("*标签*")
-                post_location = gr.Markdown("*位置*")
-                post_content = gr.Markdown("*内容*")
-                post_media = gr.Gallery(label="媒体内容")
-
-                with gr.Row():
-                    post_stats = gr.Markdown("*统计数据*")
-                    if is_from_favorites:
-                        unfav_btn = gr.Button("❌ 取消收藏", variant="secondary")
-                    else:
-                        fav_btn = gr.Button("⭐ 收藏", variant="secondary")
-                        like_btn = gr.Button("👍 点赞", variant="secondary")
-
-            # 点赞用户列表
-            with gr.Group(elem_classes="likes-section"):
-                gr.Markdown("### 点赞用户")
-                post_likes = gr.HTML("*加载中...*")
-
-            # 评论区
-            with gr.Group(elem_classes="comments-section"):
-                gr.Markdown("### 评论区")
-                post_comments = gr.HTML("*加载中...*")
-
-                # 添加评论输入框
-                with gr.Row():
-                    comment_input = gr.Textbox(
-                        label="发表评论",
-                        placeholder="写下你的评论...",
-                        lines=2
-                    )
-                    submit_comment_btn = gr.Button("发送")
-
-            # 存储当前查看的动态ID
-            post_id_state = gr.State(None)
-
-            # 收藏状态
-            fav_status = gr.State(False)
-
-            # 添加收藏ID状态组件
-            fav_id_state = gr.State(None)  # 新增
-
-    # 返回组件字典，方便后续引用
-    components = {
-        "view": detail_view,
-        "back_btn": back_btn,
-        "title": post_title,
-        "meta": post_meta,
-        "privacy": post_privacy,
-        "tags": post_tags,
-        "location": post_location,
-        "content": post_content,
-        "media": post_media,
-        "stats": post_stats,
-        "likes": post_likes,
-        "comments": post_comments,
-        "comment_input": comment_input,
-        "submit_comment": submit_comment_btn,
-        "post_id": post_id_state,
-        "fav_status": fav_status,
-        "fav_id": fav_id_state  # 新增
-    }
-
-    if is_from_favorites:
-        components["unfav_btn"] = unfav_btn
-    else:
-        components["fav_btn"] = fav_btn
-        components["like_btn"] = like_btn
-
-    return components
 
 def create_user_profile_ui(user_info_state):
     """创建用户个人中心UI（重构版）"""
     user_profile_service = UserProfileService()
     travel_post_service = TravelPostService()
+    user_stats_service = UserStatsService()  # 新增初始化
 
     with gr.TabItem("个人中心"):
         gr.Markdown("## 个人中心")
@@ -120,6 +42,8 @@ def create_user_profile_ui(user_info_state):
                         avatar = gr.File(label="上传头像")
                         update_btn = gr.Button("更新")
                         update_result = gr.Markdown()
+            # 初始加载按钮
+            initial_load_btn = gr.Button("加载个人资料", visible=True)
 
         # ==================== 统计信息标签页 ====================
         with gr.TabItem("统计信息"):
@@ -386,8 +310,7 @@ def create_user_profile_ui(user_info_state):
                 notifs_current_page = gr.State(1)
                 notifs_total_pages = gr.State(1)
 
-        # 初始加载按钮
-        initial_load_btn = gr.Button("加载个人资料", visible=True)
+
 
     # ==================== 交互函数 ====================
     def check_login(user_data):
@@ -421,18 +344,8 @@ def create_user_profile_ui(user_info_state):
             """
 
             # 统计信息
-            stats_html = f"""
-            <div class='stats'>
-                <div class='stat-item'>
-                    <span class='stat-value'>{profile.get('post_count', 0)}</span>
-                    <span class='stat-label'>动态</span>
-                </div>
-                <div class='stat-item'>
-                    <span class='stat-value'>{profile.get('friend_count', 0)}</span>
-                    <span class='stat-label'>好友</span>
-                </div>
-            </div>
-            """
+            stats_html = user_stats_service.get_simple_user_statistics(user_data["user_id"])
+            stats_html += user_stats_service.generate_statistics_html(user_data["user_id"])
 
             return profile_html, stats_html
         except Exception as e:
@@ -962,135 +875,17 @@ def create_user_profile_ui(user_info_state):
             comment_count = post.get("comment_count", 0)
             stats = f"❤️ {like_count} 次点赞 | 💬 {comment_count} 条评论"
 
-            # 获取点赞用户列表
-            # 获取点赞用户列表
-            likes_html = """
-            <div class='likes-list'>
-            <style>
-            .likes-list .user-avatars {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                margin-bottom: 10px;
-            }
-            .likes-list .user-avatar-item {
-                width: 40px;
-                height: 40px;
-                position: relative;
-            }
-            .likes-list .avatar-img {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                object-fit: cover;
-                border: 2px solid #fff;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            }
-            .likes-list .more-likes {
-                font-size: 0.9em;
-                color: #666;
-                margin-top: 5px;
-            }
-            </style>
-            """
-            recent_likes = post.get("recent_likes", [])
-            if not recent_likes:
-                likes_html += "<p>暂无点赞</p>"
-            else:
-                likes_html += "<div class='user-avatars'>"
-                for user in recent_likes:
-                    user_name = user.get("nickname") or user.get("username", "用户")
-                    user_avatar = user.get("avatar", "/default-avatar.png")
-                    likes_html += f"""
-                    <div class="user-avatar-item" title="{user_name}">
-                        <img src="{user_avatar}" class="avatar-img">
-                    </div>
-                    """
-                likes_html += "</div>"
-                # 如果点赞数超过显示的用户数
-                if like_count > len(recent_likes):
-                    likes_html += f"<p class='more-likes'>共{like_count}人点赞</p>"
-            likes_html += "</div>"
+            # 使用公共组件生成点赞用户列表
+            likes_html = create_styled_likes_display(
+                post.get("recent_likes", []),
+                like_count
+            )
 
-            # 获取评论列表
-            comments_html = """
-            <div class='comments-list'>
-            <style>
-            .comments-list .comment-item {
-                margin-bottom: 15px;
-                padding-bottom: 10px;
-                border-bottom: 1px solid #eee;
-            }
-            .comments-list .comment-header {
-                display: flex;
-                align-items: center;
-                margin-bottom: 5px;
-            }
-            .comments-list .comment-avatar {
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                margin-right: 10px;
-                object-fit: cover;
-            }
-            .comments-list .comment-meta {
-                display: flex;
-                flex-direction: column;
-            }
-            .comments-list .comment-author {
-                font-weight: bold;
-                font-size: 0.95em;
-            }
-            .comments-list .comment-time {
-                font-size: 0.8em;
-                color: #888;
-            }
-            .comments-list .comment-content {
-                margin-left: 40px;
-                line-height: 1.4;
-            }
-            .comments-list .more-comments {
-                color: #1a73e8;
-                cursor: pointer;
-                font-size: 0.9em;
-                margin-top: 10px;
-            }
-            </style>
-            """
-
-            recent_comments = post.get("recent_comments", [])
-
-            if not recent_comments:
-                comments_html += "<p>暂无评论，来发表第一条评论吧！</p>"
-            else:
-                for comment in recent_comments:
-                    commenter = comment.get("nickname") or comment.get("username", "用户")
-                    comment_avatar = comment.get("avatar", "/default-avatar.png")
-                    comment_content = comment.get("comment_content", "")
-
-                    # 格式化时间
-                    comment_time = comment.get("created_at", "")
-                    if isinstance(comment_time, datetime.datetime):
-                        comment_time = comment_time.strftime("%Y-%m-%d %H:%M")
-
-                    comments_html += f"""
-                    <div class="comment-item">
-                        <div class="comment-header">
-                            <img src="{comment_avatar}" class="comment-avatar">
-                            <div class="comment-meta">
-                                <span class="comment-author">{commenter}</span>
-                                <span class="comment-time">{comment_time}</span>
-                            </div>
-                        </div>
-                        <div class="comment-content">{comment_content}</div>
-                    </div>
-                    """
-
-                # 如果评论数超过显示的评论数
-                if comment_count > len(recent_comments):
-                    comments_html += f"<p class='more-comments'>查看全部{comment_count}条评论</p>"
-
-            comments_html += "</div>"
+            # 使用公共组件生成评论列表
+            comments_html = create_styled_comments_display(
+                post.get("recent_comments", []),
+                comment_count
+            )
 
             return (
                 f"### {title}",
@@ -1303,145 +1098,23 @@ def create_user_profile_ui(user_info_state):
             comment_count = post.get("comment_count", 0)
             view_count = post.get("view_count", 0)
             stats = f"👁️ {view_count} 次查看 | ❤️ {like_count} 次点赞 | 💬 {comment_count} 条评论"
-
             # 检查收藏状态
             is_favorited = post.get("user_favorited", False)
             if not is_favorited and not from_favorites:  # 如果来自收藏列表，必然是已收藏状态
                 # 再次确认收藏状态
                 is_favorited = travel_post_service.get_favorite_status(post_id, user_data["user_id"])
 
-            # 获取点赞用户列表
-            likes_html = """
-            <div class='likes-list'>
-            <style>
-            .likes-list .user-avatars {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                margin-bottom: 10px;
-            }
-            .likes-list .user-avatar-item {
-                width: 40px;
-                height: 40px;
-                position: relative;
-            }
-            .likes-list .avatar-img {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                object-fit: cover;
-                border: 2px solid #fff;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            }
-            .likes-list .more-likes {
-                font-size: 0.9em;
-                color: #666;
-                margin-top: 5px;
-            }
-            </style>
-            """
+            # 使用公共组件生成点赞用户列表
+            likes_html = create_styled_likes_display(
+                post.get("recent_likes", []),
+                like_count
+            )
 
-            recent_likes = post.get("recent_likes", [])
-
-            if not recent_likes:
-                likes_html += "<p>暂无点赞</p>"
-            else:
-                likes_html += "<div class='user-avatars'>"
-                for user in recent_likes:
-                    user_name = user.get("nickname") or user.get("username", "用户")
-                    user_avatar = user.get("avatar", "/default-avatar.png")
-                    likes_html += f"""
-                    <div class="user-avatar-item" title="{user_name}">
-                        <img src="{user_avatar}" class="avatar-img">
-                    </div>
-                    """
-                likes_html += "</div>"
-
-                # 如果点赞数超过显示的用户数
-                if like_count > len(recent_likes):
-                    likes_html += f"<p class='more-likes'>共{like_count}人点赞</p>"
-
-            likes_html += "</div>"
-
-            # 获取评论列表
-            comments_html = """
-            <div class='comments-list'>
-            <style>
-            .comments-list .comment-item {
-                margin-bottom: 15px;
-                padding-bottom: 10px;
-                border-bottom: 1px solid #eee;
-            }
-            .comments-list .comment-header {
-                display: flex;
-                align-items: center;
-                margin-bottom: 5px;
-            }
-            .comments-list .comment-avatar {
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                margin-right: 10px;
-                object-fit: cover;
-            }
-            .comments-list .comment-meta {
-                display: flex;
-                flex-direction: column;
-            }
-            .comments-list .comment-author {
-                font-weight: bold;
-                font-size: 0.95em;
-            }
-            .comments-list .comment-time {
-                font-size: 0.8em;
-                color: #888;
-            }
-            .comments-list .comment-content {
-                margin-left: 40px;
-                line-height: 1.4;
-            }
-            .comments-list .more-comments {
-                color: #1a73e8;
-                cursor: pointer;
-                font-size: 0.9em;
-                margin-top: 10px;
-            }
-            </style>
-            """
-
-            recent_comments = post.get("recent_comments", [])
-
-            if not recent_comments:
-                comments_html += "<p>暂无评论，来发表第一条评论吧！</p>"
-            else:
-                for comment in recent_comments:
-                    commenter = comment.get("nickname") or comment.get("username", "用户")
-                    comment_avatar = comment.get("avatar", "/default-avatar.png")
-                    comment_content = comment.get("comment_content", "")
-
-                    # 格式化时间
-                    comment_time = comment.get("created_at", "")
-                    if isinstance(comment_time, datetime.datetime):
-                        comment_time = comment_time.strftime("%Y-%m-%d %H:%M")
-
-                    comments_html += f"""
-                    <div class="comment-item">
-                        <div class="comment-header">
-                            <img src="{comment_avatar}" class="comment-avatar">
-                            <div class="comment-meta">
-                                <span class="comment-author">{commenter}</span>
-                                <span class="comment-time">{comment_time}</span>
-                            </div>
-                        </div>
-                        <div class="comment-content">{comment_content}</div>
-                    </div>
-                    """
-
-                # 如果评论数超过显示的评论数
-                if comment_count > len(recent_comments):
-                    comments_html += f"<p class='more-comments'>查看全部{comment_count}条评论</p>"
-
-            comments_html += "</div>"
+            # 使用公共组件生成评论列表
+            comments_html = create_styled_comments_display(
+                post.get("recent_comments", []),
+                comment_count
+            )
 
             return (
                 f"### {title}",
@@ -1834,6 +1507,7 @@ def create_user_profile_ui(user_info_state):
         outputs=get_fav_card_outputs()
     )
 
+    # 直接删除
     def direct_remove_favorite(post_id, user_data):
         """直接取消收藏（无确认对话框）"""
         if not user_data or not post_id:

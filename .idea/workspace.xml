@@ -4,13 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="完善了好友动态，优化了布局，添加了两个测试功能界面，与项目关联不大，主要用于实验布局可行性">
+    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/MainProject/app/services/user_stats_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MainProject/app/ui/common_components.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/services/travel_post_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/services/travel_post_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/services/user_profile_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/services/user_profile_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/ui/travel_post_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/ui/travel_post_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/ui/user_profile_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/ui/user_profile_ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.toml" beforeDir="false" afterPath="$PROJECT_DIR$/config.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -498,7 +498,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751803700874</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="完善了个人内容管理，用户头像预览待接入，确认权限可行性，优化了用户体验。">
+      <option name="closed" value="true" />
+      <created>1751889892335</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1751889892335</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -551,7 +559,8 @@
     <MESSAGE value="修改了注册界面的出错，增加了好友聊天、动态界面、初步进行拓展，但功能稳定性仍在测试，内容仍然需要完善。" />
     <MESSAGE value="稳定版本，考虑优化界面布局" />
     <MESSAGE value="完善了好友动态，优化了布局，添加了两个测试功能界面，与项目关联不大，主要用于实验布局可行性" />
-    <option name="LAST_COMMIT_MESSAGE" value="完善了好友动态，优化了布局，添加了两个测试功能界面，与项目关联不大，主要用于实验布局可行性" />
+    <MESSAGE value="完善了个人内容管理，用户头像预览待接入，确认权限可行性，优化了用户体验。" />
+    <option name="LAST_COMMIT_MESSAGE" value="完善了个人内容管理，用户头像预览待接入，确认权限可行性，优化了用户体验。" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TravelSmart$SQLHelper.coverage" NAME="SQLHelper 覆盖结果" MODIFIED="1750058069775" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />

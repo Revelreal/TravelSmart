@@ -2,44 +2,13 @@
 import datetime
 import gradio as gr
 from MainProject.app.services.travel_post_service import TravelPostService
+from MainProject.app.ui.common_components import create_styled_likes_display
 
 
 def create_travel_post_ui(user_info_state):
     """创建旅行动态UI组件，使用卡片样式展示内容"""
     travel_post_service = TravelPostService()
     PAGE_SIZE = 6  # 每页显示动态数量
-
-    # 添加自定义样式
-    css = """
-        .post-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-            background-color: #fff;
-            transition: box-shadow 0.3s;
-        }
-        .post-card:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .post-location, .post-tags {
-            color: #0066cc;
-            font-size: 0.9em;
-            margin: 8px 0;
-        }
-        .action-row {
-            margin-top: 12px;
-            display: flex;
-            align-items: center;
-        }
-        .stats-text {
-            margin-right: auto;
-            color: #666;
-        }
-        .gradio-group {
-        transition: opacity 0.3s ease;
-        }
-        """
 
     with gr.TabItem("动态广场") as travel_post_tab:
         view_state = gr.State("list")  # 可能的值: "list", "detail", "create"
@@ -141,7 +110,10 @@ def create_travel_post_ui(user_info_state):
                     detail_stats = gr.Markdown("*点赞和评论数*", elem_classes="stats-text")
                     detail_like_btn = gr.Button("👍 点赞")
                     detail_fav_btn = gr.Button("⭐ 收藏")
-
+            # 点赞用户列表 - 添加这部分
+            with gr.Group(elem_classes="likes-section"):
+                gr.Markdown("### 点赞用户")
+                detail_likes = gr.HTML("*加载中...*")
             # 评论区
             with gr.Group(elem_classes="comment-section"):
                 gr.Markdown("### 评论区")
@@ -150,6 +122,7 @@ def create_travel_post_ui(user_info_state):
                 # 发表评论
                 comment_input = gr.Textbox(label="发表评论", placeholder="请输入您的评论...", lines=3)
                 submit_comment_btn = gr.Button("发表评论", variant="primary")
+
         # 发布动态标签页
         with gr.Group(visible=False) as create_view:
             gr.Markdown("## 发布新动态")
@@ -673,6 +646,23 @@ def create_travel_post_ui(user_info_state):
                 "", "", "", False, "", None, "公开",
                 gr.Markdown(visible=False)
             ]
+        # 在详情页加载后，加载点赞用户
+        def load_likes(post_id, user_data):
+            if not post_id:
+                return "*请先选择一个动态查看点赞*"
+
+            try:
+                post = travel_post_service.get_post_detail(post_id, user_data.get("user_id") if user_data else None)
+                if not post:
+                    return "*动态不存在或已被删除*"
+
+                likes = post.get("recent_likes", [])
+                like_count = post.get("like_count", 0)
+
+                # 使用公共组件生成点赞用户列表
+                return create_styled_likes_display(likes, like_count)
+            except Exception as e:
+                return f"*加载点赞用户失败: {str(e)}*"
 
         # 绑定事件
         # 为每个帖子卡片绑定事件
@@ -690,6 +680,10 @@ def create_travel_post_ui(user_info_state):
                     detail_location, detail_content, detail_media,
                     detail_stats, detail_like_btn, detail_fav_btn
                 ]
+            ).then(
+                fn=load_likes,  # 加载点赞用户
+                inputs=[selected_post_id, user_info_state],
+                outputs=[detail_likes]
             ).then(
                 fn=load_comments,
                 inputs=[selected_post_id],
