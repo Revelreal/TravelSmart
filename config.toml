@@ -21,7 +21,7 @@ key = "sk-pnsskddlbxhdoybvyimlnlktoowxccjwogosmwnmyvnhzsjs"
 [session]
 SECRET_KEY = "secretkey1024568521569475aklshdw"
 ALGORITHM = "HS256"
-TOKEN_EXPIRE_MINUTES = 30
+TOKEN_EXPIRE_MINUTES = 180
 
 [amap]
 amap_key = "513fce8c9a3e2473fad5b2a2963d8c4f"

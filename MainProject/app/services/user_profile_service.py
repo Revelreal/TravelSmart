@@ -75,8 +75,17 @@ class UserProfileService:
         except Exception as e:
             return False, f"更新个人资料失败: {str(e)}"
 
-    def get_user_favorites(self, user_id, content_type=None, page=1, page_size=10):
+    def get_user_favorites(self, user_id, content_type=None, page=1, page_size=6):
         """获取用户收藏内容"""
+        if not user_id:
+            return {
+                'favorites': [],
+                'total': 0,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': 0
+            }
+
         offset = (page - 1) * page_size
 
         # 构建基本查询
@@ -96,169 +105,194 @@ class UserProfileService:
         sql += " ORDER BY uf.created_at DESC LIMIT %s OFFSET %s"
         params.extend([page_size, offset])
 
-        favorites = self.db.query(sql, tuple(params))
+        try:
+            favorites = self.db.query(sql, tuple(params))
 
-        # 获取每个收藏项的详细信息
-        for fav in favorites:
-            if fav['content_type'] == 'post':
-                # 获取动态信息
-                post_sql = """
-                           SELECT p.id, p.title, p.content, p.created_at, u.username, u.nickname
+            # 详细日志输出，帮助调试
+            print(f"获取到 {len(favorites)} 条收藏记录")
+
+            # 获取每个收藏项的详细信息
+            for fav in favorites:
+                if fav['content_type'] == 'post':
+                    # 获取动态信息
+                    post_sql = """
+                           SELECT p.id, p.title, p.content, p.created_at, p.location_name,
+                                  p.user_id, u.username, u.nickname, u.avatar
                            FROM TravelPosts p
                                     JOIN Users u ON p.user_id = u.id
                            WHERE p.id = %s \
                            """
-                post = self.db.fetchone(post_sql, (fav['content_id'],))
-                if post:
-                    fav['details'] = post
+                    post = self.db.fetchone(post_sql, (fav['content_id'],))
+                    if post:
+                        fav['details'] = post
 
-                    # 获取动态第一张媒体作为预览
-                    media_sql = "SELECT * FROM PostMedia WHERE post_id = %s LIMIT 1"
-                    media = self.db.query(media_sql, (fav['content_id'],))
-                    fav['preview_media'] = media[0] if media else None
+                        # 获取标签
+                        tags_sql = "SELECT tag_name FROM PostTags WHERE post_id = %s"
+                        tags = self.db.query(tags_sql, (fav['content_id'],))
+                        fav['details']['tags'] = [tag['tag_name'] for tag in tags]
 
-        # 获取总收藏数
-        count_sql = "SELECT COUNT(*) as total FROM UserFavorites WHERE user_id = %s"
-        count_params = [user_id]
+                        # 获取动态第一张媒体作为预览
+                        media_sql = "SELECT * FROM PostMedia WHERE post_id = %s"
+                        media = self.db.query(media_sql, (fav['content_id'],))
+                        fav['media'] = media if media else []
+                        fav['preview_media'] = media[0] if media else None
+                    else:
+                        print(f"收藏的动态 {fav['content_id']} 不存在")
 
-        if content_type:
-            count_sql += " AND content_type = %s"
-            count_params.append(content_type)
+            # 获取总收藏数
+            count_sql = "SELECT COUNT(*) as total FROM UserFavorites WHERE user_id = %s"
+            count_params = [user_id]
 
-        count_result = self.db.fetchone(count_sql, tuple(count_params))
-        total = count_result['total'] if count_result else 0
+            if content_type:
+                count_sql += " AND content_type = %s"
+                count_params.append(content_type)
 
-        return {
-            'favorites': favorites,
-            'total': total,
-            'page': page,
-            'page_size': page_size,
-            'total_pages': (total + page_size - 1) // page_size
-        }
-
-    def remove_favorite(self, favorite_id, user_id):
-        """删除收藏"""
-        # 检查收藏是否存在且属于该用户
-        check_sql = "SELECT id FROM UserFavorites WHERE id = %s AND user_id = %s"
-        favorite = self.db.fetchone(check_sql, (favorite_id, user_id))
-
-        if not favorite:
-            return False, "收藏不存在或无权操作"
-
-        # 删除收藏
-        delete_sql = "DELETE FROM UserFavorites WHERE id = %s"
-        try:
-            self.db.execute(delete_sql, (favorite_id,))
-            return True, "已取消收藏"
-        except Exception as e:
-            return False, f"取消收藏失败: {str(e)}"
-
-    def get_user_posts(self, user_id, viewer_id=None, page=1, page_size=10):
-        """获取用户发布的动态"""
-        # 使用旅行动态服务获取用户的动态
-        from MainProject.app.services.travel_post_service import TravelPostService
-        post_service = TravelPostService()
-
-        # 如果是查看自己的动态，显示所有动态；否则根据隐私设置过滤
-        if viewer_id == user_id:
-            return post_service.get_posts(user_id=viewer_id, page=page, page_size=page_size)
-        else:
-            # 检查用户隐私设置
-            privacy_sql = "SELECT profile_visibility FROM UserPrivacySettings WHERE user_id = %s"
-            privacy = self.db.fetchone(privacy_sql, (user_id,))
-
-            if privacy and privacy['profile_visibility'] == 'private':
-                return {'posts': [], 'total': 0, 'page': page, 'page_size': page_size, 'total_pages': 0}
-
-            # 构建查询条件
-            conditions = ["p.user_id = %s"]
-            params = [user_id]
-
-            if privacy and privacy['profile_visibility'] == 'friends':
-                # 检查是否是好友
-                friendship_sql = """
-                                 SELECT id \
-                                 FROM Friendships
-                                 WHERE user_id = %s \
-                                   AND friend_id = %s \
-                                   AND status = 'accepted' \
-                                 """
-                friendship = self.db.fetchone(friendship_sql, (user_id, viewer_id))
-                if not friendship:
-                    return {'posts': [], 'total': 0, 'page': page, 'page_size': page_size, 'total_pages': 0}
-
-            # 根据隐私级别过滤动态
-            if viewer_id:
-                conditions.append("""
-                (p.privacy_level = 'public' 
-                OR (p.privacy_level = 'friends' AND EXISTS (
-                    SELECT 1 FROM Friendships 
-                    WHERE user_id = %s AND friend_id = %s AND status = 'accepted'
-                )))
-                """)
-                params.extend([user_id, viewer_id])
-            else:
-                conditions.append("p.privacy_level = 'public'")
-
-            # 构建SQL查询
-            sql = """
-            SELECT p.*, u.username, u.nickname, u.avatar,
-                   COUNT(DISTINCT pi_like.id) as like_count,
-                   COUNT(DISTINCT pi_comment.id) as comment_count
-            FROM TravelPosts p
-            JOIN Users u ON p.user_id = u.id
-            LEFT JOIN PostInteractions pi_like ON p.id = pi_like.post_id AND pi_like.interaction_type = 'like'
-            LEFT JOIN PostInteractions pi_comment ON p.id = pi_comment.post_id AND pi_comment.interaction_type = 'comment'
-            WHERE """ + " AND ".join(conditions) + """
-            GROUP BY p.id, p.created_at, u.username, u.nickname, u.avatar
-            ORDER BY p.created_at DESC
-            LIMIT %s OFFSET %s
-            """
-
-            offset = (page - 1) * page_size
-            params.extend([page_size, offset])
-
-            posts = self.db.query(sql, tuple(params))
-
-            # 获取每个动态的标签和预览媒体
-            for post in posts:
-                tags_sql = "SELECT tag_name FROM PostTags WHERE post_id = %s"
-                tags = self.db.query(tags_sql, (post['id'],))
-                post['tags'] = [tag['tag_name'] for tag in tags]
-
-                media_sql = "SELECT * FROM PostMedia WHERE post_id = %s LIMIT 1"
-                media = self.db.query(media_sql, (post['id'],))
-                post['preview_media'] = media[0] if media else None
-
-                # 如果是登录用户，检查是否已点赞/收藏
-                if viewer_id:
-                    interaction_sql = """
-                                      SELECT interaction_type
-                                      FROM PostInteractions
-                                      WHERE post_id = %s \
-                                        AND user_id = %s \
-                                        AND interaction_type IN ('like', 'favorite') \
-                                      """
-                    interactions = self.db.query(interaction_sql, (post['id'], viewer_id))
-                    post['user_liked'] = any(i['interaction_type'] == 'like' for i in interactions)
-                    post['user_favorited'] = any(i['interaction_type'] == 'favorite' for i in interactions)
-
-            # 获取总记录数
-            count_sql = """
-                        SELECT COUNT(*) as total
-                        FROM TravelPosts p
-                        WHERE """ + " AND ".join(conditions)
-
-            count_result = self.db.fetchone(count_sql, tuple(params[:-2]))  # 移除LIMIT参数
+            count_result = self.db.fetchone(count_sql, tuple(count_params))
             total = count_result['total'] if count_result else 0
 
             return {
-                'posts': posts,
+                'favorites': favorites,
                 'total': total,
                 'page': page,
                 'page_size': page_size,
                 'total_pages': (total + page_size - 1) // page_size
             }
+        except Exception as e:
+            print(f"获取收藏失败: {str(e)}")
+            # 返回空结果而不是抛出异常
+            return {
+                'favorites': [],
+                'total': 0,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': 0,
+                'error': str(e)
+            }
+
+    def remove_favorite(self, favorite_id, user_id):
+        """删除收藏"""
+        if not favorite_id or not user_id:
+            print("移除收藏失败：无效的收藏ID或用户ID")
+            return False, "收藏ID或用户ID无效"
+
+        # 检查收藏是否存在且属于该用户
+        check_sql = "SELECT id, content_id, content_type FROM UserFavorites WHERE id = %s AND user_id = %s"
+        favorite = self.db.fetchone(check_sql, (favorite_id, user_id))
+
+        if not favorite:
+            print(f"移除收藏失败：收藏 {favorite_id} 不存在或不属于用户 {user_id}")
+            return False, "收藏不存在或无权操作"
+
+        try:
+            print(f"开始移除收藏: ID={favorite_id}, 用户ID={user_id}")
+            # 开始事务
+            self.db.execute("START TRANSACTION")
+
+            # 删除收藏
+            delete_sql = "DELETE FROM UserFavorites WHERE id = %s"
+            self.db.execute(delete_sql, (favorite_id,))
+
+            # 如果是动态，同时删除交互记录
+            if favorite['content_type'] == 'post':
+                content_id = favorite['content_id']
+                print(f"同时删除动态交互记录: 动态ID={content_id}, 用户ID={user_id}")
+                delete_interaction_sql = """
+                    DELETE FROM PostInteractions 
+                    WHERE post_id = %s AND user_id = %s AND interaction_type = 'favorite'
+                """
+                self.db.execute(delete_interaction_sql, (content_id, user_id))
+
+            # 提交事务
+            self.db.execute("COMMIT")
+            print(f"成功移除收藏: ID={favorite_id}")
+            return True, "已取消收藏"
+        except Exception as e:
+            # 回滚事务
+            self.db.execute("ROLLBACK")
+            print(f"移除收藏失败: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return False, f"取消收藏失败: {str(e)}"
+
+    def get_self_posts(self, user_id, privacy_level=None, page=1, page_size=6):
+        """用户获取自己发布的动态
+
+        Args:
+            user_id: 用户ID
+            privacy_level: 动态的隐私级别 ('public', 'friends', 'private' 或 None 表示全部)
+            page: 页码
+            page_size: 每页大小
+
+        Returns:
+            包含动态列表及分页信息的字典
+        """
+        # 构建基础查询 - 只获取自己发布的动态
+        conditions = ["p.user_id = %s"]
+        params = [user_id]
+
+        # 如果指定了隐私级别，添加过滤条件
+        if privacy_level in ['public', 'friends', 'private']:
+            conditions.append("p.privacy_level = %s")
+            params.append(privacy_level)
+
+        # 构建SQL查询
+        sql = """
+        SELECT p.*, u.username, u.nickname, u.avatar,
+               COUNT(DISTINCT pi_like.id) as like_count,
+               COUNT(DISTINCT pi_comment.id) as comment_count
+        FROM TravelPosts p
+        JOIN Users u ON p.user_id = u.id
+        LEFT JOIN PostInteractions pi_like ON p.id = pi_like.post_id AND pi_like.interaction_type = 'like'
+        LEFT JOIN PostInteractions pi_comment ON p.id = pi_comment.post_id AND pi_comment.interaction_type = 'comment'
+        WHERE """ + " AND ".join(conditions) + """
+        GROUP BY p.id
+        ORDER BY p.created_at DESC
+        LIMIT %s OFFSET %s
+        """
+
+        offset = (page - 1) * page_size
+        params.extend([page_size, offset])
+
+        posts = self.db.query(sql, tuple(params))
+
+        # 获取每个动态的标签和预览媒体
+        for post in posts:
+            tags_sql = "SELECT tag_name FROM PostTags WHERE post_id = %s"
+            tags = self.db.query(tags_sql, (post['id'],))
+            post['tags'] = [tag['tag_name'] for tag in tags]
+
+            media_sql = "SELECT * FROM PostMedia WHERE post_id = %s LIMIT 1"
+            media = self.db.query(media_sql, (post['id'],))
+            post['preview_media'] = media[0] if media else None
+
+            # 检查用户是否已点赞/收藏自己的动态
+            interaction_sql = """
+                              SELECT interaction_type
+                              FROM PostInteractions
+                              WHERE post_id = %s 
+                                AND user_id = %s 
+                                AND interaction_type IN ('like', 'favorite')
+                              """
+            interactions = self.db.query(interaction_sql, (post['id'], user_id))
+            post['user_liked'] = any(i['interaction_type'] == 'like' for i in interactions)
+            post['user_favorited'] = any(i['interaction_type'] == 'favorite' for i in interactions)
+
+        # 获取总记录数
+        count_sql = """
+                    SELECT COUNT(*) as total
+                    FROM TravelPosts p
+                    WHERE """ + " AND ".join(conditions)
+
+        count_result = self.db.fetchone(count_sql, tuple(params[:-2]))  # 移除LIMIT参数
+        total = count_result['total'] if count_result else 0
+
+        return {
+            'posts': posts,
+            'total': total,
+            'page': page,
+            'page_size': page_size,
+            'total_pages': (total + page_size - 1) // page_size
+        }
 
     def get_user_notifications(self, user_id, is_read=None, page=1, page_size=20):
         """获取用户通知"""
@@ -435,3 +469,32 @@ class UserProfileService:
             'page_size': page_size,
             'total_pages': (total + page_size - 1) // page_size
         }
+
+    def get_favorite_id_by_content(self, content_id, user_id, content_type="post"):
+        """通过内容ID获取收藏ID"""
+        if not content_id or not user_id:
+            print("获取收藏ID失败: 内容ID或用户ID为空")
+            return None
+
+        try:
+            # 查询该用户是否收藏了这个内容
+            query = """
+                SELECT id 
+                FROM UserFavorites 
+                WHERE user_id = %s AND content_id = %s AND content_type = %s
+                LIMIT 1
+            """
+            result = self.db.fetchone(query, (user_id, content_id, content_type))
+
+            if result:
+                print(f"成功获取收藏ID: {result['id']} (内容ID={content_id}, 用户ID={user_id})")
+                return result['id']
+            else:
+                print(f"未找到收藏记录: 内容ID={content_id}, 用户ID={user_id}")
+                return None
+        except Exception as e:
+            print(f"查询收藏ID失败: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return None
+

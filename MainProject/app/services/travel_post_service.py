@@ -345,6 +345,23 @@ class TravelPostService:
 
             return True, "已收藏"
 
+    def get_favorite_status(self, post_id, user_id):
+        """检查用户是否已收藏该动态"""
+        if not user_id or not post_id:
+            return False
+
+        try:
+            sql = """
+                SELECT 1 FROM UserFavorites 
+                WHERE user_id = %s AND content_id = %s AND content_type = 'post'
+                LIMIT 1
+            """
+            result = self.db.fetchone(sql, (user_id, post_id))
+            return bool(result)
+        except Exception as e:
+            print(f"检查收藏状态出错: {str(e)}")
+            return False
+
     def get_comments(self, post_id, page=1, page_size=20):
         """获取动态评论"""
         offset = (page - 1) * page_size
@@ -387,14 +404,24 @@ class TravelPostService:
         }
 
     def delete_post(self, post_id, user_id):
-        """删除动态"""
-        # 检查动态是否存在且是否为作者
+        """
+        删除动态及其相关数据
+
+        Args:
+            post_id: 要删除的动态ID
+            user_id: 请求删除的用户ID
+
+        Returns:
+            (success, message): 表示操作是否成功及相关信息
+        """
+        # 检查动态是否存在
         check_sql = "SELECT user_id FROM TravelPosts WHERE id = %s"
         post = self.db.fetchone(check_sql, (post_id,))
 
         if not post:
             return False, "动态不存在"
 
+        # 权限检查
         if post['user_id'] != user_id:
             # 检查是否为管理员
             user_sql = "SELECT role_id FROM Users WHERE id = %s"
@@ -403,26 +430,208 @@ class TravelPostService:
                 return False, "无权删除此动态"
 
         try:
-            # 删除动态（外键约束会自动删除相关的标签、媒体和互动记录）
-            delete_sql = "DELETE FROM TravelPosts WHERE id = %s"
-            self.db.execute(delete_sql, (post_id,))
+            # 由于没有事务支持，我们需要确保最关键的删除操作在最后执行
+            # 这样即使中间步骤失败，至少不会留下悬空的主记录
 
-            # 删除MongoDB中的详细内容
-            self.mongo.db.travel_post_details.delete_one({'post_id': int(post_id)})
+            # 1. 删除PostTags表中的相关记录
+            try:
+                self.db.execute("DELETE FROM PostTags WHERE post_id = %s", (post_id,))
+            except Exception as e:
+                print(f"删除标签时出错: {str(e)}")
 
-            # 删除相关的收藏记录
-            delete_fav_sql = "DELETE FROM UserFavorites WHERE content_id = %s AND content_type = 'post'"
-            self.db.execute(delete_fav_sql, (post_id,))
+            # 2. 删除PostMedia表中的相关记录
+            try:
+                self.db.execute("DELETE FROM PostMedia WHERE post_id = %s", (post_id,))
+            except Exception as e:
+                print(f"删除媒体记录时出错: {str(e)}")
 
-            # 删除相关的通知
-            self.mongo.db.notifications.delete_many({
-                'content_id': int(post_id),
-                'content_type': 'post'
-            })
+            # 3. 删除PostInteractions表中的相关记录
+            try:
+                self.db.execute("DELETE FROM PostInteractions WHERE post_id = %s", (post_id,))
+            except Exception as e:
+                print(f"删除互动记录时出错: {str(e)}")
+
+            # 4. 删除UserFavorites表中的相关记录
+            try:
+                self.db.execute("DELETE FROM UserFavorites WHERE content_id = %s AND content_type = 'post'", (post_id,))
+            except Exception as e:
+                print(f"删除收藏记录时出错: {str(e)}")
+
+            # 5. 检查并删除UserViewHistory表中的相关记录(如果表存在)
+            try:
+                # 检查表是否存在
+                check_table_sql = """
+                    SELECT COUNT(*) as count
+                    FROM information_schema.tables
+                    WHERE table_schema = DATABASE()
+                    AND table_name = 'UserViewHistory'
+                """
+                result = self.db.fetchone(check_table_sql)
+
+                if result and result.get('count', 0) > 0:
+                    # 表存在，删除相关记录
+                    self.db.execute("DELETE FROM UserViewHistory WHERE content_id = %s AND content_type = 'post'",
+                                    (post_id,))
+            except Exception as e:
+                print(f"处理浏览历史时出错: {str(e)}")
+
+            # 6. 删除MongoDB中的详细内容
+            try:
+                self.mongo.db.travel_post_details.delete_one({'post_id': int(post_id)})
+            except Exception as e:
+                print(f"删除MongoDB数据时出错: {str(e)}")
+
+            # 7. 删除相关的通知
+            try:
+                self.mongo.db.notifications.delete_many({
+                    'content_id': int(post_id),
+                    'content_type': 'post'
+                })
+            except Exception as e:
+                print(f"删除通知时出错: {str(e)}")
+
+            # 8. 最后删除TravelPosts表中的主记录
+            # 这是最关键的操作，放在最后执行
+            self.db.execute("DELETE FROM TravelPosts WHERE id = %s", (post_id,))
 
             return True, "动态已删除"
         except Exception as e:
             return False, f"删除动态失败: {str(e)}"
+
+    def update_post(self, post_id, user_id, title, content, location_name=None,
+                    privacy_level='public', tags=None, media_files=None):
+        """
+        更新旅行动态
+
+        Args:
+            post_id: 动态ID
+            user_id: 请求更新的用户ID
+            title: 新标题
+            content: 新内容
+            location_name: 新位置名称 (可选)
+            privacy_level: 新隐私级别 (可选)
+            tags: 新标签列表 (可选)
+            media_files: 新媒体文件列表 (可选)
+
+        Returns:
+            (success, message): 成功与否及相关信息
+        """
+        # 首先检查动态是否存在
+        check_sql = "SELECT user_id FROM TravelPosts WHERE id = %s"
+        post = self.db.fetchone(check_sql, (post_id,))
+
+        if not post:
+            return False, "动态不存在"
+
+        # 检查用户权限 - 必须是动态作者或管理员
+        has_permission = False
+
+        if post['user_id'] == user_id:
+            # 用户是动态作者
+            has_permission = True
+        else:
+            # 检查用户是否为管理员
+            user_sql = "SELECT role_id FROM Users WHERE id = %s"
+            user = self.db.fetchone(user_sql, (user_id,))
+            if user and user['role_id'] <= 2:  # 假设1=root, 2=admin
+                has_permission = True
+
+        if not has_permission:
+            return False, "无权修改此动态"
+
+        try:
+            # 开始更新操作
+            # 1. 更新基本信息
+            update_sql = """
+                UPDATE TravelPosts
+                SET title = %s, 
+                    content = %s, 
+                    location_name = %s, 
+                    privacy_level = %s,
+                    updated_at = NOW()
+                WHERE id = %s
+            """
+            self.db.execute(update_sql, (
+                title,
+                content,
+                location_name,
+                privacy_level,
+                post_id
+            ))
+
+            # 2. 处理标签 - 删除旧标签并添加新标签
+            if tags is not None:  # 仅当明确提供标签时才更新
+                # 删除旧标签
+                delete_tags_sql = "DELETE FROM PostTags WHERE post_id = %s"
+                self.db.execute(delete_tags_sql, (post_id,))
+
+                # 添加新标签
+                if tags and len(tags) > 0:
+                    tag_sql = "INSERT INTO PostTags (post_id, tag_name) VALUES (%s, %s)"
+                    tag_params = [(post_id, tag) for tag in tags]
+                    self.db.executemany(tag_sql, tag_params)
+
+            # 3. 处理媒体文件 (如果提供了新的媒体文件列表)
+            if media_files is not None:  # 仅当明确提供媒体文件时才更新
+                # 删除旧媒体文件
+                delete_media_sql = "DELETE FROM PostMedia WHERE post_id = %s"
+                self.db.execute(delete_media_sql, (post_id,))
+
+                # 添加新媒体文件
+                if media_files and len(media_files) > 0:
+                    media_sql = """
+                        INSERT INTO PostMedia 
+                            (post_id, media_type, media_url, thumbnail_url) 
+                        VALUES (%s, %s, %s, %s)
+                    """
+                    media_params = [
+                        (post_id, file['type'], file['url'], file.get('thumbnail_url'))
+                        for file in media_files
+                    ]
+                    self.db.executemany(media_sql, media_params)
+
+            # 4. 更新MongoDB中的详细内容
+            mongo_update = {
+                "$set": {
+                    "title": title,
+                    "content": content,
+                    "rich_content": content,  # 可以存储HTML或Markdown格式的富文本
+                    "privacy_level": privacy_level,
+                    "updated_at": datetime.datetime.now()
+                }
+            }
+
+            # 仅当提供了位置时才更新位置信息
+            if location_name is not None:
+                mongo_update["$set"]["location.name"] = location_name
+
+            # 仅当提供了标签时才更新标签
+            if tags is not None:
+                mongo_update["$set"]["tags"] = tags or []
+
+            # 仅当提供了媒体文件时才更新媒体文件
+            if media_files is not None:
+                mongo_update["$set"]["media_files"] = media_files or []
+
+            # 记录编辑历史
+            mongo_update["$push"] = {
+                "edit_history": {
+                    "edited_by": user_id,
+                    "edited_at": datetime.datetime.now(),
+                    "previous_title": post.get("title"),
+                    "previous_content": post.get("content")
+                }
+            }
+
+            # 执行MongoDB更新
+            self.mongo.db.travel_post_details.update_one(
+                {"post_id": int(post_id)},
+                mongo_update
+            )
+
+            return True, "动态已成功更新"
+        except Exception as e:
+            return False, f"更新动态失败: {str(e)}"
 
     def get_popular_tags(self, limit=10):
         """获取热门标签"""
@@ -641,6 +850,37 @@ class TravelPostService:
             print(f"获取动态详情时发生错误: {str(e)}")
             # 如果有错误，返回基本信息
             return post
+
+    def get_post_by_favorite(self, favorite_id, user_id):
+        """通过收藏ID获取动态详情"""
+        if not favorite_id or not user_id:
+            return None
+
+        try:
+            # 获取收藏信息
+            fav_sql = """
+                SELECT content_id, content_type
+                FROM UserFavorites
+                WHERE id = %s AND user_id = %s
+            """
+            favorite = self.db.fetchone(fav_sql, (favorite_id, user_id))
+
+            if not favorite:
+                return None
+
+            # 目前只处理动态类型的收藏
+            if favorite['content_type'] != 'post':
+                return {
+                    'id': favorite_id,
+                    'content_type': favorite['content_type'],
+                    'message': '暂不支持查看此类型的收藏详情'
+                }
+
+            # 获取动态详情
+            return self.get_post_detail(favorite['content_id'], user_id)
+        except Exception as e:
+            print(f"通过收藏获取动态失败: {str(e)}")
+            return None
 
     def _record_view_history(self, post_id, user_id):
         """记录用户查看历史"""

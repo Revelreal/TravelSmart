@@ -906,23 +906,171 @@ def create_travel_post_ui(user_info_state):
         # 获取初始数据的函数
         def init_data():
             try:
-                # 获取第一页数据
-                post_updates = get_posts_data(1, "", "", False, {})
+                # 初始化更新列表
+                updates = []
 
-                # 获取热门标签
-                tag_data = get_tags_data()
+                # 为每个卡片添加更新
+                for i in range(PAGE_SIZE):
+                    updates.append(gr.update(visible=False))  # 卡片可见性
+                    updates.extend([gr.update() for _ in range(10)])  # 10个内容组件
+                    # 注意：这里是10而不是9，因为每个卡片有11个组件（卡片本身 + 10个子组件）
 
-                return post_updates + [tag_data]
+                # 添加页面信息和总页数
+                updates.append("第 1 页，共 1 页")  # page_info
+                updates.append(1)  # total_pages_state
+
+                # 添加标签显示
+                updates.append("*加载中...*")  # tags_display
+
+                # 尝试获取动态数据
+                try:
+                    posts_data = travel_post_service.get_posts(page=1, page_size=PAGE_SIZE)
+
+                    if posts_data and posts_data.get("posts"):
+                        posts = posts_data.get("posts", [])
+                        total = posts_data.get("total", 0)
+                        total_pages = posts_data.get("total_pages", 1)
+
+                        # 重新构建更新列表
+                        updates = []
+
+                        # 处理每个卡片
+                        for i in range(PAGE_SIZE):
+                            if i < len(posts):
+                                # 有数据，显示卡片
+                                post = posts[i]
+                                post_id = post["id"]
+                                title = post.get("title", "无标题")
+                                username = post.get("nickname") or post.get("username", "用户")
+
+                                # 格式化时间
+                                created_time = post.get("created_at", "")
+                                if isinstance(created_time, datetime.datetime):
+                                    created_time = created_time.strftime("%Y年%m月%d日 %H:%M")
+
+                                # 内容预览
+                                content = post.get("content", "")
+                                if len(content) > 150:
+                                    content = content[:150] + "..."
+
+                                # 标签
+                                tags_text = ""
+                                if post.get("tags"):
+                                    tags_text = " ".join([f"#{tag}" for tag in post["tags"]])
+
+                                # 位置
+                                location_text = ""
+                                if post.get("location_name"):
+                                    location_text = f"📍 {post['location_name']}"
+
+                                # 统计数据
+                                like_count = post.get("like_count", 0)
+                                comment_count = post.get("comment_count", 0)
+
+                                # 用户交互状态
+                                liked = post.get("user_liked", False)
+                                favorited = post.get("user_favorited", False)
+
+                                # 添加卡片可见性更新
+                                updates.append(gr.update(visible=True))  # 卡片可见性
+
+                                # 添加内容更新
+                                updates.append(f"### {title}")  # 标题
+                                updates.append(f"**发布者:** {username} | **发布于:** {created_time}")  # 元数据
+                                updates.append(location_text)  # 位置
+                                updates.append(tags_text)  # 标签
+                                updates.append(content)  # 内容
+                                updates.append(f"👁️ {like_count + comment_count} 次查看")  # 统计
+
+                                # 更新按钮文本
+                                updates.append(gr.update(value="查看详情"))  # 查看按钮
+                                updates.append(gr.update(
+                                    value=f"👍 {like_count}",
+                                    variant="primary" if liked else "secondary"
+                                ))  # 点赞按钮
+                                updates.append(gr.update(
+                                    value="⭐ 已收藏" if favorited else "⭐ 收藏",
+                                    variant="primary" if favorited else "secondary"
+                                ))  # 收藏按钮
+
+                                # 更新帖子ID
+                                updates.append(post_id)  # post_id_state
+                            else:
+                                # 无数据，隐藏卡片
+                                updates.append(gr.update(visible=False))  # 卡片可见性
+                                # 添加10个空更新 - 标题,元数据,位置,标签,内容,统计,查看按钮,点赞按钮,收藏按钮,ID
+                                updates.extend([gr.update() for _ in range(10)])
+
+                        # 添加页面信息和总页数
+                        updates.append(f"第 1 页，共 {total_pages} 页，总计 {total} 条动态")  # page_info
+                        updates.append(total_pages)  # total_pages_state
+
+                    # 获取热门标签
+                    tags = travel_post_service.get_popular_tags()
+                    if tags:
+                        tag_links = []
+                        for tag in tags:
+                            tag_name = tag.get("tag_name") or tag.get("name", "未知标签")
+                            tag_count = tag.get("count", 0)
+                            tag_links.append(f"**#{tag_name}** ({tag_count})")
+
+                        tags_html = " · ".join(tag_links) if tag_links else "*没有热门标签*"
+                    else:
+                        tags_html = "*没有热门标签*"
+
+                    # 添加标签显示
+                    updates.append(tags_html)  # tags_display
+
+                    return updates
+
+                except Exception as e:
+                    # 发生错误，回退到空数据
+                    print(f"初始化数据加载失败: {str(e)}")
+
+                    # 确保更新列表有正确数量的元素
+                    updates = []
+
+                    # 第一个卡片显示错误信息
+                    updates.append(gr.update(visible=True))  # 卡片可见性
+                    updates.append("### 加载失败")  # 标题
+                    updates.append("**错误信息**")  # 元数据
+                    updates.append("")  # 位置
+                    updates.append("")  # 标签
+                    updates.append(f"*加载动态失败: {str(e)}*")  # 内容
+                    updates.append("")  # 统计
+                    updates.append(gr.update(visible=False))  # 查看按钮
+                    updates.append(gr.update(visible=False))  # 点赞按钮
+                    updates.append(gr.update(visible=False))  # 收藏按钮
+                    updates.append(0)  # post_id_state
+
+                    # 隐藏其余卡片
+                    for i in range(1, PAGE_SIZE):
+                        updates.append(gr.update(visible=False))  # 卡片可见性
+                        updates.extend([gr.update() for _ in range(10)])  # 10个内容组件
+
+                    # 添加页面信息和总页数以及标签
+                    updates.append(f"加载失败: {str(e)}")  # page_info
+                    updates.append(1)  # total_pages_state
+                    updates.append(f"*加载标签失败: {str(e)}*")  # tags_display
+
+                    return updates
+
             except Exception as e:
-                # 构建空数据更新
+                # 确保在任何情况下都返回正确数量的元素
+                print(f"init_data函数执行失败: {str(e)}")
+
+                # 创建完整的空更新列表
                 empty_updates = []
                 for i in range(PAGE_SIZE):
                     empty_updates.append(gr.update(visible=False))  # 卡片可见性
-                    empty_updates.extend([gr.update() for _ in range(9)])  # 9个内容组件无变化
-                    empty_updates.append(0)  # post_id_state
+                    empty_updates.extend([gr.update() for _ in range(10)])  # 10个内容组件
 
-                # 添加页面信息和总页数以及标签
-                return empty_updates + [f"加载失败: {str(e)}", 1, f"*加载标签失败: {str(e)}*"]
+                # 添加额外的3个元素
+                empty_updates.append("加载失败")  # page_info
+                empty_updates.append(1)  # total_pages_state
+                empty_updates.append("*加载失败*")  # tags_display
+
+                return empty_updates
 
         # 触发初始数据加载
         outputs_list = []

@@ -4,22 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="稳定版本，考虑优化界面布局">
-      <change afterPath="$PROJECT_DIR$/Test/like_function_test.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test/post_model_test.py" afterDir="false" />
+    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="完善了好友动态，优化了布局，添加了两个测试功能界面，与项目关联不大，主要用于实验布局可行性">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/services/message_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/services/message_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/services/travel_post_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/services/travel_post_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/services/user_profile_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/services/user_profile_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/ui/friends_component_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/ui/friends_component_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/ui/travel_post_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/ui/travel_post_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainProject/app/ui/user_profile_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/ui/user_profile_ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/welcome/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/welcome/login.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/app/welcome/register.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/welcome/register.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/auth_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/auth_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/dbhelper/MONGOHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/dbhelper/MONGOHelper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/dbhelper/NoticeManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/dbhelper/NoticeManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProject/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.toml" beforeDir="false" afterPath="$PROJECT_DIR$/config.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,58 +96,58 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python 测试.Python 测试 (user_home.py 内).executor": "Run",
-    "Python.DBHelper.executor": "Run",
-    "Python.MONGOHelper.executor": "Run",
-    "Python.NoticeManager.executor": "Run",
-    "Python.SQLHelper.executor": "Run",
-    "Python.admin_home.executor": "Run",
-    "Python.ai.executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.auth_utils.executor": "Run",
-    "Python.common.executor": "Run",
-    "Python.database_setup.executor": "Run",
-    "Python.friends_component_ui.executor": "Run",
-    "Python.liketest.executor": "Run",
-    "Python.login.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.mongo_setup.executor": "Run",
-    "Python.notice_page.executor": "Run",
-    "Python.post_model_test.executor": "Run",
-    "Python.preferences.executor": "Run",
-    "Python.test.executor": "Run",
-    "Python.user_home.executor": "Run",
-    "Python.卖弄.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "develop 上的 #2",
-    "last_opened_file_path": "D:/repos3/TravelSmart",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python 测试.Python 测试 (user_home.py 内).executor&quot;: &quot;Run&quot;,
+    &quot;Python.DBHelper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.MONGOHelper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NoticeManager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.SQLHelper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.admin_home.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ai.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.auth_utils.executor&quot;: &quot;Run&quot;,
+    &quot;Python.common.executor&quot;: &quot;Run&quot;,
+    &quot;Python.database_setup.executor&quot;: &quot;Run&quot;,
+    &quot;Python.friends_component_ui.executor&quot;: &quot;Run&quot;,
+    &quot;Python.liketest.executor&quot;: &quot;Run&quot;,
+    &quot;Python.login.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.mongo_setup.executor&quot;: &quot;Run&quot;,
+    &quot;Python.notice_page.executor&quot;: &quot;Run&quot;,
+    &quot;Python.post_model_test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.preferences.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.user_home.executor&quot;: &quot;Run&quot;,
+    &quot;Python.卖弄.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop 上的 #2&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/repos3/TravelSmart&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;http.proxy&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mongo",
-      "mysql_aurora"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mongo&quot;,
+      &quot;mysql_aurora&quot;
     ],
-    "com.intellij.ide.scratch.LRUPopupBuilder$1/SQL 方言": [
-      "MySQL",
-      "MongoDB"
+    &quot;com.intellij.ide.scratch.LRUPopupBuilder$1/SQL 方言&quot;: [
+      &quot;MySQL&quot;,
+      &quot;MongoDB&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\repos3\TravelSmart\MainProject\app\notice" />
@@ -499,7 +490,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751525870502</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="完善了好友动态，优化了布局，添加了两个测试功能界面，与项目关联不大，主要用于实验布局可行性">
+      <option name="closed" value="true" />
+      <created>1751803700874</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1751803700874</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -551,7 +550,8 @@
     <MESSAGE value="部署了公告系统" />
     <MESSAGE value="修改了注册界面的出错，增加了好友聊天、动态界面、初步进行拓展，但功能稳定性仍在测试，内容仍然需要完善。" />
     <MESSAGE value="稳定版本，考虑优化界面布局" />
-    <option name="LAST_COMMIT_MESSAGE" value="稳定版本，考虑优化界面布局" />
+    <MESSAGE value="完善了好友动态，优化了布局，添加了两个测试功能界面，与项目关联不大，主要用于实验布局可行性" />
+    <option name="LAST_COMMIT_MESSAGE" value="完善了好友动态，优化了布局，添加了两个测试功能界面，与项目关联不大，主要用于实验布局可行性" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TravelSmart$SQLHelper.coverage" NAME="SQLHelper 覆盖结果" MODIFIED="1750058069775" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
