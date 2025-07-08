@@ -7,7 +7,7 @@ from MainProject.app.services.user_profile_service import UserProfileService
 from MainProject.app.services.travel_post_service import TravelPostService
 from MainProject.app.services.user_stats_service import UserStatsService  # 新增导入
 from MainProject.app.ui.common_components import create_post_detail_view, create_styled_likes_display, create_styled_comments_display
-
+from MainProject.app.services.mongo_file_service import mongo_file_service
 
 def create_user_profile_ui(user_info_state):
     """创建用户个人中心UI（重构版）"""
@@ -39,7 +39,13 @@ def create_user_profile_ui(user_info_state):
                         gr.Markdown("### 编辑资料")
                         nickname = gr.Textbox(label="昵称")
                         city = gr.Textbox(label="城市")
-                        avatar = gr.File(label="上传头像")
+                        avatar = gr.File(
+                            label="上传头像",
+                            file_types=["image"],
+                            file_count="single",
+                            type="filepath",
+                            elem_id="avatar-upload"
+                        )
                         update_btn = gr.Button("更新")
                         update_result = gr.Markdown()
             # 初始加载按钮
@@ -322,79 +328,298 @@ def create_user_profile_ui(user_info_state):
             return "<div>请先登录</div>", "<div>请先登录</div>"
 
         try:
-            # 基本信息
+            print(f"加载用户资料，用户ID: {user_data.get('user_id')}")
+
+            # 基本信息 - 注意这里的参数顺序
             profile = user_profile_service.get_user_profile(
                 user_data["user_id"],
-                user_data["user_id"]
+                user_data["user_id"]  # viewer_id 参数
             )
+
+            print(f"获取到的资料: {profile}")
 
             if not profile:
                 return "<div>无法加载个人资料</div>", "<div>无法加载统计信息</div>"
 
+            # 检查隐私设置返回
+            if 'privacy' in profile:
+                if profile['privacy'] == 'private':
+                    return "<div>该用户的资料是私密的</div>", "<div>无法加载统计信息</div>"
+                elif profile['privacy'] == 'friends_only':
+                    return "<div>只有好友才能查看</div>", "<div>无法加载统计信息</div>"
+
+            # 使用 MongoDB 文件服务获取头像 Data URL
+            avatar_file_key = profile.get('avatar')
+            print(f"头像文件键: {avatar_file_key}")
+
+            try:
+                avatar_data_url = mongo_file_service.get_avatar_data_url(avatar_file_key)
+                print(f"头像Data URL获取成功")
+            except Exception as e:
+                print(f"获取头像失败: {e}")
+                avatar_data_url = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YwZjBmMCIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjMwIiBmaWxsPSIjY2NjY2NjIi8+PC9zdmc+"
+
+            # 格式化创建时间
+            create_time = profile.get('create_time', '')
+            if create_time:
+                try:
+                    # 如果是 datetime 对象，转换为字符串
+                    if hasattr(create_time, 'strftime'):
+                        create_time = create_time.strftime('%Y-%m-%d %H:%M:%S')
+                    else:
+                        create_time = str(create_time)
+                except:
+                    create_time = '未知'
+
             profile_html = f"""
+            <style>
+            .profile {{
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                padding: 15px;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+            }}
+            .profile-avatar {{
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid #f0f0f0;
+            }}
+            .profile-info {{
+                flex: 1;
+            }}
+            .profile-info h2 {{
+                margin-top: 0;
+                margin-bottom: 10px;
+            }}
+            .profile-info p {{
+                margin: 5px 0;
+            }}
+            .stats {{
+                display: flex;
+                gap: 20px;
+                margin-top: 10px;
+            }}
+            .stat-item {{
+                text-align: center;
+            }}
+            .stat-number {{
+                font-size: 18px;
+                font-weight: bold;
+                color: #2196F3;
+            }}
+            .stat-label {{
+                font-size: 12px;
+                color: #666;
+            }}
+            </style>
             <div class='profile'>
-                <img src='{profile.get('avatar', '/default.png')}' class='profile-avatar'/>
+                <img src='{avatar_data_url}' class='profile-avatar'/>
                 <div class='profile-info'>
-                    <h2>{profile.get('username')}</h2>
+                    <h2>{profile.get('username', '未知用户')}</h2>
                     <p><strong>昵称:</strong> {profile.get('nickname', '未设置')}</p>
                     <p><strong>城市:</strong> {profile.get('city', '未设置')}</p>
-                    <p><strong>注册时间:</strong> {profile.get('create_time')}</p>
+                    <p><strong>注册时间:</strong> {create_time}</p>
+                    <div class='stats'>
+                        <div class='stat-item'>
+                            <div class='stat-number'>{profile.get('friend_count', 0)}</div>
+                            <div class='stat-label'>好友</div>
+                        </div>
+                        <div class='stat-item'>
+                            <div class='stat-number'>{profile.get('post_count', 0)}</div>
+                            <div class='stat-label'>动态</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             """
 
             # 统计信息
-            stats_html = user_stats_service.get_simple_user_statistics(user_data["user_id"])
-            stats_html += user_stats_service.generate_statistics_html(user_data["user_id"])
+            try:
+                stats_html = user_stats_service.get_simple_user_statistics(user_data["user_id"])
+                stats_html += user_stats_service.generate_statistics_html(user_data["user_id"])
+            except Exception as e:
+                print(f"获取统计信息失败: {e}")
+                stats_html = "<div>统计信息加载失败</div>"
 
             return profile_html, stats_html
+
         except Exception as e:
+            print(f"加载个人资料失败: {e}")
+            import traceback
+            traceback.print_exc()
             return f"<div class='error'>错误: {str(e)}</div>", f"<div class='error'>错误: {str(e)}</div>"
 
     def view_other_user(user_id, user_data):
+        """查看其他用户资料"""
         if not user_data:
             return "请先登录"
         if not user_id:
             return "请输入有效的用户ID"
 
         try:
+            # 注意参数顺序：user_id, viewer_id
             profile = user_profile_service.get_user_profile(
-                user_id,
+                int(user_id),
                 user_data["user_id"]
             )
 
             if not profile:
                 return "用户不存在"
 
-            if profile.get("privacy") == "private":
-                return "该用户的资料是私密的"
-            elif profile.get("privacy") == "friends_only":
-                return "只有好友才能查看"
+            # 检查隐私设置
+            if 'privacy' in profile:
+                if profile['privacy'] == 'private':
+                    return "该用户的资料是私密的"
+                elif profile['privacy'] == 'friends_only':
+                    return "只有好友才能查看"
 
-            return f"已加载用户 {profile.get('username')} 的资料"
+            # 使用 MongoDB 文件服务获取头像
+            avatar_file_key = profile.get('avatar')
+            try:
+                avatar_data_url = mongo_file_service.get_avatar_data_url(avatar_file_key)
+            except Exception as e:
+                print(f"获取头像失败: {e}")
+                avatar_data_url = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YwZjBmMCIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjMwIiBmaWxsPSIjY2NjY2NjIi8+PC9zdmc+"
+
+            # 格式化创建时间
+            create_time = profile.get('create_time', '')
+            if create_time:
+                try:
+                    if hasattr(create_time, 'strftime'):
+                        create_time = create_time.strftime('%Y-%m-%d %H:%M:%S')
+                    else:
+                        create_time = str(create_time)
+                except:
+                    create_time = '未知'
+
+            # 构建用户资料显示
+            profile_html = f"""
+            <style>
+            .other-user-profile {{
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                padding: 15px;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+            }}
+            .profile-avatar {{
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid #f0f0f0;
+            }}
+            .profile-info {{
+                flex: 1;
+            }}
+            .stats {{
+                display: flex;
+                gap: 15px;
+                margin-top: 10px;
+            }}
+            .stat-item {{
+                text-align: center;
+            }}
+            .stat-number {{
+                font-size: 16px;
+                font-weight: bold;
+                color: #2196F3;
+            }}
+            .stat-label {{
+                font-size: 12px;
+                color: #666;
+            }}
+            </style>
+            <div class='other-user-profile'>
+                <img src='{avatar_data_url}' class='profile-avatar'/>
+                <div class='profile-info'>
+                    <h3>{profile.get('username', '未知用户')}</h3>
+                    <p><strong>昵称:</strong> {profile.get('nickname', '未设置')}</p>
+                    <p><strong>城市:</strong> {profile.get('city', '未设置')}</p>
+                    <p><strong>注册时间:</strong> {create_time}</p>
+                    <div class='stats'>
+                        <div class='stat-item'>
+                            <div class='stat-number'>{profile.get('friend_count', 0)}</div>
+                            <div class='stat-label'>好友</div>
+                        </div>
+                        <div class='stat-item'>
+                            <div class='stat-number'>{profile.get('post_count', 0)}</div>
+                            <div class='stat-label'>动态</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            """
+
+            profile_html += user_stats_service.get_simple_user_statistics(user_id=user_id)
+
+            return profile_html
+
         except Exception as e:
+            print(f"查看其他用户资料失败: {e}")
+            import traceback
+            traceback.print_exc()
             return f"错误: {str(e)}"
 
     def update_profile(nickname, city, avatar, user_data):
+        """更新用户个人资料"""
         if not user_data:
             return "请先登录"
 
         try:
-            update_data = {}
-            if nickname:
-                update_data["nickname"] = nickname
-            if city:
-                update_data["city"] = city
-            if avatar:
-                update_data["avatar"] = "path/to/avatar.jpg"  # 实际应用中需要处理文件上传
+            print(f"更新个人资料，用户ID: {user_data.get('user_id')}")
+            print(f"昵称: {nickname}, 城市: {city}")
+            print(f"头像: {avatar}")
 
+            update_data = {}
+            if nickname and nickname.strip():
+                update_data["nickname"] = nickname.strip()
+            if city and city.strip():
+                update_data["city"] = city.strip()
+
+            # 处理头像上传 - 使用 MongoDB 文件服务
+            if avatar:
+                print("开始处理头像上传...")
+                success, message, file_key = mongo_file_service.save_avatar(user_data['user_id'], avatar)
+                print(f"头像上传结果: success={success}, message={message}, file_key={file_key}")
+
+                if success and file_key:
+                    update_data["avatar"] = file_key  # 存储文件键而不是文件路径
+                    print(f"头像上传成功，文件键: {file_key}")
+                else:
+                    return f"头像上传失败: {message}"
+
+            # 如果没有任何更新数据，返回提示
+            if not update_data:
+                return "没有需要更新的内容"
+
+            print(f"准备更新的数据: {update_data}")
+
+            # 更新用户资料 - 注意这里返回的是元组
             success, message = user_profile_service.update_user_profile(
                 user_data["user_id"],
                 update_data
             )
-            return message
+
+            print(f"资料更新结果: success={success}, message={message}")
+
+            if success:
+                return "个人资料更新成功！"
+            else:
+                return f"更新失败: {message}"
+
         except Exception as e:
-            return f"错误: {str(e)}"
+            print(f"更新个人资料错误: {e}")
+            import traceback
+            traceback.print_exc()
+            return f"更新失败: {str(e)}"
 
     def load_my_posts(filter_type, page, user_data):
         """加载用户自己的动态并填充卡片视图"""
@@ -829,18 +1054,18 @@ def create_user_profile_ui(user_info_state):
             visible=False), "list"
 
     def load_post_detail(post_id, user_data):
-        """加载动态详情数据，包括点赞用户和评论"""
+        """加载动态详情数据，包括点赞用户和评论（完善版）"""
         if not post_id or not user_data:
             return "未选择动态", "", "", "", "", "", None, "", "", ""
 
         try:
-            # 获取动态详情
-            post = travel_post_service.get_post_detail(post_id, user_data["user_id"])
+            # 获取动态详情（包含交互信息）
+            post = travel_post_service.get_post_detail_with_interactions(post_id, user_data["user_id"])
 
             if not post or post.get("user_id") != user_data["user_id"]:
                 return "无权查看此动态", "", "", "", "", "", None, "", "", ""
 
-            # 提取数据
+            # 提取基本数据
             title = post.get("title", "无标题")
             username = post.get("nickname") or post.get("username", "用户")
             created_at = post.get("created_at", "")
@@ -867,44 +1092,161 @@ def create_user_profile_ui(user_info_state):
             media = []
             if post.get("media"):
                 for item in post.get("media"):
-                    if isinstance(item, dict) and item.get("media_url"):
+                    if item.get("media_url"):
                         media.append(item["media_url"])
 
-            # 统计
+            # 统计数据
             like_count = post.get("like_count", 0)
             comment_count = post.get("comment_count", 0)
-            stats = f"❤️ {like_count} 次点赞 | 💬 {comment_count} 条评论"
+            view_count = post.get("view_count", 0)
+            stats_text = f"👍 {like_count} 点赞 | 💬 {comment_count} 评论 | 👀 {view_count} 浏览"
 
-            # 使用公共组件生成点赞用户列表
+            # 点赞用户显示
+            likes_data = post.get("likes_data", {})
             likes_html = create_styled_likes_display(
-                post.get("recent_likes", []),
-                like_count
+                likes_data.get("likes", []),
+                likes_data.get("total", 0)
             )
 
-            # 使用公共组件生成评论列表
+            # 评论显示
+            comments_data = post.get("comments_data", {})
             comments_html = create_styled_comments_display(
-                post.get("recent_comments", []),
-                comment_count
+                comments_data.get("comments", []),
+                comments_data.get("total", 0)
             )
+
+            # 发布信息
+            meta_text = f"👤 {username} | 📅 {created_at}"
 
             return (
                 f"### {title}",
-                f"**发布者:** {username} | **时间:** {created_at}",
+                meta_text,
                 privacy_text,
-                f"**标签:** {tags_text}",
-                f"**位置:** {location_text}",
+                tags_text,
+                location_text,
                 content,
                 media,
-                stats,
+                stats_text,
                 likes_html,
                 comments_html
             )
+
         except Exception as e:
-            return (
-                f"加载失败: {str(e)}", "", "", "", "", "", None, "",
-                "<p>加载点赞用户失败</p>",
-                "<p>加载评论失败</p>"
-            )
+            print(f"加载动态详情失败: {e}")
+            return "加载失败", "", "", "", "", "", None, "", "", ""
+
+    def load_more_likes_handler(post_id, current_page, user_data):
+        """加载更多点赞用户"""
+        if not post_id or not user_data:
+            return "", current_page, False
+
+        try:
+            next_page = current_page + 1
+            likes_data = travel_post_service.load_more_likes(post_id, next_page, user_data["user_id"])
+
+            if likes_data.get("likes"):
+                likes_html = create_styled_likes_display(
+                    likes_data.get("likes", []),
+                    likes_data.get("total", 0)
+                )
+                return likes_html, next_page, likes_data.get("has_more", False)
+            else:
+                return "", current_page, False
+
+        except Exception as e:
+            print(f"加载更多点赞失败: {e}")
+            return "", current_page, False
+
+    def load_more_comments_handler(post_id, current_page, user_data):
+        """加载更多评论"""
+        if not post_id or not user_data:
+            return "", current_page, False
+
+        try:
+            next_page = current_page + 1
+            comments_data = travel_post_service.load_more_comments(post_id, next_page, user_data["user_id"])
+
+            if comments_data.get("comments"):
+                comments_html = create_styled_comments_display(
+                    comments_data.get("comments", []),
+                    comments_data.get("total", 0)
+                )
+                return comments_html, next_page, comments_data.get("has_more", False)
+            else:
+                return "", current_page, False
+
+        except Exception as e:
+            print(f"加载更多评论失败: {e}")
+            return "", current_page, False
+
+    def submit_comment_handler(post_id, comment_content, user_data):
+        """提交评论"""
+        if not post_id or not comment_content or not user_data:
+            return "", "请输入评论内容", ""
+
+        try:
+            # 清理评论内容
+            comment_content = comment_content.strip()
+            if not comment_content:
+                return "", "评论内容不能为空", ""
+
+            # 提交评论
+            result = travel_post_service.add_comment(post_id, user_data["user_id"], comment_content)
+
+            if result.get("success"):
+                # 重新加载评论
+                comments_data = travel_post_service.get_comments_with_avatars(post_id, page=1, page_size=10)
+                comments_html = create_styled_comments_display(
+                    comments_data.get("comments", []),
+                    comments_data.get("total", 0)
+                )
+                return comments_html, "评论发表成功！", ""
+            else:
+                return "", f"评论失败: {result.get('message', '未知错误')}", comment_content
+
+        except Exception as e:
+            print(f"提交评论失败: {e}")
+            return "", f"评论失败: {str(e)}", comment_content
+
+    # 在创建详情视图后添加事件绑定
+
+    def bind_detail_view_events(components, user_data):
+        """绑定详情视图的事件处理器"""
+
+        # 加载更多点赞
+        components["load_more_likes"].click(
+            fn=lambda post_id, page: load_more_likes_handler(post_id, page, user_data),
+            inputs=[components["post_id"], components["likes_page"]],
+            outputs=[components["likes"], components["likes_page"], components["load_more_likes"]]
+        )
+
+        # 加载更多评论
+        components["load_more_comments"].click(
+            fn=lambda post_id, page: load_more_comments_handler(post_id, page, user_data),
+            inputs=[components["post_id"], components["comments_page"]],
+            outputs=[components["comments"], components["comments_page"], components["load_more_comments"]]
+        )
+
+        # 提交评论
+        components["submit_comment"].click(
+            fn=lambda post_id, content: submit_comment_handler(post_id, content, user_data),
+            inputs=[components["post_id"], components["comment_input"]],
+            outputs=[components["comments"], gr.Textbox(), components["comment_input"]]
+        )
+
+        # 表情符号按钮（可以扩展为表情选择器）
+        components["emoji_btn"].click(
+            fn=lambda current: current + "😊",
+            inputs=[components["comment_input"]],
+            outputs=[components["comment_input"]]
+        )
+
+        # @提及按钮（可以扩展为用户选择器）
+        components["mention_btn"].click(
+            fn=lambda current: current + "@",
+            inputs=[components["comment_input"]],
+            outputs=[components["comment_input"]]
+        )
 
     def load_post_for_edit(post_id, user_data):
         """加载动态数据用于编辑"""

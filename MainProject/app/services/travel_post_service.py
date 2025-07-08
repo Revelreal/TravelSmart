@@ -765,7 +765,7 @@ class TravelPostService:
                         SELECT id, media_type, media_url, thumbnail_url, created_at
                         FROM PostMedia
                         WHERE post_id = %s
-                        ORDER BY id ASC \
+                        ORDER BY id \
                         """
             post['media'] = self.db.query(media_sql, (post_id,))
 
@@ -1069,3 +1069,206 @@ class TravelPostService:
         except Exception as e:
             # 提及处理失败不应影响主评论流程
             print(f"处理用户提及时出错: {str(e)}")
+
+    def get_likes(self, post_id, page=1, page_size=20):
+        """获取动态点赞用户（带头像）"""
+        try:
+            offset = (page - 1) * page_size
+
+            # 获取点赞用户列表，包含头像信息
+            likes_sql = """
+                        SELECT pi.user_id, pi.created_at, u.username, u.nickname, u.avatar
+                        FROM PostInteractions pi
+                                 JOIN Users u ON pi.user_id = u.id
+                        WHERE pi.post_id = %s \
+                          AND pi.interaction_type = 'like'
+                        ORDER BY pi.created_at DESC
+                        LIMIT %s OFFSET %s \
+                        """
+
+            likes = self.db.query(likes_sql, (post_id, page_size, offset))
+
+            # 获取总点赞数
+            count_sql = """
+                        SELECT COUNT(*) as total
+                        FROM PostInteractions
+                        WHERE post_id = %s \
+                          AND interaction_type = 'like' \
+                        """
+            count_result = self.db.fetchone(count_sql, (post_id,))
+            total = count_result['total'] if count_result else 0
+
+            return {
+                'likes': likes,
+                'total': total,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': (total + page_size - 1) // page_size
+            }
+
+        except Exception as e:
+            print(f"获取点赞用户失败: {e}")
+            return {
+                'likes': [],
+                'total': 0,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': 0
+            }
+
+    def get_post_detail_with_interactions(self, post_id, user_id=None):
+        """
+        获取动态详情，包含完整的点赞用户和评论信息
+        """
+        # 获取基本动态信息
+        post = self.get_post_detail(post_id, user_id)
+        if not post:
+            return None
+
+        try:
+            # 获取完整的点赞用户列表（带头像）
+            likes_data = self.get_likes_with_avatars(post_id, page=1, page_size=20)
+            post['likes_data'] = likes_data
+
+            # 获取完整的评论列表（带头像）
+            comments_data = self.get_comments_with_avatars(post_id, page=1, page_size=10)
+            post['comments_data'] = comments_data
+
+            return post
+
+        except Exception as e:
+            print(f"获取动态交互信息失败: {e}")
+            return post
+
+    def get_likes_with_avatars(self, post_id, page=1, page_size=20):
+        """获取点赞用户列表（包含头像信息）"""
+        try:
+            offset = (page - 1) * page_size
+
+            # 获取点赞用户列表，包含完整用户信息
+            likes_sql = """
+                        SELECT pi.user_id, \
+                               pi.created_at,
+                               u.username, \
+                               u.nickname, \
+                               u.avatar,
+                               u.id as user_id
+                        FROM PostInteractions pi
+                                 JOIN Users u ON pi.user_id = u.id
+                        WHERE pi.post_id = %s \
+                          AND pi.interaction_type = 'like'
+                        ORDER BY pi.created_at DESC
+                        LIMIT %s OFFSET %s \
+                        """
+
+            likes = self.db.query(likes_sql, (post_id, page_size, offset))
+
+            # 获取总点赞数
+            count_sql = """
+                        SELECT COUNT(*) as total
+                        FROM PostInteractions
+                        WHERE post_id = %s \
+                          AND interaction_type = 'like' \
+                        """
+            count_result = self.db.fetchone(count_sql, (post_id,))
+            total = count_result['total'] if count_result else 0
+
+            # 处理头像数据
+            for like in likes:
+                # 确保头像键存在
+                if not like.get('avatar'):
+                    like['avatar'] = None
+
+            return {
+                'likes': likes,
+                'total': total,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': (total + page_size - 1) // page_size,
+                'has_more': total > page * page_size
+            }
+
+        except Exception as e:
+            print(f"获取点赞用户失败: {e}")
+            return {
+                'likes': [],
+                'total': 0,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': 0,
+                'has_more': False
+            }
+
+    def get_comments_with_avatars(self, post_id, page=1, page_size=10):
+        """获取评论列表（包含头像信息）"""
+        try:
+            offset = (page - 1) * page_size
+
+            # 获取评论列表，包含完整用户信息
+            comments_sql = """
+                           SELECT pi.id, \
+                                  pi.user_id, \
+                                  pi.comment_content, \
+                                  pi.created_at,
+                                  u.username, \
+                                  u.nickname, \
+                                  u.avatar,
+                                  u.id as commenter_id
+                           FROM PostInteractions pi
+                                    JOIN Users u ON pi.user_id = u.id
+                           WHERE pi.post_id = %s \
+                             AND pi.interaction_type = 'comment'
+                           ORDER BY pi.created_at DESC
+                           LIMIT %s OFFSET %s \
+                           """
+
+            comments = self.db.query(comments_sql, (post_id, page_size, offset))
+
+            # 获取总评论数
+            count_sql = """
+                        SELECT COUNT(*) as total
+                        FROM PostInteractions
+                        WHERE post_id = %s \
+                          AND interaction_type = 'comment' \
+                        """
+            count_result = self.db.fetchone(count_sql, (post_id,))
+            total = count_result['total'] if count_result else 0
+
+            # 处理头像数据和评论内容
+            for comment in comments:
+                # 确保头像键存在
+                if not comment.get('avatar'):
+                    comment['avatar'] = None
+
+                # 处理评论内容中的换行符
+                if comment.get('comment_content'):
+                    comment['comment_content'] = comment['comment_content'].replace('\n', '<br>')
+
+            return {
+                'comments': comments,
+                'total': total,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': (total + page_size - 1) // page_size,
+                'has_more': total > page * page_size
+            }
+
+        except Exception as e:
+            print(f"获取评论失败: {e}")
+            return {
+                'comments': [],
+                'total': 0,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': 0,
+                'has_more': False
+            }
+
+    def load_more_likes(self, post_id, page, user_id=None):
+        """加载更多点赞用户"""
+        return self.get_likes_with_avatars(post_id, page=page, page_size=20)
+
+    def load_more_comments(self, post_id, page, user_id=None):
+        """加载更多评论"""
+        return self.get_comments_with_avatars(post_id, page=page, page_size=10)
+

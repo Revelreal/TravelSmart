@@ -4,6 +4,38 @@ from MainProject.dbhelper.SQLHelper import SQLHelper
 from MainProject.dbhelper.MONGOHelper import MongoHelper
 
 
+def get_default_statistics():
+    """获取默认的统计数据（当出错时使用）
+
+    Returns:
+        dict: 包含默认值的统计数据字典
+    """
+    return {
+        "friend_count": 0,
+        "accepted_friends": 0,
+        "pending_friends": 0,
+        "accepted_percent": 0,
+        "sent_messages": 0,
+        "received_messages": 0,
+        "post_count": 0,
+        "public_percent": 0,
+        "friends_percent": 0,
+        "private_percent": 0,
+        "image_count": 0,
+        "video_count": 0,
+        "like_count": 0,
+        "comment_count": 0,
+        "favorite_count": 0,
+        "engagement_rate": 0,
+        "avg_interactions": 0,
+        "given_likes": 0,
+        "given_comments": 0,
+        "top_tags": [],
+        "location_count": 0,
+        "top_locations": []
+    }
+
+
 class UserStatsService:
     """用户统计信息服务，提供用户相关统计数据的获取和处理功能"""
 
@@ -78,38 +110,7 @@ class UserStatsService:
             }
         except Exception as e:
             print(f"Error getting user statistics: {str(e)}")
-            return self.get_default_statistics()
-
-    def get_default_statistics(self):
-        """获取默认的统计数据（当出错时使用）
-
-        Returns:
-            dict: 包含默认值的统计数据字典
-        """
-        return {
-            "friend_count": 0,
-            "accepted_friends": 0,
-            "pending_friends": 0,
-            "accepted_percent": 0,
-            "sent_messages": 0,
-            "received_messages": 0,
-            "post_count": 0,
-            "public_percent": 0,
-            "friends_percent": 0,
-            "private_percent": 0,
-            "image_count": 0,
-            "video_count": 0,
-            "like_count": 0,
-            "comment_count": 0,
-            "favorite_count": 0,
-            "engagement_rate": 0,
-            "avg_interactions": 0,
-            "given_likes": 0,
-            "given_comments": 0,
-            "top_tags": [],
-            "location_count": 0,
-            "top_locations": []
-        }
+            return get_default_statistics()
 
     def get_friendship_stats(self, user_id):
         """获取用户的好友统计信息

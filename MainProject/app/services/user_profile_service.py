@@ -237,17 +237,21 @@ class UserProfileService:
 
         # 构建SQL查询
         sql = """
-        SELECT p.*, u.username, u.nickname, u.avatar,
-               COUNT(DISTINCT pi_like.id) as like_count,
-               COUNT(DISTINCT pi_comment.id) as comment_count
-        FROM TravelPosts p
-        JOIN Users u ON p.user_id = u.id
-        LEFT JOIN PostInteractions pi_like ON p.id = pi_like.post_id AND pi_like.interaction_type = 'like'
-        LEFT JOIN PostInteractions pi_comment ON p.id = pi_comment.post_id AND pi_comment.interaction_type = 'comment'
-        WHERE """ + " AND ".join(conditions) + """
-        GROUP BY p.id
-        ORDER BY p.created_at DESC
-        LIMIT %s OFFSET %s
+            SELECT p.id, p.user_id, p.title, p.content, p.location_name, p.location_coordinates, 
+                   p.privacy_level, p.view_count, p.created_at, p.updated_at,
+                   u.username, u.nickname, u.avatar,
+                   COUNT(DISTINCT pi_like.id) as like_count,
+                   COUNT(DISTINCT pi_comment.id) as comment_count
+            FROM TravelPosts p
+            JOIN Users u ON p.user_id = u.id
+            LEFT JOIN PostInteractions pi_like ON p.id = pi_like.post_id AND pi_like.interaction_type = 'like'
+            LEFT JOIN PostInteractions pi_comment ON p.id = pi_comment.post_id AND pi_comment.interaction_type = 'comment'
+            WHERE """ + " AND ".join(conditions) + """
+            GROUP BY p.id, p.user_id, p.title, p.content, p.location_name, p.location_coordinates, 
+                     p.privacy_level, p.view_count, p.created_at, p.updated_at,
+                     u.username, u.nickname, u.avatar
+            ORDER BY p.created_at DESC
+            LIMIT %s OFFSET %s
         """
 
         offset = (page - 1) * page_size
