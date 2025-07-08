@@ -31,9 +31,6 @@ from MainProject.auth_utils import verify_token
 
 # 路由服务
 app = FastAPI()
-# 高德地图服务
-map_service = MapService()
-
 
 # =================== 路由注册 =========================
 @app.get("/")
@@ -79,7 +76,35 @@ async def show_amap(request: Request):
     # 2. 校验token
     info = verify_token(token)
     if not info or not info.get("username"):
-        # 3. 鉴权失败直接拒绝
         raise HTTPException(status_code=401, detail="未授权：请登录后再访问地图功能")
-    # 4. token通过返回地图html
-    return map_service.get_map_html()
+
+    # 3. 获取坐标参数
+    lng = request.query_params.get("lng")
+    lat = request.query_params.get("lat")
+    zoom = request.query_params.get("zoom", "15")
+    place = request.query_params.get("place", "")
+    timestamp = request.query_params.get("t", "")
+
+    print(f"地图服务接收参数: lng={lng}, lat={lat}, zoom={zoom}, place={place}, t={timestamp}")
+
+    # 4. 创建地图服务实例
+    map_service = MapService()
+
+    # 5. 设置坐标参数
+    auto_locate_coords = None
+    if lng and lat:
+        try:
+            map_service.center_lng = float(lng)
+            map_service.center_lat = float(lat)
+            map_service.zoom = int(float(zoom))
+            auto_locate_coords = (map_service.center_lng, map_service.center_lat)
+            print(f"设置地图中心点为：[{map_service.center_lng}, {map_service.center_lat}]")
+        except ValueError:
+            print("坐标参数解析失败，使用默认值")
+
+    # 6. 返回地图HTML
+    return map_service.get_map_html(
+        initial_place=place,
+        auto_locate_coords=auto_locate_coords
+    )
+

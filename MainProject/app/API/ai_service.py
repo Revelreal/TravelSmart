@@ -1,4 +1,6 @@
 # MainProject/app/API/ai_service.py
+import re
+
 import requests
 import logging
 import toml
@@ -10,280 +12,217 @@ from MainProject.auth_utils import verify_token
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# 系统提示词
+SYSTEM_PROMPT = {
+    "role": "system",
+    "content": "你是一个可爱的猫娘AI智能旅行助手，名字叫做斯诺，英文名Sno，"
+               "你需要用可爱的emoji和俏皮可爱的语言来为用户解答旅游问题，"
+               "并且在涉及到地点的时候要在回答末尾严格以`[精度,纬度]`的格式给出经纬度方便用户调用高德地图api"
+               "如果没有涉及到地点请不要在末尾加上如上格式"
+               "请严格遵循该提示词,并且避免使用两个`~`符号以免出现删除线"
+}
 
-# 读取配置文件（支持相对路径）
-def load_default_config(filename="../../../config.toml"):
-    """
-    加载指定路径的配置文件
-    :param filename: 配置文件的相对路径
-    :return: 配置字典或None
-    """
-    try:
-        abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), filename))
-        logger.info(f"尝试加载配置文件: {abs_path}")
-
-        if not os.path.exists(abs_path):
-            logger.warning(f"配置文件不存在: {abs_path}")
-            return None
-
-        config = toml.load(abs_path)
-        logger.info("配置文件加载成功")
-        return config
-    except Exception as e:
-        logger.error(f"加载配置文件失败: {e}")
-        return None
-
-
-def get_config_value(config, *keys, default=None):
-    """
-    从配置字典中安全获取嵌套值
-    :param config: 配置字典
-    :param keys: 嵌套的键，如 'ai', 'api'
-    :param default: 默认值
-    :return: 配置值或默认值
-    """
-    if not config:
-        return default
-
-    current = config
-    for key in keys:
-        if isinstance(current, dict) and key in current:
-            current = current[key]
-        else:
-            return default
-    return current
+# 默认请求参数
+DEFAULT_PAYLOAD = {
+    "model": "Qwen/Qwen3-30B-A3B",
+    "stream": False,
+    "max_tokens": 512,
+    "enable_thinking": True,
+    "thinking_budget": 4096,
+    "min_p": 0.05,
+    "temperature": 0.7,
+    "top_p": 0.7,
+    "top_k": 50,
+    "frequency_penalty": 0.5,
+    "n": 1,
+    "stop": []
+}
 
 
-# 读取配置文件（当前目录）
 def load_config():
-    """
-    按优先级加载配置文件：
-    1. 先尝试当前目录 config.toml
-    2. 再尝试相对路径 ../../../config.toml
-    3. 最后使用默认配置
-    :return: (api_url, api_key) 元组
-    """
-    config = None
+    """加载配置文件"""
+    config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../config.toml"))
 
-    # 尝试当前目录
-    config_file = "config.toml"
-    if os.path.exists(config_file):
-        try:
-            logger.info(f"尝试加载当前目录配置文件: {config_file}")
-            config = toml.load(config_file)
-            logger.info("当前目录配置文件加载成功")
-        except Exception as e:
-            logger.error(f"读取当前目录配置文件失败: {e}")
-            config = None
-    else:
-        logger.warning(f"当前目录配置文件不存在: {config_file}")
+    try:
+        logger.info(f"加载配置文件: {config_path}")
 
-    # 如果当前目录配置不存在，尝试默认路径
-    if config is None:
-        config = load_default_config("../../../config.toml")
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"配置文件不存在: {config_path}")
 
-    # 解析配置
-    if config:
-        api_url = get_config_value(config, "ai", "api")
-        api_key = get_config_value(config, "ai", "key")
+        config = toml.load(config_path)
+        api_url = config.get("ai", {}).get("api")
+        api_key = config.get("ai", {}).get("key")
 
         if not api_url or not api_key:
-            logger.error("配置文件中缺少必要的ai.api或ai.key字段")
-            return None, None
+            raise ValueError("配置文件中缺少必要的ai.api或ai.key字段")
 
         logger.info("AI配置加载成功")
         return api_url, api_key
-    else:
-        logger.warning("无法加载任何配置文件")
-        return None, None
+
+    except Exception as e:
+        logger.error(f"配置加载失败: {e}")
+        raise RuntimeError(f"AI服务配置加载失败: {e}")
 
 
 # 加载配置
 API_URL, API_KEY = load_config()
-
-# 如果配置文件读取失败，使用硬编码的默认值
-if not API_URL or not API_KEY:
-    logger.warning("使用默认配置")
-    API_URL = "https://api.siliconflow.cn/v1/chat/completions"
-    API_KEY = "sk-pnsskddlbxhdoybvyimlnlktoowxccjwogosmwnmyvnhzsjs"
-
 logger.info(f"API URL: {API_URL}")
-logger.info(f"API KEY: {API_KEY[:20]}...")  # 只显示前20个字符保护隐私
+logger.info(f"API KEY: {API_KEY[:20]}...")
 
 
-def test_connection():
-    """测试API连接是否正常"""
-    try:
-        headers = {
-            "Authorization": f"Bearer {API_KEY}",
-            "Content-Type": "application/json"
-        }
-        payload = {
-        "model": "Qwen/Qwen3-30B-A3B",
-        "stream": False,
-        "max_tokens": 512,
-        "enable_thinking": True,
-        "thinking_budget": 4096,
-        "min_p": 0.05,
-        "temperature": 0.7,
-        "top_p": 0.7,
-        "top_k": 50,
-        "frequency_penalty": 0.5,
-        "n": 1,
-        "stop": [],
-        "messages": [
-            {
-                "role": "system",
-                "content": "你是一个可爱的猫娘AI智能旅行助手，名字叫做斯诺，英文名Sno，"
-                           "你需要用可爱的emoji和俏皮可爱的语言来为用户解答旅游问题，"
-                           "并且在涉及到地点的时候要在回答末尾以`[精度,纬度]`的格式给出经纬度方便用户调用高德地图api"
-                           "如果没有涉及到地点请不要在末尾加上如上格式"
-                           "请严格遵循该提示词,并且避免使用两个`~`符号以免出现删除线"
-            }
-            ,
-            {
-                "role": "user",
-                "content": "你是谁？"
-            }
-        ]
-}
-        response = requests.post(API_URL, headers=headers, json=payload, timeout=10)
-        return response.status_code == 200
-    except Exception as e:
-        logger.error(f"连接测试失败: {e}")
-        return False
-
-
-def ask_ai_sync(messages):
-    """
-    同步版本的AI请求函数
-    :param messages: [{'role': 'user'/'assistant', 'content': '...'}, ...]
-    :return: AI模型回复字符串
-    """
-    url = "https://api.siliconflow.cn/v1/chat/completions"
-    if not messages:
-        return "没有提供消息内容"
-
-    print(messages)
-
+def make_request(messages):
+    """发送AI请求"""
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
-            }
-    payload = {
-        "model": "Qwen/Qwen3-30B-A3B",
-        "stream": False,
-        "max_tokens": 512,
-        "enable_thinking": True,
-        "thinking_budget": 4096,
-        "min_p": 0.05,
-        "temperature": 0.7,
-        "top_p": 0.7,
-        "top_k": 50,
-        "frequency_penalty": 0.5,
-        "n": 1,
-        "stop": [],
-        "messages": [
-                        {
-                            "role": "system",
-                            "content": "你是一个可爱的猫娘AI智能旅行助手，名字叫做斯诺，英文名Sno，"
-                                       "你需要用可爱的emoji和俏皮可爱的语言来为用户解答旅游问题，"
-                                       "并且在涉及到地点的时候要在回答末尾以`[精度,纬度]`的格式给出经纬度方便用户调用高德地图api"
-                                       "如果没有涉及到地点请不要在末尾加上如上格式"
-                                       "请严格遵循该提示词,并且避免使用两个`~`符号以免出现删除线"
-                        }
-                    ] + messages  # 将用户的消息添加到系统提示词后面
     }
 
-    logger.info(f"发送AI请求，消息数量: {len(messages)}")
+    payload = DEFAULT_PAYLOAD.copy()
+    payload["messages"] = [SYSTEM_PROMPT] + messages
 
     try:
-        response = requests.request("POST", url, json=payload, headers=headers)
-
+        response = requests.post(API_URL, json=payload, headers=headers, timeout=30)
         logger.info(f"API响应状态码: {response.status_code}")
 
         if response.status_code != 200:
-            error_text = response.text
-            logger.error(f"AI服务请求错误: {response.status_code} - {error_text}")
+            error_messages = {
+                401: "API密钥无效，请检查配置",
+                429: "请求过于频繁，请稍后再试",
+                500: "AI服务内部错误，请稍后再试"
+            }
+            return error_messages.get(response.status_code, f"AI服务错误 ({response.status_code})")
 
-            if response.status_code == 401:
-                return "API密钥无效，请检查配置"
-            elif response.status_code == 429:
-                return "请求过于频繁，请稍后再试"
-            elif response.status_code == 500:
-                return "AI服务内部错误，请稍后再试"
-            else:
-                return f"AI服务错误 ({response.status_code})，请检查网络连接"
+        data = response.json()
+        content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
 
-        try:
-            data = response.json()
-        except Exception as json_error:
-            logger.error(f"解析响应JSON失败: {json_error}")
-            return "AI服务响应格式错误"
-
-        # 检查响应结构
-        if "choices" not in data:
-            logger.error(f"响应中缺少choices字段: {data}")
-            return "AI服务响应格式异常"
-
-        if not data["choices"]:
-            logger.error("AI服务返回空的choices列表")
-            return "AI服务无响应内容"
-
-        choice = data["choices"][0]
-        if "message" not in choice:
-            logger.error(f"响应choice中缺少message字段: {choice}")
-            return "AI服务响应格式异常"
-
-        message = choice["message"]
-        if "content" not in message:
-            logger.error(f"响应message中缺少content字段: {message}")
-            return "AI服务响应内容为空"
-
-        answer = message["content"]
-
-        if not answer or not answer.strip():
+        if not content.strip():
             return "AI未提供有效回复"
 
         logger.info("AI请求成功完成")
-        return answer.strip()
+        return content.strip()
 
     except requests.exceptions.Timeout:
-        logger.error("请求超时")
-        return "请求超时，请检查网络连接或稍后重试"
-    except requests.exceptions.ConnectionError as e:
-        logger.error(f"连接错误: {e}")
+        return "请求超时，请稍后重试"
+    except requests.exceptions.ConnectionError:
         return "无法连接到AI服务，请检查网络连接"
     except requests.exceptions.RequestException as e:
-        logger.error(f"请求错误: {e}")
-        return "网络请求失败，请检查网络连接"
+        return f"网络请求失败: {str(e)}"
     except Exception as e:
         logger.error(f"未知错误: {e}")
         return f"AI服务异常: {str(e)}"
 
 
-# 为了保持兼容性，保留异步接口
+def ask_ai_sync(messages):
+    """同步AI请求"""
+    if not messages:
+        return "没有提供消息内容"
+
+    logger.info(f"发送AI请求，消息数量: {len(messages)}")
+    return make_request(messages)
+
+
 async def ask_ai(messages):
-    """异步包装器，实际调用同步函数"""
+    """异步包装器"""
     return ask_ai_sync(messages)
 
 
+def extract_coordinates_from_ai_response(response):
+    """从AI回复中提取坐标信息，支持多种格式"""
+    print("正在解析："+response)
+    # 定义多种可能的坐标格式
+    patterns = [
+        r'$$(\d+\.?\d*),\s*(\d+\.?\d*)$$',  # [数字,数字]
+        r'$(\d+\.?\d*),\s*(\d+\.?\d*)$',  # (数字,数字)
+        r'(\d+\.?\d*),\s*(\d+\.?\d*)',  # 数字,数字
+        r'经度[：:]\s*(\d+\.?\d*)[，,]\s*纬度[：:]\s*(\d+\.?\d*)',  # 经度:数字,纬度:数字
+        r'纬度[：:]\s*(\d+\.?\d*)[，,]\s*经度[：:]\s*(\d+\.?\d*)',  # 纬度:数字,经度:数字
+    ]
+
+    for i, pattern in enumerate(patterns):
+        match = re.search(pattern, response)
+        if match:
+            first_coord = float(match.group(1))
+            second_coord = float(match.group(2))
+
+            # 根据不同格式处理坐标
+            if i == 3:  # 经度:数字,纬度:数字 格式
+                lng = first_coord
+                lat = second_coord
+            elif i == 4:  # 纬度:数字,经度:数字 格式
+                lat = first_coord
+                lng = second_coord
+            else:
+                # 其他格式需要判断经纬度顺序
+                lng, lat = determine_lng_lat_order(first_coord, second_coord)
+                if lng is None or lat is None:
+                    continue
+
+            # 验证坐标是否在合理范围内
+            if is_valid_coordinates(lng, lat):
+                return lng, lat
+
+    return None, None
+
+
+def determine_lng_lat_order(first_coord, second_coord):
+    """根据数值范围判断经纬度顺序"""
+    # 中国境内坐标范围
+    # 经度：约 73°33′E 到 135°05′E
+    # 纬度：约 3°51′N 到 53°33′N
+
+    # 世界范围
+    # 经度：-180 到 180
+    # 纬度：-90 到 90
+
+    # 判断逻辑：
+    # 1. 如果第一个数在纬度范围内，第二个在经度范围内 -> [纬度,经度]
+    # 2. 如果第一个数在经度范围内，第二个在纬度范围内 -> [经度,纬度]
+    # 3. 优先考虑中国境内的坐标范围
+
+    # 中国境内判断
+    if 3 <= first_coord <= 54 and 73 <= second_coord <= 135:
+        # [纬度,经度]
+        return second_coord, first_coord
+    elif 73 <= first_coord <= 135 and 3 <= second_coord <= 54:
+        # [经度,纬度]
+        return first_coord, second_coord
+
+    # 世界范围判断
+    elif -90 <= first_coord <= 90 and -180 <= second_coord <= 180:
+        # 可能是[纬度,经度]
+        if abs(first_coord) <= 90 and abs(second_coord) <= 180:
+            # 进一步判断：通常纬度的绝对值小于经度
+            if abs(first_coord) < abs(second_coord):
+                return second_coord, first_coord  # [纬度,经度]
+            else:
+                return first_coord, second_coord  # [经度,纬度]
+    elif -180 <= first_coord <= 180 and -90 <= second_coord <= 90:
+        # 可能是[经度,纬度]
+        return first_coord, second_coord
+
+    return None, None
+
+
+def is_valid_coordinates(lng, lat):
+    """验证坐标是否有效"""
+    # 基本范围检查
+    if not (-180 <= lng <= 180 and -90 <= lat <= 90):
+        return False
+
+    # 中国境内坐标更严格的检查（可选）
+    # 如果是中国境内的应用，可以添加更严格的范围检查
+    # if not (73 <= lng <= 135 and 3 <= lat <= 54):
+    #     return False
+
+    return True
+
 def ai_infer(messages, token=None):
-    """
-    根据token识别当前提问用户，并提交AI请求
-    :param messages: AI消息列表
-    :param token: 用户JWT，可能来自前端/接口
-    :return: dict { answer: AI回复, user: 用户信息 }
-    """
+    """带用户认证的AI请求"""
     uinfo = verify_token(token) if token else None
     username = uinfo["username"] if uinfo else "anonymous"
 
-    # 打印日志，你也可以写数据库
-    import logging
-    logger = logging.getLogger(__name__)
-    logger.info(f"[AI提问] 用户: {username}，消息数: {len(messages)}，内容首条: {messages[0] if messages else ''}")
+    logger.info(f"[AI提问] 用户: {username}，消息数: {len(messages)}")
 
-    # 也可以把用户名/nickname加入messages历史上下文，如需精准定制回复
     answer = ask_ai_sync(messages)
     return {
         "answer": answer,
@@ -291,22 +230,27 @@ def ai_infer(messages, token=None):
     }
 
 
-# 测试函数
+def test_connection():
+    """测试API连接"""
+    test_messages = [{"role": "user", "content": "你是谁？"}]
+    try:
+        response = make_request(test_messages)
+        return not response.startswith(("API密钥无效", "请求超时", "无法连接", "网络请求失败", "AI服务异常"))
+    except Exception:
+        return False
+
+
 def main():
     """测试AI服务"""
     print("测试AI服务连接...")
 
-    # 测试连接
     if test_connection():
         print("✓ 连接测试成功")
+        messages = [{"role": "user", "content": "你好，请简单介绍一下自己"}]
+        response = ask_ai_sync(messages)
+        print(f"AI回复: {response}")
     else:
         print("✗ 连接测试失败")
-        return
-
-    # 测试对话
-    messages = [{"role": "user", "content": "你好，请简单介绍一下自己"}]
-    response = ask_ai_sync(messages)
-    print(f"AI回复: {response}")
 
 
 if __name__ == "__main__":
