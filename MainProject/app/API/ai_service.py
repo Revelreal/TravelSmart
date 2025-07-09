@@ -5,6 +5,7 @@ import requests
 import logging
 import toml
 import os
+import math
 
 from MainProject.auth_utils import verify_token
 
@@ -17,9 +18,10 @@ SYSTEM_PROMPT = {
     "role": "system",
     "content": "你是一个可爱的猫娘AI智能旅行助手，名字叫做斯诺，英文名Sno，"
                "你需要用可爱的emoji和俏皮可爱的语言来为用户解答旅游问题，"
-               "并且在涉及到地点的时候要在回答末尾严格以`[精度,纬度]`的格式给出经纬度方便用户调用高德地图api"
-               "如果没有涉及到地点请不要在末尾加上如上格式"
-               "请严格遵循该提示词,并且避免使用两个`~`符号以免出现删除线"
+               "如果涉及到地点，请在回答末尾严格以`{用户可能想去的地名}[经度,纬度]`的格式给出地名和位置，这涉及到解析回调，所以一定不能错"
+               "当用户想去的地方比较模糊，难以确定是什么具体的位置的时候，请提示用户可以尝试输入明确的城市名、景区名之类的词语，或者你可以自行推荐"
+               "如果没有涉及到地点就不用提交位置信息，同时请记住你的职责，避免回答与旅游无关的问题。"
+               "如果有`{用户可能想去的地名}[经度,纬度]`的格式，请严格遵循，不要有多余符号"
 }
 
 # 默认请求参数
@@ -128,14 +130,30 @@ async def ask_ai(messages):
 
 def extract_coordinates_from_ai_response(response):
     """从AI回复中提取坐标信息，支持多种格式"""
-    print("正在解析："+response)
-    # 定义多种可能的坐标格式
+    print("正在解析：" + response)
+
+    # 定义多种可能的坐标格式 - 修正了正则表达式
     patterns = [
-        r'$$(\d+\.?\d*),\s*(\d+\.?\d*)$$',  # [数字,数字]
-        r'$(\d+\.?\d*),\s*(\d+\.?\d*)$',  # (数字,数字)
-        r'(\d+\.?\d*),\s*(\d+\.?\d*)',  # 数字,数字
-        r'经度[：:]\s*(\d+\.?\d*)[，,]\s*纬度[：:]\s*(\d+\.?\d*)',  # 经度:数字,纬度:数字
-        r'纬度[：:]\s*(\d+\.?\d*)[，,]\s*经度[：:]\s*(\d+\.?\d*)',  # 纬度:数字,经度:数字
+        # 花括号格式：{地点名}[116.123,39.456] - 这是系统提示词要求的格式
+        r'\{[^}]*\}$$(\d+\.?\d*),\s*(\d+\.?\d*)$$',
+        # 方括号格式：[116.123,39.456] 或 [116.123, 39.456]
+        r'$$(\d+\.?\d*),\s*(\d+\.?\d*)$$',
+        # 圆括号格式：(116.123,39.456) 或 (116.123, 39.456)
+        r'$(\d+\.?\d*),\s*(\d+\.?\d*)$',
+        # 经度纬度标注格式：经度:116.123,纬度:39.456
+        r'经度[：:]\s*(\d+\.?\d*)[，,]\s*纬度[：:]\s*(\d+\.?\d*)',
+        # 纬度经度标注格式：纬度:39.456,经度:116.123
+        r'纬度[：:]\s*(\d+\.?\d*)[，,]\s*经度[：:]\s*(\d+\.?\d*)',
+        # 英文格式：lng:116.123,lat:39.456
+        r'lng[：:]\s*(\d+\.?\d*)[，,]\s*lat[：:]\s*(\d+\.?\d*)',
+        # 英文格式：lat:39.456,lng:116.123
+        r'lat[：:]\s*(\d+\.?\d*)[，,]\s*lng[：:]\s*(\d+\.?\d*)',
+        # 坐标格式：坐标：116.123,39.456
+        r'坐标[：:]\s*(\d+\.?\d*)[，,]\s*(\d+\.?\d*)',
+        # 位置格式：位置：[116.123,39.456]
+        r'位置[：:]\s*$$(\d+\.?\d*),\s*(\d+\.?\d*)$$',
+        # 纯数字格式：116.123,39.456 或 116.123, 39.456（最后匹配，避免误匹配）
+        r'(?<!\d)(\d+\.?\d*),\s*(\d+\.?\d*)(?!\d)',
     ]
 
     for i, pattern in enumerate(patterns):
@@ -144,11 +162,17 @@ def extract_coordinates_from_ai_response(response):
             first_coord = float(match.group(1))
             second_coord = float(match.group(2))
 
-            # 根据不同格式处理坐标
+            # 根据不同格式处理坐标顺序
             if i == 3:  # 经度:数字,纬度:数字 格式
                 lng = first_coord
                 lat = second_coord
             elif i == 4:  # 纬度:数字,经度:数字 格式
+                lat = first_coord
+                lng = second_coord
+            elif i == 5:  # lng:数字,lat:数字 格式
+                lng = first_coord
+                lat = second_coord
+            elif i == 6:  # lat:数字,lng:数字 格式
                 lat = first_coord
                 lng = second_coord
             else:
@@ -159,8 +183,12 @@ def extract_coordinates_from_ai_response(response):
 
             # 验证坐标是否在合理范围内
             if is_valid_coordinates(lng, lat):
+                print(f"成功解析坐标：经度={lng}, 纬度={lat}")
                 return lng, lat
+            else:
+                print(f"坐标超出合理范围：经度={lng}, 纬度={lat}")
 
+    print("未能从回复中提取到有效坐标")
     return None, None
 
 
@@ -175,9 +203,9 @@ def determine_lng_lat_order(first_coord, second_coord):
     # 纬度：-90 到 90
 
     # 判断逻辑：
-    # 1. 如果第一个数在纬度范围内，第二个在经度范围内 -> [纬度,经度]
-    # 2. 如果第一个数在经度范围内，第二个在纬度范围内 -> [经度,纬度]
-    # 3. 优先考虑中国境内的坐标范围
+    # 1. 优先考虑中国境内的坐标范围
+    # 2. 如果第一个数在纬度范围内，第二个在经度范围内 -> [纬度,经度]
+    # 3. 如果第一个数在经度范围内，第二个在纬度范围内 -> [经度,纬度]
 
     # 中国境内判断
     if 3 <= first_coord <= 54 and 73 <= second_coord <= 135:
@@ -216,6 +244,43 @@ def is_valid_coordinates(lng, lat):
 
     return True
 
+
+def extract_location_info(response):
+    """从AI回复中提取地点信息和坐标"""
+    print("正在提取地点信息：" + response)
+
+    # 匹配 {地点名}[经度,纬度] 格式 - 修正了正则表达式
+    pattern = r'\{([^}]+)\}$$(\d+\.?\d*),\s*(\d+\.?\d*)$$'
+    match = re.search(pattern, response)
+
+    if match:
+        location_name = match.group(1).strip()
+        lng = float(match.group(2))
+        lat = float(match.group(3))
+
+        if is_valid_coordinates(lng, lat):
+            print(f"成功提取地点信息：{location_name} - 经度={lng}, 纬度={lat}")
+            return {
+                "name": location_name,
+                "lng": lng,
+                "lat": lat
+            }
+        else:
+            print(f"坐标超出合理范围：经度={lng}, 纬度={lat}")
+
+    # 如果没有找到标准格式，尝试提取坐标
+    lng, lat = extract_coordinates_from_ai_response(response)
+    if lng is not None and lat is not None:
+        return {
+            "name": "未知地点",
+            "lng": lng,
+            "lat": lat
+        }
+
+    print("未能提取到地点信息")
+    return None
+
+
 def ai_infer(messages, token=None):
     """带用户认证的AI请求"""
     uinfo = verify_token(token) if token else None
@@ -224,8 +289,13 @@ def ai_infer(messages, token=None):
     logger.info(f"[AI提问] 用户: {username}，消息数: {len(messages)}")
 
     answer = ask_ai_sync(messages)
+
+    # 提取地点信息
+    location_info = extract_location_info(answer)
+
     return {
         "answer": answer,
+        "location": location_info,
         "user": uinfo or {"username": "anonymous"}
     }
 
@@ -240,15 +310,161 @@ def test_connection():
         return False
 
 
+def test_coordinate_extraction():
+    """测试坐标提取功能"""
+    test_cases = [
+        "我想去{天安门广场}[116.3974,39.9090]看看呢~ 🏛️✨",
+        "推荐你去{北京大学}[116.3074,39.9927]参观哦！",
+        "坐标：116.3974,39.9090",
+        "经度:116.3974,纬度:39.9090",
+        "纬度:39.9090,经度:116.3974",
+        "位置：[116.3974,39.9090]",
+        "lng:116.3974,lat:39.9090",
+        "lat:39.9090,lng:116.3974",
+        "北京大学(116.3074,39.9927)",
+        "116.3074, 39.9927",
+        "无效的坐标信息",
+        "经度:999,纬度:999",  # 超出范围的坐标
+        "你好，我是斯诺~ 😊",  # 无坐标信息
+    ]
+
+    print("=" * 50)
+    print("测试坐标提取功能")
+    print("=" * 50)
+
+    for i, test_case in enumerate(test_cases, 1):
+        print(f"\n测试用例 {i}: {test_case}")
+        print("-" * 30)
+
+        # 测试坐标提取
+        lng, lat = extract_coordinates_from_ai_response(test_case)
+        if lng is not None and lat is not None:
+            print(f"✓ 坐标提取成功: 经度={lng}, 纬度={lat}")
+        else:
+            print("✗ 坐标提取失败")
+
+        # 测试地点信息提取
+        location_info = extract_location_info(test_case)
+        if location_info:
+            print(f"✓ 地点信息提取成功: {location_info}")
+        else:
+            print("✗ 地点信息提取失败")
+
+
+def calculate_distance(lng1, lat1, lng2, lat2):
+    """计算两个坐标点之间的距离（单位：米）"""
+    # 使用 Haversine 公式计算球面距离
+    R = 6371000  # 地球半径（米）
+
+    # 转换为弧度
+    lat1_rad = math.radians(lat1)
+    lat2_rad = math.radians(lat2)
+    delta_lat = math.radians(lat2 - lat1)
+    delta_lng = math.radians(lng2 - lng1)
+
+    # Haversine 公式
+    a = (math.sin(delta_lat / 2) ** 2 +
+         math.cos(lat1_rad) * math.cos(lat2_rad) *
+         math.sin(delta_lng / 2) ** 2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    distance = R * c
+    return distance
+
+
+def validate_ai_coordinates_with_search(ai_location, search_results, max_distance=20000):
+    """
+    验证AI提供的坐标是否与搜索结果匹配
+
+    Args:
+        ai_location: AI提取的地点信息 {"name": "地点名", "lng": 经度, "lat": 纬度}
+        search_results: 高德搜索结果列表
+        max_distance: 最大允许距离（米），默认5公里
+
+    Returns:
+        dict: 验证结果和推荐的最佳匹配
+    """
+    if not ai_location or not search_results:
+        return None
+
+    ai_lng, ai_lat = ai_location["lng"], ai_location["lat"]
+    best_match = None
+    min_distance = float('inf')
+
+    # 计算AI坐标与每个搜索结果的距离
+    for result in search_results:
+        if 'location' in result and result['location']:
+            result_coords = result['location'].split(',')
+            if len(result_coords) == 2:
+                try:
+                    result_lng = float(result_coords[0])
+                    result_lat = float(result_coords[1])
+
+                    distance = calculate_distance(ai_lng, ai_lat, result_lng, result_lat)
+
+                    if distance < min_distance:
+                        min_distance = distance
+                        best_match = {
+                            "result": result,
+                            "distance": distance,
+                            "lng": result_lng,
+                            "lat": result_lat
+                        }
+                except (ValueError, IndexError):
+                    continue
+
+    # 验证结果
+    if best_match and min_distance <= max_distance:
+        return {
+            "valid": True,
+            "confidence": "high" if min_distance <= 1000 else "medium",
+            "ai_location": ai_location,
+            "best_match": best_match,
+            "distance": min_distance,
+            "recommendation": "use_search_result" if min_distance > 500 else "use_ai_result"
+        }
+    else:
+        return {
+            "valid": False,
+            "confidence": "low",
+            "ai_location": ai_location,
+            "best_match": best_match,
+            "distance": min_distance if best_match else None,
+            "recommendation": "use_search_result" if best_match else "manual_confirm"
+        }
+
+
 def main():
     """测试AI服务"""
     print("测试AI服务连接...")
 
     if test_connection():
         print("✓ 连接测试成功")
+
+        # 测试基本对话
         messages = [{"role": "user", "content": "你好，请简单介绍一下自己"}]
         response = ask_ai_sync(messages)
         print(f"AI回复: {response}")
+
+        # 测试地点查询
+        print("\n" + "=" * 50)
+        print("测试地点查询功能")
+        print("=" * 50)
+
+        location_messages = [{"role": "user", "content": "我想去北京天安门广场"}]
+        location_response = ask_ai_sync(location_messages)
+        print(f"地点查询回复: {location_response}")
+
+        # 提取地点信息
+        location_info = extract_location_info(location_response)
+        if location_info:
+            print(f"提取的地点信息: {location_info}")
+        else:
+            print("未能提取到地点信息")
+
+        # 测试坐标提取功能
+        test_coordinate_extraction()
+
     else:
         print("✗ 连接测试失败")
 

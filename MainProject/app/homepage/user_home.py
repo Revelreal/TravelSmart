@@ -1,6 +1,8 @@
 import gradio as gr
+
 from MainProject.app.API.ai_service import ask_ai_sync, extract_coordinates_from_ai_response
 from MainProject.auth_utils import verify_token
+
 
 # 构建AI问题
 def build_ai_messages(history, question):
@@ -11,6 +13,7 @@ def build_ai_messages(history, question):
     if question and question.strip():
         messages.append({"role": "user", "content": str(question)})
     return messages
+
 
 # 地图接口（必须token核查）
 def create_map_ui(token_box):
@@ -36,29 +39,43 @@ def create_map_ui(token_box):
 
     return map_html, map_script_html
 
-def get_quick_suggestions():
-    """获取快速建议列表"""
-    return [
-        "北京天安门广场怎么去？",
-        "上海外滩有什么好玩的？",
-        "西湖十景都有哪些？",
-        "故宫博物院开放时间",
-        "长城一日游路线推荐",
-        "成都美食推荐",
-        "三亚海滩哪个最美？",
-        "桂林山水甲天下在哪里？"
-    ]
 
-def get_custom_content_suggestions():
-    """获取自定义内容建议"""
-    return [
-        "我想了解最近的热门旅游景点",
-        "帮我规划一个3天2夜的周末游",
-        "推荐一些适合拍照的网红打卡地",
-        "我想找性价比高的酒店住宿",
-        "有什么特色美食值得尝试？",
-        "当地的交通出行方式有哪些？"
-    ]
+# 快速提问内容建议
+QUICK_SUGGESTIONS = [
+    "北京天安门广场怎么去？", "上海外滩有什么好玩的？", "西湖十景都有哪些？",
+    "故宫博物院开放时间", "长城一日游路线推荐", "成都美食推荐",
+    "三亚海滩哪个最美？", "桂林山水甲天下在哪里？", "西安兵马俑门票价格",
+    "张家界国家森林公园最佳路线", "九寨沟最佳旅游季节", "丽江古城有哪些特色客栈？",
+    "鼓浪屿轮渡时刻表", "黄山看日出最佳地点", "乌镇东西栅区别",
+    "平遥古城必去景点", "敦煌莫高窟参观攻略", "峨眉山金顶住宿推荐",
+    "厦门曾厝垵小吃推荐", "阳朔西街酒吧哪家好？", "青海湖环湖骑行路线",
+    "哈尔滨冰雪大世界门票", "婺源油菜花最佳观赏时间", "香格里拉松赞林寺介绍"
+]
+
+# 个性推荐内容建议
+CUSTOM_SUGGESTIONS = [
+    "我想了解最近的热门旅游景点", "帮我规划一个3天2夜的周末游",
+    "推荐一些适合拍照的网红打卡地", "我想找性价比高的酒店住宿",
+    "有什么特色美食值得尝试？", "当地的交通出行方式有哪些？",
+    "适合带老人去的景点推荐", "亲子游最佳目的地", "自驾游路线规划",
+    "雨季旅游注意事项", "冬季最佳旅游城市", "小众特色景点推荐"
+]
+
+
+def get_random_suggestions(suggestion_type):
+    """随机获取建议"""
+    import random
+    if suggestion_type == "quick":
+        return random.sample(QUICK_SUGGESTIONS, min(8, len(QUICK_SUGGESTIONS)))
+    elif suggestion_type == "custom":
+        return random.sample(CUSTOM_SUGGESTIONS, min(6, len(CUSTOM_SUGGESTIONS)))
+    elif suggestion_type == "favorite":
+        return  ["鼓浪屿", "乌镇", "阳朔", "九寨沟", "婺源", "香格里拉"] # 这里替换为用户收藏消息的组合函数
+    elif suggestion_type == "trip":
+        return ["我的行程1: 北京三日游", "我的行程2: 上海周末游", "我的行程3: 成都美食之旅",
+                "我的行程4: 云南七日游", "我的行程5: 西安文化之旅", "我的行程6: 三亚海滨度假"]
+    return []
+
 
 def create_user_home_app():
     with gr.Blocks(
@@ -336,7 +353,7 @@ def create_user_home_app():
                     # 快速建议
                     with gr.Tabs():
                         with gr.Tab("💡 快速提问"):
-                            suggestions = get_quick_suggestions()
+                            suggestions = get_random_suggestions("quick")
                             suggestion_buttons = []
 
                             for i in range(0, len(suggestions), 2):
@@ -351,7 +368,7 @@ def create_user_home_app():
                                             suggestion_buttons.append(btn)
 
                         with gr.Tab("🎯 个性推荐"):
-                            custom_suggestions = get_custom_content_suggestions()
+                            custom_suggestions = get_random_suggestions("custom")
                             custom_buttons = []
 
                             for i in range(0, len(custom_suggestions), 2):
@@ -364,6 +381,37 @@ def create_user_home_app():
                                                 size="sm"
                                             )
                                             custom_buttons.append(btn)
+
+                        with gr.Tab("❤️ 我的收藏"):
+                            favorite_suggestions = get_random_suggestions("favorite")
+                            favorite_buttons = []
+
+                            for i in range(0, len(favorite_suggestions), 2):
+                                with gr.Row():
+                                    for j in range(2):
+                                        if i + j < len(favorite_suggestions):
+                                            btn = gr.Button(
+                                                favorite_suggestions[i + j],
+                                                elem_classes="suggestion-item",
+                                                size="sm"
+                                            )
+                                            favorite_buttons.append(btn)
+
+                        with gr.Tab("🚆 我的行程"):
+                            trip_suggestions = get_random_suggestions("trip")
+                            trip_buttons = []
+
+                            for i in range(0, len(trip_suggestions), 2):
+                                with gr.Row():
+                                    for j in range(2):
+                                        if i + j < len(trip_suggestions):
+                                            btn = gr.Button(
+                                                trip_suggestions[i + j],
+                                                elem_classes="suggestion-item",
+                                                size="sm"
+                                            )
+                                            trip_buttons.append(btn)
+
 
                     # 输入区域
                     with gr.Row():
@@ -429,7 +477,7 @@ def create_user_home_app():
                     return suggestion_text
 
                 # 绑定建议按钮
-                all_buttons = suggestion_buttons + custom_buttons
+                all_buttons = suggestion_buttons + custom_buttons + trip_buttons + favorite_buttons
                 for btn in all_buttons:
                     btn.click(
                         fn=use_suggestion,

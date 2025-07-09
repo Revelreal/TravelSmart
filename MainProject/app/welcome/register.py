@@ -69,7 +69,7 @@ def create_register_app():
                     db.register_user(user_info)
 
                     # 标准token
-                    token = create_token(u, "user")
+                    token = create_token(u, "user", "user")
                     encoded_token = urllib.parse.quote(token)
                     jump_url = f"/homepage/user_home?token={encoded_token}"
 
