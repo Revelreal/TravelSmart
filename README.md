@@ -210,7 +210,7 @@ graph TB
 2. **安装后端依赖**
 
    ```bash
-   cd backend
+   cd MainProject
    pip install -r requirements.txt
    ```
 
@@ -231,7 +231,7 @@ graph TB
 5. **初始化数据库**
 
    ```bash
-   cd backend
+   cd MainProject
    python manage.py migrate
    python manage.py seed  # 导入示例数据
    ```
@@ -240,7 +240,7 @@ graph TB
 
    ```bash
    # 启动后端服务
-   cd backend && python main.py
+   cd MainProject && python main.py
    
    # 启动前端开发服务器
    cd frontend && npm run dev

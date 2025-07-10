@@ -1,0 +1,94 @@
+/* 动态详情页面样式 */
+.detail-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.back-button {
+    margin-bottom: 20px;
+}
+
+.post-media {
+    margin: 15px 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.likes-section, .comments-section {
+    margin: 20px 0;
+}
+
+.comment-input-section {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.comment-input {
+    width: 100%;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.emoji-btn, .mention-btn {
+    border-radius: 6px;
+    padding: 5px 10px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.load-more-btn {
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .detail-container {
+        padding: 10px;
+    }
+
+    .likes-list {
+        gap: 6px;
+    }
+
+    .like-user {
+        padding: 4px 8px;
+    }
+
+    .like-avatar {
+        width: 24px;
+        height: 24px;
+    }
+
+    .comment-avatar {
+        width: 32px;
+        height: 32px;
+    }
+
+    .comment-item {
+        padding: 8px;
+    }
+}
+
+/* 加载动画 */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

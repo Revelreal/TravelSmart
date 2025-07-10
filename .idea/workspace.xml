@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="AI-地图交互，猜你想搜一键使用！">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/API/ai_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/API/ai_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/homepage/user_home.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/homepage/user_home.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProject/app/welcome/register.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainProject/app/welcome/register.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ai_service.py" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExportToHTMLSettings">
+    <option name="printScope" value="4" />
+    <option name="OUTPUT_DIRECTORY" value="$PROJECT_DIR$/exportToHTML" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="HTML File" />
+        <option value="CSS File" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="Gradio_TravelSmart" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="develop" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;jiangxiaoxuan0721&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Revelreal/TravelSmart.git&quot;,
+    &quot;accountId&quot;: &quot;8bf47d0c-3d05-47c6-b2da-36f587e745b4&quot;
+  },
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
+    },
+    &quot;owner&quot;: &quot;Revelreal&quot;,
+    &quot;repository&quot;: &quot;TravelSmart&quot;
+  },
+  &quot;editorReviewEnabled&quot;: false
+}</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2xlm5wGz8GCVtDPShTIn42Ib7R2" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python 测试.Python 测试 (ai_service.py 内).executor&quot;: &quot;Run&quot;,
+    &quot;Python 测试.Python 测试 (user_home.py 内).executor&quot;: &quot;Run&quot;,
+    &quot;Python.DBHelper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.MONGOHelper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NoticeManager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.SQLHelper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.admin_home.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ai.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.auth_utils.executor&quot;: &quot;Run&quot;,
+    &quot;Python.common.executor&quot;: &quot;Run&quot;,
+    &quot;Python.create.executor&quot;: &quot;Run&quot;,
+    &quot;Python.database_setup.executor&quot;: &quot;Run&quot;,
+    &quot;Python.friends_component_ui.executor&quot;: &quot;Run&quot;,
+    &quot;Python.liketest.executor&quot;: &quot;Run&quot;,
+    &quot;Python.login.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.mongo_setup.executor&quot;: &quot;Run&quot;,
+    &quot;Python.notice_page.executor&quot;: &quot;Run&quot;,
+    &quot;Python.post_model_test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.preferences.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.user_home.executor&quot;: &quot;Run&quot;,
+    &quot;Python.卖弄.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop 上的 #2&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/repos3/TravelSmart&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.tencent.code.intel.settings.ApplicationConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mongo&quot;,
+      &quot;mysql_aurora&quot;
+    ],
+    &quot;com.intellij.ide.scratch.LRUPopupBuilder$1/SQL 方言&quot;: [
+      &quot;MySQL&quot;,
+      &quot;MongoDB&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\repos3\TravelSmart\MainProject\app\notice" />
+      <recent name="D:\repos3\TravelSmart\MainProject" />
+      <recent name="D:\repos3\TravelSmart\MainProject\services" />
+      <recent name="D:\repos3\TravelSmart" />
+      <recent name="D:\repos3\TravelSmart\MainProject\dbhelper" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.main">
+    <configuration name="create" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="TravelSmart" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Test/create.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="like_function_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="TravelSmart" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="D:\repos3\TravelSmart\Test\like_function_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="TravelSmart" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MainProject" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="D:\repos3\TravelSmart\MainProject\main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="post_model_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="TravelSmart" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Test/post_model_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python 测试 (ai_service.py 内)" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="TravelSmart" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MainProject/app/API" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/MainProject/app/API/ai_service.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python 测试.Python 测试 (ai_service.py 内)" />
+        <item itemvalue="Python.post_model_test" />
+        <item itemvalue="Python.like_function_test" />
+        <item itemvalue="Python.create" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-PY-251.26094.141" />
+        <option value="bundled-python-sdk-9f8e2b94138c-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26094.141" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="0ee6d508-fedc-4541-a01d-f15ad3e4e1ed" name="更改" comment="" />
+      <created>1748520855205</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748520855205</updated>
+      <workItem from="1748523581793" duration="901000" />
+      <workItem from="1748525488698" duration="3718000" />
+      <workItem from="1748566275068" duration="46000" />
+      <workItem from="1748566568978" duration="81000" />
+      <workItem from="1748570212306" duration="89000" />
+      <workItem from="1748570412357" duration="383000" />
+      <workItem from="1748570910949" duration="152000" />
+      <workItem from="1748572341885" duration="281000" />
+      <workItem from="1748572941938" duration="1373000" />
+      <workItem from="1748574348507" duration="7039000" />
+      <workItem from="1748585160988" duration="3425000" />
+      <workItem from="1748653259901" duration="2867000" />
+      <workItem from="1748658805614" duration="29343000" />
+      <workItem from="1748839087599" duration="41000" />
+      <workItem from="1748928470451" duration="1239000" />
+      <workItem from="1748953655016" duration="4832000" />
+      <workItem from="1749026091764" duration="5925000" />
+      <workItem from="1749032232959" duration="179000" />
+      <workItem from="1749032731673" duration="7000" />
+      <workItem from="1749033854149" duration="195000" />
+      <workItem from="1749034207904" duration="2562000" />
+      <workItem from="1749041366475" duration="111000" />
+      <workItem from="1749041516049" duration="143000" />
+      <workItem from="1749041699058" duration="1546000" />
+      <workItem from="1749043869787" duration="622000" />
+      <workItem from="1749044557043" duration="27000" />
+      <workItem from="1749044662602" duration="549000" />
+      <workItem from="1749097717377" duration="2333000" />
+      <workItem from="1749107552158" duration="1664000" />
+      <workItem from="1749811423277" duration="10842000" />
+      <workItem from="1749881920573" duration="3355000" />
+      <workItem from="1749885305364" duration="826000" />
+      <workItem from="1749886302368" duration="8855000" />
+      <workItem from="1749981217896" duration="226000" />
+      <workItem from="1749981485745" duration="6000" />
+      <workItem from="1749981767195" duration="8000" />
+      <workItem from="1749981791354" duration="2000" />
+      <workItem from="1749981882371" duration="60000" />
+      <workItem from="1749982013682" duration="543000" />
+      <workItem from="1749982877351" duration="4000" />
+      <workItem from="1749982893917" duration="9000" />
+      <workItem from="1749982983624" duration="39000" />
+      <workItem from="1749983290787" duration="2768000" />
+      <workItem from="1749988448687" duration="2914000" />
+      <workItem from="1749991747881" duration="274000" />
+      <workItem from="1749992344405" duration="365000" />
+      <workItem from="1749992947305" duration="8376000" />
+      <workItem from="1750002737993" duration="633000" />
+      <workItem from="1750040032171" duration="183000" />
+      <workItem from="1750045698331" duration="4366000" />
+      <workItem from="1750052795497" duration="4033000" />
+      <workItem from="1750058657119" duration="6954000" />
+      <workItem from="1750120267267" duration="89000" />
+      <workItem from="1750129433200" duration="966000" />
+      <workItem from="1750130586578" duration="43111000" />
+      <workItem from="1750191887823" duration="8725000" />
+      <workItem from="1750246022324" duration="662000" />
+      <workItem from="1751430796354" duration="636000" />
+      <workItem from="1751433577841" duration="24734000" />
+      <workItem from="1751461722710" duration="2600000" />
+      <workItem from="1751466434055" duration="8842000" />
+      <workItem from="1751508997922" duration="23735000" />
+      <workItem from="1751537174092" duration="8098000" />
+      <workItem from="1751625205935" duration="1000" />
+      <workItem from="1751713088183" duration="48000" />
+      <workItem from="1751943546060" duration="2131000" />
+      <workItem from="1751946057093" duration="69000" />
+      <workItem from="1751946150599" duration="25409000" />
+      <workItem from="1752037824174" duration="212000" />
+      <workItem from="1752068467495" duration="390000" />
+      <workItem from="1752068874928" duration="870000" />
+      <workItem from="1752069789872" duration="7009000" />
+    </task>
+    <task id="LOCAL-00001" summary="基础界面功能搭建中...">
+      <option name="closed" value="true" />
+      <created>1748524413329</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1748524413329</updated>
+    </task>
+    <task id="LOCAL-00002" summary="准备使用Gradio重构项目">
+      <option name="closed" value="true" />
+      <created>1748574179372</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1748574179372</updated>
+    </task>
+    <task id="LOCAL-00003" summary="准备使用Gradio重构项目">
+      <option name="closed" value="true" />
+      <created>1748582177646</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1748582177646</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Gradio重构模板">
+      <option name="closed" value="true" />
+      <created>1748588508886</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1748588508886</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Gradio重构模板">
+      <option name="closed" value="true" />
+      <created>1748659261251</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1748659261251</updated>
+    </task>
+    <task id="LOCAL-00006" summary="基本功能完善">
+      <option name="closed" value="true" />
+      <created>1748680900287</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1748680900287</updated>
+    </task>
+    <task id="LOCAL-00007" summary="基本功能完善">
+      <option name="closed" value="true" />
+      <created>1748681169574</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1748681169574</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Merge remote-tracking branch 'origin/develop' into develop">
+      <option name="closed" value="true" />
+      <created>1748689158471</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1748689158471</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Merge remote-tracking branch 'origin/develop' into develop">
+      <option name="closed" value="true" />
+      <created>1748693033485</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1748693033485</updated>
+    </task>
+    <task id="LOCAL-00010" summary="基于token的用户认证已完善。有几个后门：root用户可以凭token登陆任意界面，管理员可以凭token登陆普通用户界面/设置，如果他们愿意修改链接的话。">
+      <option name="closed" value="true" />
+      <created>1750073513887</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1750073513887</updated>
+    </task>
+    <task id="LOCAL-00011" summary="基于token的用户认证已完善。有几个后门：root用户可以凭token登陆任意界面，管理员可以凭token登陆普通用户界面/设置，如果他们愿意修改链接的话。">
+      <option name="closed" value="true" />
+      <created>1750073810996</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1750073810996</updated>
+    </task>
+    <task id="LOCAL-00012" summary="基于token的用户认证已完善。有几个后门：root用户可以凭token登陆任意界面，管理员可以凭token登陆普通用户界面/设置，如果他们愿意修改链接的话。">
+      <option name="closed" value="true" />
+      <created>1750150371632</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1750150371632</updated>
+    </task>
+    <task id="LOCAL-00013" summary="模块完善：导航定位，评论查看、用户偏好、">
+      <option name="closed" value="true" />
+      <created>1750169054510</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1750169054510</updated>
+    </task>
+    <task id="LOCAL-00014" summary="模块完善：导航定位，评论查看、用户偏好、旅行计划定制，形成第二版本">
+      <option name="closed" value="true" />
+      <created>1750200498983</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1750200498983</updated>
+    </task>
+    <task id="LOCAL-00015" summary="部署了公告系统">
+      <option name="closed" value="true" />
+      <created>1751449293876</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1751449293876</updated>
+    </task>
+    <task id="LOCAL-00016" summary="修改了注册界面的出错，增加了好友聊天、动态界面、初步进行拓展，但功能稳定性仍在测试，内容仍然需要完善。">
+      <option name="closed" value="true" />
+      <created>1751521871737</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1751521871737</updated>
+    </task>
+    <task id="LOCAL-00017" summary="稳定版本，考虑优化界面布局">
+      <option name="closed" value="true" />
+      <created>1751525870502</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1751525870502</updated>
+    </task>
+    <task id="LOCAL-00018" summary="完善了好友动态，优化了布局，添加了两个测试功能界面，与项目关联不大，主要用于实验布局可行性">
+      <option name="closed" value="true" />
+      <created>1751803700874</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1751803700874</updated>
+    </task>
+    <task id="LOCAL-00019" summary="完善了个人内容管理，用户头像预览待接入，确认权限可行性，优化了用户体验。">
+      <option name="closed" value="true" />
+      <created>1751889892335</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1751889892335</updated>
+    </task>
+    <task id="LOCAL-00020" summary="用户数据据统计完善，模块提取进行复用">
+      <option name="closed" value="true" />
+      <created>1751907260516</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1751907260516</updated>
+    </task>
+    <task id="LOCAL-00021" summary="美化评论区、点赞，更新用户头像上传功能，进行模块重构，用户文件可以上传为其他类型存储。">
+      <option name="closed" value="true" />
+      <created>1751956664730</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1751956664730</updated>
+    </task>
+    <task id="LOCAL-00022" summary="AI-地图交互，猜你想搜一键使用！">
+      <option name="closed" value="true" />
+      <created>1751973332604</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1751973332604</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="b9fc5970-b5ce-4a8e-a0f1-7b1b79888b8a" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/Gradio_TravelSmart" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+        <entry key="b9fc5970-b5ce-4a8e-a0f1-7b1b79888b8a">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="基础界面功能搭建中..." />
+    <MESSAGE value="准备使用Gradio重构项目" />
+    <MESSAGE value="2025.5.31 9.47" />
+    <MESSAGE value="Gradio重构模板" />
+    <MESSAGE value="基本功能完善" />
+    <MESSAGE value="Merge remote-tracking branch 'origin/develop' into develop" />
+    <MESSAGE value="基于token的用户认证已完善。有几个后门：root用户可以凭token登陆任意界面，管理员可以凭token登陆普通用户界面/设置，如果他们愿意修改链接的话。" />
+    <MESSAGE value="模块完善：导航定位，评论查看、用户偏好、" />
+    <MESSAGE value="模块完善：导航定位，评论查看、用户偏好、旅行计划定制，形成第二版本" />
+    <MESSAGE value="部署了公告系统" />
+    <MESSAGE value="修改了注册界面的出错，增加了好友聊天、动态界面、初步进行拓展，但功能稳定性仍在测试，内容仍然需要完善。" />
+    <MESSAGE value="稳定版本，考虑优化界面布局" />
+    <MESSAGE value="完善了好友动态，优化了布局，添加了两个测试功能界面，与项目关联不大，主要用于实验布局可行性" />
+    <MESSAGE value="完善了个人内容管理，用户头像预览待接入，确认权限可行性，优化了用户体验。" />
+    <MESSAGE value="用户数据据统计完善，模块提取进行复用" />
+    <MESSAGE value="美化评论区、点赞，更新用户头像上传功能，进行模块重构，用户文件可以上传为其他类型存储。" />
+    <MESSAGE value="AI-地图交互，猜你想搜一键使用！" />
+    <option name="LAST_COMMIT_MESSAGE" value="AI-地图交互，猜你想搜一键使用！" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/TravelSmart$SQLHelper.coverage" NAME="SQLHelper 覆盖结果" MODIFIED="1750058069775" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
+    <SUITE FILE_PATH="coverage/TravelSmart$database_setup.coverage" NAME="database_setup 覆盖结果" MODIFIED="1751457883099" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
+    <SUITE FILE_PATH="coverage/TravelSmart$user_home.coverage" NAME="user_home 覆盖结果" MODIFIED="1749041630389" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/homepage" />
+    <SUITE FILE_PATH="coverage/TravelSmart$mongo_setup.coverage" NAME="mongo_setup 覆盖结果" MODIFIED="1751457973662" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
+    <SUITE FILE_PATH="coverage/TravelSmart$DBHelper.coverage" NAME="DBHelper 覆盖结果" MODIFIED="1748659199619" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
+    <SUITE FILE_PATH="coverage/TravelSmart$preferences.coverage" NAME="preferences 覆盖结果" MODIFIED="1750156451445" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/API" />
+    <SUITE FILE_PATH="coverage/TravelSmart$common.coverage" NAME="common 覆盖结果" MODIFIED="1748683017862" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app" />
+    <SUITE FILE_PATH="coverage/TravelSmart$friends_component_ui.coverage" NAME="friends_component_ui 覆盖结果" MODIFIED="1751472661551" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/ui" />
+    <SUITE FILE_PATH="coverage/TravelSmart$.coverage" NAME=" 覆盖结果" MODIFIED="1751974907388" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/API" />
+    <SUITE FILE_PATH="coverage/TravelSmart$create.coverage" NAME="create 覆盖结果" MODIFIED="1751954133186" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Test" />
+    <SUITE FILE_PATH="coverage/TravelSmart$app.coverage" NAME="app 覆盖结果" MODIFIED="1748581085974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app" />
+    <SUITE FILE_PATH="coverage/TravelSmart$login.coverage" NAME="login 覆盖结果" MODIFIED="1748684672832" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/welcome" />
+    <SUITE FILE_PATH="coverage/TravelSmart$auth_utils.coverage" NAME="auth_utils 覆盖结果" MODIFIED="1749985449781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
+    <SUITE FILE_PATH="coverage/TravelSmart$NoticeManager.coverage" NAME="NoticeManager 覆盖结果" MODIFIED="1751440022548" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
+    <SUITE FILE_PATH="coverage/TravelSmart$admin_home.coverage" NAME="admin_home 覆盖结果" MODIFIED="1751441296862" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/homepage" />
+    <SUITE FILE_PATH="coverage/TravelSmart$main.coverage" NAME="main 覆盖结果" MODIFIED="1752076388605" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject" />
+    <SUITE FILE_PATH="coverage/TravelSmart$MONGOHelper.coverage" NAME="MONGOHelper 覆盖结果" MODIFIED="1750137428237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/dbhelper" />
+    <SUITE FILE_PATH="coverage/TravelSmart$notice_page.coverage" NAME="notice_page 覆盖结果" MODIFIED="1751440420468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/app/notice" />
+    <SUITE FILE_PATH="coverage/TravelSmart$test.coverage" NAME="test 覆盖结果" MODIFIED="1749031993397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MainProject/static" />
+  </component>
+</project>
